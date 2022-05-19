@@ -10,7 +10,7 @@
     "client": "npm start --prefix client",
     "client-install": "npm install --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "cd app && cd client && npm install --only=dev && npm install && npm run build",
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build",
     "full-install": "npm install && npm install --prefix client"
   },
   "keywords": [],
