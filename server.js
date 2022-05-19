@@ -14,6 +14,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json()); // json 파싱
+app.set('port', port);
 
 // mongoDB
 const uri = process.env.ATLAS_URI;
