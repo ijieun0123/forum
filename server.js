@@ -33,7 +33,7 @@ app.use('/forum/', forumsRouter);
 app.use('/comment/', commentsRouter);
 app.use('/heart/', heartRouter);
 
-// production
+/* production
 if(process.env.NODE_ENV === 'production'){
     // Set static folder
     // All the javascript and css files will be read and served from this folder
@@ -43,6 +43,20 @@ if(process.env.NODE_ENV === 'production'){
     app.get('/', (req, res) => {
         res.sendFile(path.resolve(_dirname, './client', 'build', 'index.html'));
     })
+}
+*/
+
+// Deployment
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/build")));
+    app.get("*", (req, res) =>
+      // res.sendFile(path.resolve(__dirname, "../client", "public", "index.html"))
+      res.sendFile(path.resolve(__dirname, "../client/build/index.html"))
+    );
+  } else {
+    app.get("/", (req, res) => {
+      res.send("API IS RUNNING.");
+    });
 }
 
 // 서버 시작
