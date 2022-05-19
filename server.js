@@ -9,7 +9,7 @@ require('dotenv').config();
 
 // express & 포트 만들기
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // middleware
 app.use(cors());
