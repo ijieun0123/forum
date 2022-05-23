@@ -43,8 +43,6 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-createRoutes(app);
-
 // 서버 시작
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
