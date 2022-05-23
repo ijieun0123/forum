@@ -4,8 +4,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "heroku-prebuild": "npm install --dev",
     "heroku-postbuild": "cd client && npm install && npm install webpack-cli --dev && npm run build",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
