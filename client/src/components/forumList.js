@@ -42,7 +42,7 @@ const ForumList = () => {
     
     const deleteForum = async () => {
         try{            
-            const res = await axios.delete(`/api/forum/delete/${forumId}`);
+            const res = await axios.delete(`/forum/delete/${forumId}`);
             console.log(res.data);
             setAlertShow(false);
             getForums(selectValue);
@@ -66,7 +66,7 @@ const ForumList = () => {
             heartClickUsers: heartClickUsers
         }
         try{
-            const res = await axios.patch(`/api/forum/heart/update/${forumId}`, body);
+            const res = await axios.patch(`/forum/heart/update/${forumId}`, body);
             console.log(res.data);
             ( searchValue ? getSearchForums(e) : getForums(selectValue) )
         } catch(err){
@@ -80,7 +80,7 @@ const ForumList = () => {
             searchValue: searchValue
         }
         try{
-            const res = await axios.get('/api/forum/search/get', {params: body})
+            const res = await axios.get('/forum/search/get', {params: body})
             const data = res.data;
             console.log(data)
             setForums(data);
@@ -92,7 +92,7 @@ const ForumList = () => {
     
     const getForums = async (selectValue) => {
         try{
-            const res = await axios.get('/api/forum/get')
+            const res = await axios.get('/forum/get')
             const data = res.data;
             setSearchValue('')
            
