@@ -28,10 +28,10 @@ const usersRouter = require('./routes/users');
 const forumsRouter = require('./routes/forums');
 const commentsRouter = require('./routes/comments');
 const heartRouter = require('./routes/heart');
-app.use('/user/', usersRouter);
-app.use('/forum/', forumsRouter);
-app.use('/comment/', commentsRouter);
-app.use('/heart/', heartRouter);
+app.use('/user', usersRouter);
+app.use('/forum', forumsRouter);
+app.use('/comment', commentsRouter);
+app.use('/heart', heartRouter);
 
 // Server static assets if in production
 if (process.env.NODE_ENV === 'production') {
