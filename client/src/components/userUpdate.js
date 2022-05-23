@@ -83,7 +83,7 @@ const UserUpdate = () => {
             password: password,
         }
         try{
-            const res = await axios.post('/api/user/post', body);
+            const res = await axios.post('/user/post', body);
             console.log(res.data);
             setModalMessage('회원가입을 축하합니다!')
             formReset();
@@ -104,7 +104,7 @@ const UserUpdate = () => {
             userId: userId,
         }
         try{
-            const res = await axios.patch(`/api/user/update/${user._id}`, body);
+            const res = await axios.patch(`/user/update/${user._id}`, body);
             const data = res.data;
             const { _id, profileImage, userName, nickname, userId, password } = data;
             console.log(data);

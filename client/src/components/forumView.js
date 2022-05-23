@@ -33,7 +33,7 @@ const ForumView = () => {
     
     const deleteForum = async () => {
         try{            
-            const res = await axios.delete(`/api/forum/delete/${id}`);
+            const res = await axios.delete(`/forum/delete/${id}`);
             console.log(res.data);
             setAlertShow(false);
             navigate(`/forum/list/`);
@@ -48,7 +48,7 @@ const ForumView = () => {
             heartClickUsers: heartClickUsers
         }
         try{            
-            const res = await axios.patch(`/api/forum/heart/update/${id}`, body);
+            const res = await axios.patch(`/forum/heart/update/${id}`, body);
             const data = res.data;
             setHeartCount(data.heart.count)
             setHeartClickUsers(data.heart.user)
@@ -60,7 +60,7 @@ const ForumView = () => {
 
     const getComment = async () => {
         try{
-            const res = await axios.get(`/api/forum/get/${id}`)
+            const res = await axios.get(`/forum/get/${id}`)
             const data = res.data;
             setComments(data._comment)
             console.log(data._comment)
@@ -71,7 +71,7 @@ const ForumView = () => {
 
     const updateViewCount = async () => {
         try{
-            const res = await axios.patch(`/api/forum/viewCount/update/${id}`);
+            const res = await axios.patch(`/forum/viewCount/update/${id}`);
             console.log(res.data)
         } catch(err){
             console.log(err);
@@ -80,7 +80,7 @@ const ForumView = () => {
   
     const getForum = async () => {
         try{
-            const res = await axios.get(`/api/forum/get/${id}`)
+            const res = await axios.get(`/forum/get/${id}`)
             const data = res.data;
             setAttachImage(data.attachImage)
             setCreatedAt(data.createdAt)
