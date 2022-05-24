@@ -28,17 +28,17 @@ const usersRouter = require('./routes/users');
 const forumsRouter = require('./routes/forums');
 const commentsRouter = require('./routes/comments');
 const heartRouter = require('./routes/heart');
-app.use('/user', usersRouter);
-app.use('/forum', forumsRouter);
-app.use('/comment', commentsRouter);
-app.use('/heart', heartRouter);
+app.use('/api/user', usersRouter);
+app.use('/api/forum', forumsRouter);
+app.use('/api/comment', commentsRouter);
+app.use('/api/heart', heartRouter);
 
 // Server static assets if in production
 if (process.env.NODE_ENV === 'production') {
     // Set static folder
     app.use(express.static(path.join(__dirname, 'client/build')));
   
-    app.get('/*', (req, res) => {
+    app.get('/api/*', (req, res) => {
       res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
     });
 }
