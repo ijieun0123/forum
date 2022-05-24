@@ -58,7 +58,7 @@ const ForumWrite = () => {
             mainText: mainText,
         }
         try{
-            const res = await axios.post('/forum/post', body);
+            const res = await axios.post('/api/forum/post', body);
             console.log(res.data)
             formReset();
             navigate(`/forum/list`);
@@ -75,7 +75,7 @@ const ForumWrite = () => {
             mainText: mainText,
         }
         try{
-            const res = await axios.put(`/forum/update/${id}`, body);
+            const res = await axios.put(`/api/forum/update/${id}`, body);
             console.log(res.data)
             formReset();
             navigate(`/forum/list`);
@@ -91,7 +91,7 @@ const ForumWrite = () => {
 
     const getForum = async () => {
         try{
-            const res = await axios.get(`/forum/get/${id}`);
+            const res = await axios.get(`/api/forum/get/${id}`);
             const data = res.data;
             setTitleText(data.titleText);
             setMainText(data.mainText);

@@ -34,7 +34,7 @@ const Signin = () => {
             password: password
         }
         try{
-            const res = await axios.get('/user/get', {params: params});
+            const res = await axios.get('/api/user/get', {params: params});
             const data = res.data[0];
             console.log(data)
             const { _id, profileImage, userName, nickname, userId, password } = data;
