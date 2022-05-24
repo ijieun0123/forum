@@ -92,7 +92,7 @@ const ForumList = () => {
     
     const getForums = async (selectValue) => {
         try{
-            const res = await axios.get('/forum/get')
+            const res = await axios.get('/api/forum/get')
             const data = res.data;
             setSearchValue('')
            

@@ -1,10 +1,12 @@
-
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
-  app.use(createProxyMiddleware('/', { 
+  app.use(createProxyMiddleware('/api', { 
     target: 'http://localhost:5000', 
     changeOrigin: true,
+    pathRewrite: {
+      '^/api': '' // URL ^/api -> 공백 변경
+    }
   }));
 };
 
