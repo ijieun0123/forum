@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "heroku-postbuild": "cd client && npm install && npm install webpack-cli --dev && npm run build",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
@@ -13,7 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "autoprefixer": "10.4.5",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "mongoose": "^6.3.0",
