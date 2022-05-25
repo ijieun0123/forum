@@ -19,7 +19,7 @@ const Td = styled.td`
 
 const ForumList = () => {
     const user = useSelector(state => state.user.user);
-    const { signin } = user;
+    const { signin, userId } = user;
 
     const [forums, setForums] = useState([]);
     const [forumId, setForumId] = useState('');
@@ -62,7 +62,7 @@ const ForumList = () => {
     
     const updateForumHeart = async (e, forumId, heartClickUsers) => {
         const body = {
-            userId: user._id,
+            userId: userId,
             heartClickUsers: heartClickUsers
         }
         try{
@@ -106,10 +106,10 @@ const ForumList = () => {
                 const heartOrder = data.sort((a, b) => b.heart.count - a.heart.count)
                 setForums(heartOrder);
             } else if(selectValue === 'whatIWrote'){
-                const whatIWrote = data.filter(el => el._user._id === user._id)
+                const whatIWrote = data.filter(el => el._user._id === userId)
                 setForums(whatIWrote);
             } else{
-                const whatILike = data.filter(el => el.heart.user.includes(user._id))
+                const whatILike = data.filter(el => el.heart.user.includes(userId))
                 setForums(whatILike);
             }
         } catch(err){
@@ -217,7 +217,7 @@ const ForumList = () => {
                                             <HeartCount 
                                                 src={false} 
                                                 count={forum.heart.count} 
-                                                fill={(forum.heart.user.includes(user._id) ? true : false)} 
+                                                fill={(forum.heart.user.includes(userId) ? true : false)} 
                                                 onClick={ (e) => {updateForumHeart(e, forum._id, forum.heart.user)} } 
                                             />
                                         </Td>
@@ -227,7 +227,7 @@ const ForumList = () => {
                                                 value="수정"
                                                 variant="secondary"
                                                 size="sm"
-                                                disabled={ forum._user._id === user._id ? false : true }
+                                                disabled={ forum._user._id === userId ? false : true }
                                             />
                                         </Td>
                                         <Td>
@@ -236,7 +236,7 @@ const ForumList = () => {
                                                 value="삭제"
                                                 variant="danger"
                                                 size="sm"
-                                                disabled={ forum._user._id === user._id ? false : true }
+                                                disabled={ forum._user._id === userId ? false : true }
                                             />
                                         </Td>
                                     </tr>

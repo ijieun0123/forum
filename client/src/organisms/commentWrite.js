@@ -4,7 +4,7 @@ import Btn from '../atoms/button';
 import { useState } from 'react';
 import axios from 'axios';
 
-const CommentWrite = ({ profileImage, nickname, _user, _forum, getComment }) => {
+const CommentWrite = ({ profileImage, nickname, userId, forumId, getComments }) => {
 
     const [commentText, setCommentText] = useState('');
 
@@ -17,15 +17,15 @@ const CommentWrite = ({ profileImage, nickname, _user, _forum, getComment }) => 
         e.preventDefault();
         
         const body = {
-            _user: _user,
-            _forum: _forum,
+            _user: userId,
+            _forum: forumId,
             commentText: commentText
         }
         try{
             const res = await axios.post(`/api/comment/post`, body);
             console.log(res.data)
             setCommentText('');
-            getComment();
+            getComments();
         } catch(err){
             console.log(err);
         }

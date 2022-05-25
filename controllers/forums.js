@@ -30,8 +30,11 @@ module.exports.getSearchForums = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.getForum = (req, res) => {
+module.exports.getForum = async (req, res) => {
     const id = req.params.id;
+
+    const forum = await Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } })
+    if(Array.isArray(forum)) forum.save()
 
     Forum.findById(id)
     .populate('_user', 'profileImage nickname')
@@ -49,14 +52,6 @@ module.exports.updateForum = (req, res) => {
     
     Forum.findByIdAndUpdate(id, body)
     .then(() => res.json(`Forum updated`))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-module.exports.updateViewCount = (req, res) => {
-    const id = req.params.id;
-
-    Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } })
-    .then(() => res.json(`ViewCount updated`))
     .catch(err => res.status(400).json('Error: ' + err));
 }
 

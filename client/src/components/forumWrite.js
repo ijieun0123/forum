@@ -14,6 +14,7 @@ const ForumWrite = () => {
     const fileInput = useRef(null);
 
     const user = useSelector(state => state.user.user);
+    const { userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -51,7 +52,7 @@ const ForumWrite = () => {
 
     const createForum = async () => {
         const body = {
-            _user: user._id,
+            _user: userId,
             attachImage: attachImage,
             attachImageValue: attachImageValue,
             titleText: titleText,

@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux'
 import { signin } from '../features/userSlice'
 
 const Signin = () => {
-    const [userId, setUserId] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     const [modalMessage, setModalMessage] = useState('');
@@ -18,9 +18,9 @@ const Signin = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const onChangeUserId = e => {
-        let newUserId = e.target.value;
-        setUserId(newUserId);
+    const onChangeEmail = e => {
+        let newEmail = e.target.value;
+        setEmail(newEmail);
     }
 
     const onChangePassword = e => {
@@ -30,21 +30,21 @@ const Signin = () => {
 
     const getUser = async () => {
         const params = {
-            userId: userId,
+            email: email,
             password: password
         }
         try{
             const res = await axios.get('/api/user/get', {params: params});
             const data = res.data[0];
             console.log(data)
-            const { _id, profileImage, userName, nickname, userId, password } = data;
+            const { _id, profileImage, userName, nickname, email, password } = data;
             if(data){
                 dispatch(signin({
-                    _id: _id,
+                    userId: _id,
                     profileImage: profileImage,
                     userName: userName,
                     nickname: nickname,
-                    userId: userId,
+                    email: email,
                     password: password,
                     signin: true
                 }));
@@ -73,7 +73,7 @@ const Signin = () => {
                         Email
                     </Form.Label>
                     <Col sm={10}>
-                        <Form.Control type="email" placeholder="Email" value={userId} onChange={ onChangeUserId }/>
+                        <Form.Control type="email" placeholder="Email" value={email} onChange={ onChangeEmail }/>
                     </Col>
                 </Form.Group>
 

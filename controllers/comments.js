@@ -36,6 +36,20 @@ module.exports.getMyComment = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
+module.exports.updateComment = async (req, res) => {
+    const id = req.params.id;
+    const commentText = req.body.commentText;
+    const _forum = req.body._forum;
+
+    const comment = await Comment.findByIdAndUpdate(id, { $set:{ commentText: commentText } })
+    if(Array.isArray(comment)) comment.save()
+    
+    Comment.find({_forum: _forum})
+    .populate('_user', 'profileImage nickname')
+    .then(comments => res.json(comments))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
 module.exports.updateCommentHeart = (req, res) => {
     const commentId = req.params.id;
     const userId = req.body.userId;
@@ -52,19 +66,19 @@ module.exports.updateCommentHeart = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err))
 }
 
-module.exports.updateComment = (req, res) => {
-    const body = req.body;
-    const id = req.params.id;
+module.exports.deleteComment = async (req, res) => {
+    const _comment = req.params.id;
+    const _forum = req.query._forum
+
+    const comment = await Comment.findByIdAndDelete(_comment)
+    if(Array.isArray(comment)) comment.save()
     
-    Comment.findByIdAndUpdate(id, body)
-    .then(() => res.json(`Comment updated`))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-module.exports.deleteComment = (req, res) => {
-    const id = req.params.id;
-
-    Comment.findByIdAndDelete(id)
-    .then(() => res.json(`Comment deleted`))
+    const forum = await Forum.findById(_forum)
+    if(Array.isArray(forum._comment)) forum._comment.pull(_comment);
+    forum.save()
+    
+    Comment.find({_forum: _forum})
+    .populate('_user', 'profileImage nickname')
+    .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
 }

@@ -3,8 +3,7 @@ import Title from '../atoms/title';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Warning from '../organisms/warning'
-import CommentView from '../organisms/commentView'
-import CommentWrite from '../organisms/commentWrite'
+import Comment from '../organisms/commentView'
 import { Card, Stack } from 'react-bootstrap';
 import Profile from '../atoms/profile';
 import HeartCount from '../atoms/heartCount'
@@ -26,7 +25,7 @@ const ForumView = () => {
 
     const [alertShow, setAlertShow] = useState(false);
     const user = useSelector(state => state.user.user);
-    const { nickname, signin, profileImage, _id } = user;
+    const { nickname, profileImage ,userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -58,17 +57,6 @@ const ForumView = () => {
         }
     }
 
-    const getComment = async () => {
-        try{
-            const res = await axios.get(`/api/forum/get/${id}`)
-            const data = res.data;
-            setComments(data._comment)
-            console.log(data._comment)
-        } catch(err){
-            console.log(err);
-        }
-    }
-
     const updateViewCount = async () => {
         try{
             const res = await axios.patch(`/api/forum/viewCount/update/${id}`);
@@ -91,7 +79,6 @@ const ForumView = () => {
             setViewCount(data.viewCount)
             setWriter(data._user.nickname)
             setWriterImg(data._user.profileImage)
-            setComments(data._comment)
             console.log(data)
         } catch(err){
             console.log(err);
@@ -100,7 +87,7 @@ const ForumView = () => {
 
     useEffect(() => {
         getForum();
-        updateViewCount();
+        //updateViewCount();
     }, [])
 
     return (
@@ -161,9 +148,7 @@ const ForumView = () => {
                 </Card.Footer>
             </Card>
 
-            <Title text='Review' />
-
-            {/* 댓글 반복문 */
+            {/* 댓글 반복문 
                 comments.map((comment, i) => {
                     return (
                         <CommentView
@@ -180,19 +165,14 @@ const ForumView = () => {
                         />
                     )
                 })
-            }
+            */ }
 
-            {/* 댓글 쓰기 */
-                signin ? 
-                <CommentWrite 
-                    nickname={ nickname }
-                    profileImage={ profileImage }
-                    _user={ _id }
-                    _forum={ id }
-                    getComment={ getComment }
-                />
-                : null
-            }
+            <Comment 
+                forumId={ id } 
+                nickname={ nickname }
+                profileImage={ profileImage }
+                userId={ userId }
+            />  
         </div>
     )
 }

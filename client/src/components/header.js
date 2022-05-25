@@ -18,11 +18,11 @@ const Header = () => {
     const clickSignOutBtn = (e) => {
         e.preventDefault();
         dispatch(signout({
-            _id:'',
+            userId:'',
             profileImage: '',
             userName: '',
             nickname: '',
-            userId: '',
+            email: '',
             password: '',
             signin: false
         }));

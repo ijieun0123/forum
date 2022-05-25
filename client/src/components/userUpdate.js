@@ -16,7 +16,7 @@ const UserUpdate = () => {
 
     const [userName, setUserName] = useState('')
     const [nickname, setNickname] = useState('')
-    const [userId, setUserId] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
 
@@ -49,9 +49,9 @@ const UserUpdate = () => {
         setNickname(newNickName);
     }
 
-    const onChangeUserId = e => {
-        const newUserId = e.target.value;
-        setUserId(newUserId);
+    const onChangeEmail = e => {
+        const newemail = e.target.value;
+        setEmail(newemail);
     }
 
     const onChangePassword = e => {
@@ -69,7 +69,7 @@ const UserUpdate = () => {
         setProfileImage(defaultProfileImage);
         setUserName('');
         setNickname('');
-        setUserId('');
+        setEmail('');
         setPassword('');
         setPasswordConfirm('');
     }
@@ -79,7 +79,7 @@ const UserUpdate = () => {
             profileImage: profileImage,
             userName: userName,
             nickname: nickname,
-            userId: userId,
+            email: email,
             password: password,
         }
         try{
@@ -101,19 +101,19 @@ const UserUpdate = () => {
             profileImage: profileImage,
             userName: userName,
             nickname: nickname,
-            userId: userId,
+            email: email,
         }
         try{
             const res = await axios.patch(`/api/user/update/${user._id}`, body);
             const data = res.data;
-            const { _id, profileImage, userName, nickname, userId, password } = data;
+            const { _id, profileImage, userName, nickname, email, password } = data;
             console.log(data);
             dispatch(signin({
-                _id: _id,
+                userId: _id,
                 profileImage: profileImage,
                 userName: userName,
                 nickname: nickname,
-                userId: userId,
+                email: email,
                 password: password,
                 signin: true
             }));
@@ -130,14 +130,14 @@ const UserUpdate = () => {
     const checkValidation = () => {
         const checkUserName = /^[가-힣a-zA-Z]{1,16}$/; 
         const checkNickname = /^[가-힣a-zA-Z]{1,16}$/; 
-        const checkUserId = /^(?=[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$).{1,80}$/; 
+        const checkEmail = /^(?=[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$).{1,80}$/; 
         const checkPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^*()_+~`=\{\}\[\]|\:;"',.?/\-<>\&\\])(?!.*?[\sㄱ-ㅎㅏ-ㅣ가-힣]).{1,}$/; 
         
         if (!checkUserName.test(userName)){
             setModalMessage('이름을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
         } else if (!checkNickname.test(nickname)){
             setModalMessage('닉네임을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
-        } else if (!checkUserId.test(userId)){
+        } else if (!checkEmail.test(email)){
             setModalMessage('이메일 형식을 정확히 입력하세요.( user@email.com )');
         } else if (!checkPassword.test(password)){
             ( user.signin ? updateUser() : setModalMessage('비밀번호를 다시 확인해주세요. ( 최소 9자 이상 최대 16자까지 입력 • 특수문자 1개 이상 대문자 1개 이상 필수 입력 )') )
@@ -160,12 +160,12 @@ const UserUpdate = () => {
             setProfileImage(user.profileImage)
             setUserName(user.userName)
             setNickname(user.nickname)
-            setUserId(user.userId)
+            setEmail(user.email)
         } else{
             setProfileImage(defaultProfileImage)
             setUserName('')
             setNickname('')
-            setUserId('')
+            setEmail('')
         }
     }, [user])
 
@@ -236,10 +236,10 @@ const UserUpdate = () => {
                     <Col sm={10}>
                         <Form.Control 
                             type="email" 
-                            value={userId} 
+                            value={email} 
                             placeholder="Email" 
                             required 
-                            onChange={ onChangeUserId } 
+                            onChange={ onChangeEmail } 
                         />
                     </Col>
                 </Form.Group>

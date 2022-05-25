@@ -8,7 +8,6 @@ router.get('/search/get', controllers.getSearchForums);
 router.get('/get/:id', controllers.getForum);
 
 router.put('/update/:id', controllers.updateForum);
-router.patch('/viewCount/update/:id', controllers.updateViewCount);
 router.patch('/heart/update/:id', controllers.updateForumHeart);
 
 router.delete('/delete/:id', controllers.deleteForum);
