@@ -3,7 +3,7 @@ import Title from '../atoms/title';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Warning from '../organisms/warning'
-import Comment from '../organisms/commentView'
+import Comment from '../organisms/comment'
 import { Card, Stack } from 'react-bootstrap';
 import Profile from '../atoms/profile';
 import HeartCount from '../atoms/heartCount'
@@ -43,7 +43,7 @@ const ForumView = () => {
 
     const updateForumHeart = async () => {
         const body = {
-            userId: user._id,
+            userId: userId,
             heartClickUsers: heartClickUsers
         }
         try{            
@@ -133,7 +133,7 @@ const ForumView = () => {
                             <HeartCount 
                                 src={false} 
                                 count={heartCount} 
-                                fill={heartClickUsers.includes(user._id) ? true : false} 
+                                fill={heartClickUsers.includes(userId) ? true : false} 
                                 onClick={ updateForumHeart } 
                             />
                         </div>

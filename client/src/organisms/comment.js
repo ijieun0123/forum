@@ -5,7 +5,7 @@ import Title from '../atoms/title';
 import Btn from '../atoms/button';
 import CommentCard from '../molecules/card';
 import HeartCount from '../atoms/heartCount';
-import CommentWrite from '../organisms/commentWrite'
+import CommentWrite from './commentWrite'
 import axios from 'axios';
 
 const Comment = ({ forumId, nickname, profileImage, userId }) => {
@@ -34,16 +34,17 @@ const Comment = ({ forumId, nickname, profileImage, userId }) => {
         }
     }
 
-    const updateCommentHeart = async () => {
+    const updateCommentHeart = async (targetId, heartClickUsers) => {
         const body = {
             userId: userId,
-            heartClickUsers: heartClickUsers
+            heartClickUsers: heartClickUsers,
+            forumId: forumId
         }
         try{            
             const res = await axios.patch(`/api/comment/heart/update/${targetId}`, body);
             const data = res.data;
             console.log(data);
-            //getComment();
+            setComments(data);
         } catch(err){
             console.log(err);
         }
@@ -112,7 +113,7 @@ const Comment = ({ forumId, nickname, profileImage, userId }) => {
                                             src={false} 
                                             count={ comment.heart.count } 
                                             fill={ comment.heart.user.includes(userId) ? true : false } 
-                                            onClick={ updateCommentHeart }
+                                            onClick={ () => updateCommentHeart(comment._id, comment.heart.user) }
                                         />
                                     </div>
                                 </Stack>

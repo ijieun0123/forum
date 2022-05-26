@@ -50,20 +50,26 @@ module.exports.updateComment = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.updateCommentHeart = (req, res) => {
+module.exports.updateCommentHeart = async (req, res) => {
     const commentId = req.params.id;
     const userId = req.body.userId;
     const heartClickUsers = req.body.heartClickUsers;
+    const forumId = req.body.forumId;
 
-    Comment.findByIdAndUpdate(commentId,
+    const comment = await Comment.findByIdAndUpdate(commentId,
         (
             heartClickUsers.includes(userId)
             ? { $pull: {'heart.user':userId}, $inc: { 'heart.count': -1 } }
             : { $push: {'heart.user':userId}, $inc: { 'heart.count': +1 } }
-        )
+        ),
+        {new: true}
     )
-    .then((comment) => res.json(comment))
-    .catch(err => res.status(400).json('Error: ' + err))
+    if(Array.isArray(comment)) comment.save()
+
+    Comment.find({_forum: forumId})
+    .populate('_user', 'profileImage nickname')
+    .then(comments => res.json(comments))
+    .catch(err => res.status(400).json('Error: ' + err));
 }
 
 module.exports.deleteComment = async (req, res) => {
