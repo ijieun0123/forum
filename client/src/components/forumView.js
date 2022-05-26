@@ -35,7 +35,7 @@ const ForumView = () => {
             const res = await axios.delete(`/api/forum/delete/${id}`);
             console.log(res.data);
             setAlertShow(false);
-            navigate(`/forum/list/`);
+            navigate(`/`);
         } catch(err){
             console.log(err);
         }

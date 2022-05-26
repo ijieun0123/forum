@@ -6,6 +6,7 @@ export const userSlice = createSlice({
         user: {
             userId:'',
             profileImage: '',
+            profileImageValue: '',
             userName: '',
             nickname: '',
             email: '',

@@ -20,20 +20,21 @@ const Header = () => {
         dispatch(signout({
             userId:'',
             profileImage: '',
+            profileImageValue: '',
             userName: '',
             nickname: '',
             email: '',
             password: '',
             signin: false
         }));
-        navigate('/user/signup');
+        navigate('/');
     }   
     
     return (
         <Navbar bg="primary" variant="dark">
             <Container>
                 <Navbar.Brand>
-                    <Link to="/forum/list">
+                    <Link to="/">
                         <Btn 
                             value="Forum"
                             margin='0 5px'

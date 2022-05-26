@@ -62,7 +62,7 @@ const ForumWrite = () => {
             const res = await axios.post('/api/forum/post', body);
             console.log(res.data)
             formReset();
-            navigate(`/forum/list`);
+            navigate(`/`);
         } catch(err){
             console.log(err);
         }
@@ -79,7 +79,7 @@ const ForumWrite = () => {
             const res = await axios.put(`/api/forum/update/${id}`, body);
             console.log(res.data)
             formReset();
-            navigate(`/forum/list`);
+            navigate(`/`);
         } catch(err){
             console.log(err);
         }

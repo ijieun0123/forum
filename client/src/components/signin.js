@@ -37,11 +37,12 @@ const Signin = () => {
             const res = await axios.get('/api/user/get', {params: params});
             const data = res.data[0];
             console.log(data)
-            const { _id, profileImage, userName, nickname, email, password } = data;
+            const { _id, profileImage, profileImageValue, userName, nickname, email, password } = data;
             if(data){
                 dispatch(signin({
                     userId: _id,
                     profileImage: profileImage,
+                    profileImageValue: profileImageValue,
                     userName: userName,
                     nickname: nickname,
                     email: email,

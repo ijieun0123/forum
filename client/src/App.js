@@ -28,7 +28,7 @@ function App() {
                 <Route path="/user/signin" element={ <Signin /> } />
                 <Route path="/user/signup" element={ <UserUpdate /> } />
                 <Route path="/user/profile" element={ <UserUpdate /> } />
-                <Route path="/forum/list" element={ <ForumList /> } />
+                <Route path="/" element={ <ForumList /> } />
                 <Route 
                   path="/forum/write" 
                   element={ 
@@ -37,7 +37,7 @@ function App() {
                     : <Warning 
                         alertShow={alertShow}
                         onClick={() => {navigate('/user/signin'); setAlertShow(true);}}
-                        onClose={() => {navigate('/forum/list')}}
+                        onClose={() => {navigate('/')}}
                         titleText={'경고창'}
                         mainText={'로그인 후 글쓰기 작성이 가능합니다.'}
                         btnText={'sign in'}
@@ -53,7 +53,7 @@ function App() {
                     : <Warning 
                         alertShow={alertShow}
                         onClick={() => {navigate('/user/signin'); setAlertShow(true);}}
-                        onClose={() => {navigate('/forum/list')}}
+                        onClose={() => {navigate('/')}}
                         titleText={'경고창'}
                         mainText={'회원만 접근가능 합니다.'}
                         btnText={'sign in'}

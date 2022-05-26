@@ -1,4 +1,4 @@
-import { Row, Form, Col, Button, Modal } from 'react-bootstrap';
+import { Row, Form, Col, Button, Modal, FloatingLabel } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
@@ -12,6 +12,7 @@ const UserUpdate = () => {
 
     const defaultProfileImage = "/img/profile_default.png";
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
+    const [profileImageValue, setProfileImageValue] = useState('');
     const fileInput = useRef(null);
 
     const [userName, setUserName] = useState('')
@@ -30,13 +31,14 @@ const UserUpdate = () => {
     const onChangeProfileImage = e => {
         let reader = new FileReader();
         const file = e.target.files[0]
-
-        reader.onload = function(){
-           setProfileImage(reader.result)
+        if(file) reader.readAsDataURL(file);
+        setProfileImageValue(file.name)
+        reader.onload = () => {
+            if(reader.readyState === 2){
+                console.log(reader.result)
+                setProfileImage(reader.result);
+            }
         }
-        if(file){
-            reader.readAsDataURL(file);
-        } 
     }
 
     const onChangeUserName = e => {
@@ -67,6 +69,7 @@ const UserUpdate = () => {
     const formReset = () => {
         fileInput.current.value="";
         setProfileImage(defaultProfileImage);
+        setProfileImageValue('');
         setUserName('');
         setNickname('');
         setEmail('');
@@ -77,6 +80,7 @@ const UserUpdate = () => {
     const postUser = async () => {
         const body = {
             profileImage: profileImage,
+            profileImageValue: profileImageValue,
             userName: userName,
             nickname: nickname,
             email: email,
@@ -85,9 +89,9 @@ const UserUpdate = () => {
         try{
             const res = await axios.post('/api/user/post', body);
             console.log(res.data);
+            navigate('/');
             setModalMessage('회원가입을 축하합니다!')
             formReset();
-            navigate('/');
         } catch(err){
             console.log(err);
             ( err.response.status === 413
@@ -99,18 +103,20 @@ const UserUpdate = () => {
     const updateUser = async () => {
         const body = {
             profileImage: profileImage,
+            profileImageValue: profileImageValue,
             userName: userName,
             nickname: nickname,
             email: email,
         }
         try{
-            const res = await axios.patch(`/api/user/update/${user._id}`, body);
+            const res = await axios.patch(`/api/user/update/${user.userId}`, body);
             const data = res.data;
             const { _id, profileImage, userName, nickname, email, password } = data;
             console.log(data);
             dispatch(signin({
                 userId: _id,
                 profileImage: profileImage,
+                profileImageValue: profileImageValue,
                 userName: userName,
                 nickname: nickname,
                 email: email,
@@ -158,14 +164,10 @@ const UserUpdate = () => {
     useEffect(() => {
         if(user.signin){
             setProfileImage(user.profileImage)
+            setProfileImageValue(user.profileImageValue)
             setUserName(user.userName)
             setNickname(user.nickname)
             setEmail(user.email)
-        } else{
-            setProfileImage(defaultProfileImage)
-            setUserName('')
-            setNickname('')
-            setEmail('')
         }
     }, [user])
 
@@ -186,7 +188,7 @@ const UserUpdate = () => {
 
             <Form noValidate onSubmit={ onSubmit }>
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column sm={2} style={{cursor:'pointer'}} for="profileImage"> 
                         프로필 이미지
                     </Form.Label>
                     <Col sm={10}>
@@ -195,7 +197,16 @@ const UserUpdate = () => {
                             onChange={ onChangeProfileImage }
                             accept="image/jpg,image/png,image/jpeg"
                             ref={ fileInput }
+                            style={{display:'none'}}
+                            id="profileImage"
                         />
+                        <FloatingLabel controlId="floatingTextarea2" label="파일명">
+                            <Form.Control
+                                type="text" 
+                                value={ profileImageValue }
+                                readOnly
+                            />
+                        </FloatingLabel>
                     </Col>
                 </Form.Group>
 
