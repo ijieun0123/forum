@@ -9,7 +9,7 @@ const userSchema = new Schema({
     },
     profileImageValue: { 
         type: String, 
-        default: '' // 기본 프로필사진
+        default: '' 
     },
     userName: {
         type: String,

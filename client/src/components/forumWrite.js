@@ -5,6 +5,7 @@ import Title from '../atoms/title';
 import Btn from '../atoms/button';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import Warning from '../organisms/warning'
 
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
@@ -13,11 +14,15 @@ const ForumWrite = () => {
     const [attachImageValue, setAttachImageValue] = useState('');
     const fileInput = useRef(null);
 
+    const [alertShow, setAlertShow] = useState(false);
+
     const user = useSelector(state => state.user.user);
     const { userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const alertClose = () => setAlertShow(false);
 
     const onChangeTitle = e => {
         const newTitle = e.target.value;
@@ -27,6 +32,11 @@ const ForumWrite = () => {
     const onChangeMain = e => {
         const newMain = e.target.value;
         setMainText(newMain);
+    }
+
+    const deleteAttachImage = () => {
+        setAttachImage('');
+        setAttachImageValue('');
     }
 
     const onChangeAttachImage = e => {
@@ -82,6 +92,7 @@ const ForumWrite = () => {
             navigate(`/`);
         } catch(err){
             console.log(err);
+            if(err.response.status === 413) setAlertShow(true);
         }
     }
 
@@ -112,6 +123,21 @@ const ForumWrite = () => {
         <div>
             <Title text='Forum Write' />
 
+            {
+                alertShow
+                ? 
+                <Warning 
+                    onClickBtn={ alertClose } 
+                    onClose={ () => {setAlertShow(false)} }
+                    titleText="안내" 
+                    mainText="사진이 용량을 초과하였습니다."
+                    btnText="닫기"
+                    variant="danger"
+                    btnVariant="outline-danger"
+                />
+                : null
+            }
+
             <Form onSubmit={ onSubmit }>
                 <Form.Group controlId="formFile" className="mb-3">
                     <FloatingLabel controlId="floatingTextarea" label="제목" className="mb-3">
@@ -139,6 +165,12 @@ const ForumWrite = () => {
                     <Stack gap={0}>
                         <div>
                             <Form.Label style={{cursor:'pointer'}}>파일첨부</Form.Label>
+                            <img 
+                                src="../../img/close.svg" 
+                                alt="삭제" 
+                                style={{ cursor:'pointer', width:25, marginLeft:5 }}
+                                onClick={ deleteAttachImage }
+                            />
                         </div>
                         <div>
                             <Form.Control 

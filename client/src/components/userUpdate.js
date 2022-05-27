@@ -1,6 +1,7 @@
-import { Row, Form, Col, Button, Modal, FloatingLabel } from 'react-bootstrap';
+import { Row, Form, Col, Button, Stack, FloatingLabel } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
+import Warning from '../organisms/warning'
 import axios from 'axios';
 import Title from '../atoms/title'
 import { useSelector, useDispatch } from 'react-redux'
@@ -21,22 +22,29 @@ const UserUpdate = () => {
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
 
-    const [modalMessage, setModalMessage] = useState('');
-    const [modalOpen, setModalOpen] = useState(false); 
-    const handleClose = () => setModalOpen(false);
+    const [validation, setValidation] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertShow, setAlertShow] = useState(false);
+
+    const alertClose = () => setAlertShow(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const deleteProfileImage = () => {
+        setProfileImage(defaultProfileImage);
+        setProfileImageValue('');
+    }
+
     const onChangeProfileImage = e => {
         let reader = new FileReader();
         const file = e.target.files[0]
-        if(file) reader.readAsDataURL(file);
-        setProfileImageValue(file.name)
+        if(file) reader.readAsDataURL(file) 
         reader.onload = () => {
             if(reader.readyState === 2){
                 console.log(reader.result)
                 setProfileImage(reader.result);
+                setProfileImageValue(file.name)
             }
         }
     }
@@ -66,6 +74,20 @@ const UserUpdate = () => {
         setPasswordConfirm(newPasswordConfirm);
     }
 
+    const deleteUser = async () => {
+        try{
+            const res = await axios.post(`/api/user/delete/${user.userId}`);
+            console.log(res.data);
+            setAlertMessage('회원가입을 축하합니다!')
+            formReset();
+        } catch(err){
+            console.log(err);
+            ( err.response.status === 413
+            ? setAlertMessage('사진이 용량을 초과하였습니다.') 
+            : setAlertMessage('이미 다른 사용자가 사용 중입니다.'))
+        }
+    }
+
     const formReset = () => {
         fileInput.current.value="";
         setProfileImage(defaultProfileImage);
@@ -89,14 +111,14 @@ const UserUpdate = () => {
         try{
             const res = await axios.post('/api/user/post', body);
             console.log(res.data);
-            navigate('/');
-            setModalMessage('회원가입을 축하합니다!')
+            setValidation(true);
+            setAlertMessage('회원가입을 축하합니다!')
             formReset();
         } catch(err){
             console.log(err);
             ( err.response.status === 413
-            ? setModalMessage('사진이 용량을 초과하였습니다.') 
-            : setModalMessage('이미 다른 사용자가 사용 중입니다.'))
+            ? setAlertMessage('사진이 용량을 초과하였습니다.') 
+            : setAlertMessage('이미 다른 사용자가 사용 중입니다.'))
         }
     }
 
@@ -123,13 +145,14 @@ const UserUpdate = () => {
                 password: password,
                 signin: true
             }));
+            setValidation(true);
+            setAlertMessage('프로필이 변경되었습니다!')
             formReset();
-            navigate('/');
         } catch(err){
             console.log(err);
             ( err.response.status === 413
-            ? setModalMessage('사진이 용량을 초과하였습니다.') 
-            : setModalMessage('이미 다른 사용자가 사용 중입니다.'))
+            ? setAlertMessage('사진이 용량을 초과하였습니다.') 
+            : setAlertMessage('이미 다른 사용자가 사용 중입니다.'))
         }
     }
 
@@ -140,20 +163,20 @@ const UserUpdate = () => {
         const checkPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^*()_+~`=\{\}\[\]|\:;"',.?/\-<>\&\\])(?!.*?[\sㄱ-ㅎㅏ-ㅣ가-힣]).{1,}$/; 
         
         if (!checkUserName.test(userName)){
-            setModalMessage('이름을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
+            setAlertMessage('이름을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
         } else if (!checkNickname.test(nickname)){
-            setModalMessage('닉네임을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
+            setAlertMessage('닉네임을 다시 확인해주세요. ( 한글 • 영어 • 최대 16자까지 입력가능 )');
         } else if (!checkEmail.test(email)){
-            setModalMessage('이메일 형식을 정확히 입력하세요.( user@email.com )');
+            setAlertMessage('아이디를 다시 확인해주세요. ( 이메일 형식 예시 user@email.com )');
         } else if (!checkPassword.test(password)){
-            ( user.signin ? updateUser() : setModalMessage('비밀번호를 다시 확인해주세요. ( 최소 9자 이상 최대 16자까지 입력 • 특수문자 1개 이상 대문자 1개 이상 필수 입력 )') )
+            ( user.signin ? updateUser() : setAlertMessage('비밀번호를 다시 확인해주세요. ( 최소 9자 이상 최대 16자까지 입력 • 특수문자 1개 이상 대문자 1개 이상 필수 입력 )') )
         } else if (password !== passwordConfirm){
-            ( user.signin ? updateUser() : setModalMessage('비밀번호와 비밀번호 확인이 일치하지 않습니다.') )
+            ( user.signin ? updateUser() : setAlertMessage('비밀번호와 비밀번호 확인이 일치하지 않습니다.') )
         } else{
             ( user.signin ? updateUser() : postUser() )
         }
 
-        setModalOpen(true)
+        setAlertShow(true)
     }
 
     const onSubmit = e => {
@@ -175,6 +198,21 @@ const UserUpdate = () => {
         <div>
             <Title text={ user.signin ? 'Profile' : 'Sign up' } />
 
+            {
+                alertShow
+                ? 
+                <Warning 
+                    onClickBtn={ validation ? () => navigate('/') : alertClose } 
+                    onClose={ () => { setAlertShow(false)} }
+                    titleText="안내" 
+                    mainText={ alertMessage }
+                    btnText={ validation ? "홈으로" : "Close" }
+                    variant={ validation ? "primary" : "danger" }
+                    btnVariant={ validation ? "outline-primary" : "outline-danger" }
+                />
+                : null
+            }
+
             <img 
                 src={ 
                     profileImage 
@@ -184,6 +222,7 @@ const UserUpdate = () => {
                 onClick={ () => fileInput.current.click() }
                 alt="프로필"
                 className="profileImage"
+                style={{ marginBottom:30 }}
             />
 
             <Form noValidate onSubmit={ onSubmit }>
@@ -191,7 +230,7 @@ const UserUpdate = () => {
                     <Form.Label column sm={2} style={{cursor:'pointer'}} for="profileImage"> 
                         프로필 이미지
                     </Form.Label>
-                    <Col sm={10}>
+                    <Col sm={9}>
                         <Form.Control 
                             type="file" 
                             onChange={ onChangeProfileImage }
@@ -207,6 +246,14 @@ const UserUpdate = () => {
                                 readOnly
                             />
                         </FloatingLabel>
+                    </Col>
+                    <Col sm={1}>
+                        <img 
+                            src="../img/close.svg" 
+                            alt="삭제" 
+                            style={{ cursor:'pointer' }}
+                            onClick={ deleteProfileImage }
+                        />
                     </Col>
                 </Form.Group>
 
@@ -289,27 +336,14 @@ const UserUpdate = () => {
                         </>
                 }
 
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" style={{'margin-right':10}}>
                     { user.signin ? '저장하기' : '회원가입' }
                 </Button>
+
+                {
+                    <Button type="submit" variant="warning" onClick={ deleteUser }>탈퇴하기</Button>
+                }
             </Form>
-
-            <Modal show={modalOpen} onHide={ handleClose }>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        { user.signin ? 'Profile guide' : 'Sign up guide' }
-                    </Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <p>{modalMessage}</p>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button variant="primary" onClick={ handleClose } >Close</Button>
-                    <Button variant="primary" onClick={ () => navigate('/user/signin') } >Signin</Button>
-                </Modal.Footer>
-            </Modal>
         </div>
     )
 }

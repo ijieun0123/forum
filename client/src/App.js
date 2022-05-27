@@ -36,11 +36,13 @@ function App() {
                     ? <ForumWrite /> 
                     : <Warning 
                         alertShow={alertShow}
-                        onClick={() => {navigate('/user/signin'); setAlertShow(true);}}
+                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(true);}}
                         onClose={() => {navigate('/')}}
                         titleText={'경고창'}
                         mainText={'로그인 후 글쓰기 작성이 가능합니다.'}
                         btnText={'sign in'}
+                        variant="danger"
+                        btnVariant="outline-danger"
                       /> 
                   }
                 />
@@ -52,11 +54,13 @@ function App() {
                     ? <ForumView /> 
                     : <Warning 
                         alertShow={alertShow}
-                        onClick={() => {navigate('/user/signin'); setAlertShow(true);}}
+                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(true);}}
                         onClose={() => {navigate('/')}}
                         titleText={'경고창'}
                         mainText={'회원만 접근가능 합니다.'}
                         btnText={'sign in'}
+                        variant="danger"
+                        btnVariant="outline-danger"
                       /> 
                   } 
                 />

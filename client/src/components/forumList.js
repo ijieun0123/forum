@@ -128,11 +128,13 @@ const ForumList = () => {
             {
                 alertShow  
                 ?   <Warning 
-                        onClick={ deleteForum } 
+                        onClickBtn={ deleteForum } 
                         onClose={ () => {setAlertShow(false)} }
                         titleText="경고" 
                         mainText="게시물을 지우면 복구할 수 없습니다.&nbsp; 정말로 삭제하겠습니까?"
                         btnText="삭제하기"
+                        variant="danger"
+                        btnVariant="outline-danger"
                     />
                 : null
             }

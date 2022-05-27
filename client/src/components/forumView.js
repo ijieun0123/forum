@@ -56,15 +56,6 @@ const ForumView = () => {
             console.log(err);
         }
     }
-
-    const updateViewCount = async () => {
-        try{
-            const res = await axios.patch(`/api/forum/viewCount/update/${id}`);
-            console.log(res.data)
-        } catch(err){
-            console.log(err);
-        }
-    }
   
     const getForum = async () => {
         try{
@@ -87,7 +78,6 @@ const ForumView = () => {
 
     useEffect(() => {
         getForum();
-        //updateViewCount();
     }, [])
 
     return (
@@ -104,11 +94,13 @@ const ForumView = () => {
                 alertShow
                 ? 
                 <Warning 
-                    onClick={ deleteForum } 
+                    onClickBtn={ deleteForum } 
                     onClose={ () => {setAlertShow(false)} }
                     titleText="경고" 
                     mainText="게시물을 지우면 복구할 수 없습니다.&nbsp; 정말로 삭제하겠습니까?"
                     btnText="삭제하기"
+                    variant="danger"
+                    btnVariant="outline-danger"
                 />
                 : null
             }
@@ -147,25 +139,6 @@ const ForumView = () => {
                     {createdAt? createdAt.slice(0, 10) : null}
                 </Card.Footer>
             </Card>
-
-            {/* 댓글 반복문 
-                comments.map((comment, i) => {
-                    return (
-                        <CommentView
-                            key={i}
-                            writerImg={ comment._user.profileImage } 
-                            writer={ comment._user.nickname } 
-                            heartCount={ comment.heart.count }
-                            heartFill={ comment.heart.user.includes(user._id) ? true : false }
-                            heartClickUsers={ comment.heart.user }
-                            cardText={ comment.commentText }
-                            createDate={ comment.createdAt.slice(0, 10) }
-                            commentId={ comment._id }
-                            getComment={ getComment }
-                        />
-                    )
-                })
-            */ }
 
             <Comment 
                 forumId={ id } 

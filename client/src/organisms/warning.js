@@ -2,7 +2,7 @@ import { Alert, Button  } from 'react-bootstrap'
 import styled from 'styled-components';
 
 const Body = styled.div`
-    position:absolute;
+    position:fixed;
     top:0;
     left:0;
     width:100%;
@@ -11,7 +11,7 @@ const Body = styled.div`
     z-index:10;
 `
 
-const Waring = ({ alertShow, onClick, onClose, titleText, mainText, btnText }) => {
+const Waring = ({ alertShow, onClickBtn, onClose, titleText, mainText, btnText, variant, btnVariant }) => {
     const alertStyle={
         position:'absolute',
         top:'50%',
@@ -25,14 +25,14 @@ const Waring = ({ alertShow, onClick, onClose, titleText, mainText, btnText }) =
             <Alert 
                 show={alertShow} 
                 onClose={onClose} 
-                variant="danger" 
+                variant={variant}
                 dismissible 
                 style={alertStyle}
             >
                 <Alert.Heading>{titleText}</Alert.Heading>
                 <p>{mainText}</p>
                 <div className="d-flex justify-content-end">
-                    <Button variant="outline-danger" onClick={onClick} >
+                    <Button variant={btnVariant} onClick={onClickBtn} >
                         {btnText}
                     </Button>
                 </div>
