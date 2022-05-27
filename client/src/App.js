@@ -2,7 +2,7 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Header from './components/header';
-import Signin from './components/signin';
+import UserValidate from './components/userValidate';
 import UserUpdate from './components/userUpdate';
 import ForumList from './components/forumList';
 import ForumWrite from './components/forumWrite';
@@ -25,7 +25,8 @@ function App() {
 
         <Container>
             <Routes>
-                <Route path="/user/signin" element={ <Signin /> } />
+                <Route path="/user/signin" element={ <UserValidate /> } />
+                <Route path="/user/validate" element={ <UserValidate /> } />
                 <Route path="/user/signup" element={ <UserUpdate /> } />
                 <Route path="/user/profile" element={ <UserUpdate /> } />
                 <Route path="/" element={ <ForumList /> } />

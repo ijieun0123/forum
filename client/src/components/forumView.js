@@ -88,6 +88,8 @@ const ForumView = () => {
                 updateBtn={ nickname === writer ? true : false }
                 clickDeleteBtn={ () => {setAlertShow(true)}  }
                 clickUpdateBtn={ () => navigate(`/forum/update/${id}`) }
+                updateBtnText="수정하기"
+                deleteBtnText="삭제하기"
             />
                
             {

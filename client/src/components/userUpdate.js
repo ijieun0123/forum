@@ -74,20 +74,6 @@ const UserUpdate = () => {
         setPasswordConfirm(newPasswordConfirm);
     }
 
-    const deleteUser = async () => {
-        try{
-            const res = await axios.post(`/api/user/delete/${user.userId}`);
-            console.log(res.data);
-            setAlertMessage('회원가입을 축하합니다!')
-            formReset();
-        } catch(err){
-            console.log(err);
-            ( err.response.status === 413
-            ? setAlertMessage('사진이 용량을 초과하였습니다.') 
-            : setAlertMessage('이미 다른 사용자가 사용 중입니다.'))
-        }
-    }
-
     const formReset = () => {
         fileInput.current.value="";
         setProfileImage(defaultProfileImage);
@@ -196,7 +182,15 @@ const UserUpdate = () => {
 
     return (
         <div>
-            <Title text={ user.signin ? 'Profile' : 'Sign up' } />
+            <Title 
+                text={ user.signin ? 'Profile' : 'Sign up' } 
+                deleteBtn={ user.signin ? true : false }
+                updateBtn={ true }
+                clickDeleteBtn={ () => navigate(`/user/validate`) }
+                clickUpdateBtn={ onSubmit }
+                updateBtnText={ user.signin ? '수정하기' : '회원가입' }
+                deleteBtnText="탈퇴하기"
+            />
 
             {
                 alertShow
@@ -336,13 +330,7 @@ const UserUpdate = () => {
                         </>
                 }
 
-                <Button type="submit" variant="primary" style={{'margin-right':10}}>
-                    { user.signin ? '저장하기' : '회원가입' }
-                </Button>
-
-                {
-                    <Button type="submit" variant="warning" onClick={ deleteUser }>탈퇴하기</Button>
-                }
+                <Button type="submit" style={{display:'none'}}>updateUserBtn</Button>
             </Form>
         </div>
     )

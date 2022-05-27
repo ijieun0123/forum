@@ -15,7 +15,7 @@ const H3 = styled.h3`
     color:#2a2a2a;
 `
 
-const Title = ({ text, deleteBtn, updateBtn, clickDeleteBtn, clickUpdateBtn }) => {
+const Title = ({ text, deleteBtn, updateBtn, clickDeleteBtn, clickUpdateBtn, updateBtnText, deleteBtnText }) => {
     return (
         <TitleBox>
             <H3>{ text }</H3>
@@ -28,8 +28,9 @@ const Title = ({ text, deleteBtn, updateBtn, clickDeleteBtn, clickUpdateBtn }) =
                         variant="outline-primary" 
                         style={{marginRight:10}} 
                         onClick={ clickUpdateBtn }
+                        type="submit"
                     >
-                        수정하기
+                        { updateBtnText }
                     </Button>
                     : null
                 }
@@ -40,7 +41,7 @@ const Title = ({ text, deleteBtn, updateBtn, clickDeleteBtn, clickUpdateBtn }) =
                         variant="outline-danger" 
                         onClick={ clickDeleteBtn }
                     >
-                        삭제하기
+                        { deleteBtnText }
                     </Button>
                     : null
                 }

@@ -3,17 +3,22 @@ import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Title from '../atoms/title'
+import { useDispatch, useSelector } from 'react-redux'
+import { signin, signout } from '../features/userSlice'
+import Warning from '../organisms/warning'
 
-import { useDispatch } from 'react-redux'
-import { signin } from '../features/userSlice'
+const UserValidate = () => {
 
-const Signin = () => {
+    const user = useSelector(state => state.user.user);
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const [modalMessage, setModalMessage] = useState('');
-    const [modalOpen, setModalOpen] = useState(false); 
-    const handleClose = () => setModalOpen(false);
+    const [validation, setValidation] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertShow, setAlertShow] = useState(false);
+
+    const alertClose = () => setAlertShow(false);
 
     const dispatch = useDispatch()
     const navigate = useNavigate();
@@ -28,6 +33,26 @@ const Signin = () => {
         setPassword(newPassword);
     }
 
+    const deleteUser = async () => {
+        try{
+            const res = await axios.post(`/api/user/delete/${user.userId}`);
+            console.log(res.data);
+            dispatch(signout({
+                userId: '',
+                profileImage: '',
+                profileImageValue: '',
+                userName: '',
+                nickname: '',
+                email: '',
+                password: '',
+                signin: false
+            }));
+            navigate('/');
+        } catch(err){
+            console.log(err);
+        }
+    }
+
     const getUser = async () => {
         const params = {
             email: email,
@@ -38,7 +63,7 @@ const Signin = () => {
             const data = res.data[0];
             console.log(data)
             const { _id, profileImage, profileImageValue, userName, nickname, email, password } = data;
-            if(data){
+            if(!user.signin){
                 dispatch(signin({
                     userId: _id,
                     profileImage: profileImage,
@@ -50,12 +75,15 @@ const Signin = () => {
                     signin: true
                 }));
                 navigate('/');
-            } else {
-                setModalMessage('아이디와 비밀번호를 다시 확인해주세요!');
-                setModalOpen(true);
+            } else{
+                setValidation(true);
+                setAlertMessage('탈퇴할 경우, 회원정보 복구가 어렵습니다. 정말 탈퇴하시겠습니까?');
+                setAlertShow(true);
             }
         } catch(err){
             console.log(err);
+            setAlertMessage('아이디와 비밀번호를 다시 확인해주세요!');
+            setAlertShow(true);
         }
     }
 
@@ -66,7 +94,30 @@ const Signin = () => {
 
     return (
         <div>
-            <Title text='Sign in' />
+            <Title 
+                text={ user.signin ? 'Validation' : 'Sign in' } 
+                deleteBtn={ user.signin ? true : false }
+                updateBtn={ user.signin ? false : true }
+                clickDeleteBtn={ getUser }
+                clickUpdateBtn={ onSubmit }
+                updateBtnText="로그인"
+                deleteBtnText={ '탈퇴하기' }
+            />
+
+            {
+                alertShow
+                ? 
+                <Warning 
+                    onClickBtn={ validation ? deleteUser : alertClose } 
+                    onClose={ () => { setAlertShow(false)} }
+                    titleText="경고" 
+                    mainText={ alertMessage }
+                    btnText={ validation ? "탈퇴하기" : "닫기" }
+                    variant={ "danger" }
+                    btnVariant={ "outline-danger" }
+                />
+                : null
+            }
 
             <Form onSubmit={ onSubmit }>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
@@ -87,25 +138,10 @@ const Signin = () => {
                     </Col>
                 </Form.Group>
 
-                <Button type="submit" variant="primary">로그인</Button>
+                <Button type="submit" style={{display:'none'}}>로그인</Button>
             </Form>
-
-            <Modal show={modalOpen} onHide={ handleClose }>
-                <Modal.Header closeButton>
-                    <Modal.Title>Sign in guide</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <p>{modalMessage}</p>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button variant="primary" onClick={ handleClose } >Close</Button>
-                    <Button variant="primary" onClick={ () => navigate('/user/signup') } >Signup</Button>
-                </Modal.Footer>
-            </Modal>
         </div>
     )
 }
 
-export default Signin;
+export default UserValidate;
