@@ -151,6 +151,7 @@ const ForumWrite = () => {
                             placeholder="Leave a comment here" 
                             value={ titleText }
                             onChange={ onChangeTitle }
+                            maxLength='40'
                         />
                     </FloatingLabel>
                 </Form.Group>

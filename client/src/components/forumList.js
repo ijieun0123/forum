@@ -209,9 +209,9 @@ const ForumList = () => {
                                             />
                                         </Td>
                                         <Td onClick={() => {navigate(`/forum/view/${forum._id}`)}} style={{cursor:'pointer'}}>
-                                            {forum.titleText}
+                                            { forum.titleText.slice(0, 40) }
                                         </Td>
-                                        <Td>{forum.createdAt.slice(0,10)}</Td>
+                                        <Td>{ forum.createdAt.slice(0,10) }</Td>
                                         <Td>
                                             <EyeCount count={forum.viewCount} />
                                         </Td>

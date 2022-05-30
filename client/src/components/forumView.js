@@ -118,7 +118,7 @@ const ForumView = () => {
                             />
                         </div>
                         <div className="ms-auto">
-                            {titleText}
+                            {titleText.slice(0, 40)}
                         </div>
                         <div className="ms-auto">
                             <EyeCount count={viewCount} />
