@@ -10,10 +10,9 @@ module.exports.postUser = (req, res) => {
 }
 
 module.exports.getUser = (req, res) => {
-    const query = req.query;
-    const body = Object.assign(query, {active: true})
+    const body = req.body;
 
-    User.find(body)
+    User.find( {$and: [ body, { "active": "true" }]})
     .then(user => res.json(user))
     .catch(err => res.status(400).json('Error: ' + err));
 }

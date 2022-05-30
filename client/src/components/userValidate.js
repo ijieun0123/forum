@@ -54,12 +54,12 @@ const UserValidate = () => {
     }
 
     const getUser = async () => {
-        const params = {
+        const body = {
             email: email,
             password: password
         }
         try{
-            const res = await axios.get('/api/user/get', {params: params});
+            const res = await axios.post('/api/user/get', body);
             const data = res.data[0];
             console.log(data)
             const { _id, profileImage, profileImageValue, userName, nickname, email, password } = data;
