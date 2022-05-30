@@ -1,8 +1,7 @@
-import { FloatingLabel, Form, Stack } from 'react-bootstrap';
+import { FloatingLabel, Form, Stack, Button } from 'react-bootstrap';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../atoms/title';
-import Btn from '../atoms/button';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Warning from '../organisms/warning'
@@ -121,7 +120,13 @@ const ForumWrite = () => {
 
     return (
         <div>
-            <Title text='Forum Write' />
+            <Title 
+                text='Forum Write'
+                deleteBtn={ false }
+                updateBtn={ true }
+                clickUpdateBtn={ onSubmit }
+                updateBtnText="저장하기"
+            />
 
             {
                 alertShow
@@ -192,7 +197,7 @@ const ForumWrite = () => {
                     </Stack>
                 </Form.Group>
 
-                <Btn type="submit" value="저장하기" margin="50px 0" />
+                <Button type="submit" style={{display:'none'}} />
             </Form>
         </div>
     )
