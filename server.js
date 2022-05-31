@@ -14,7 +14,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json({limit: '50mb'})); // 파일 업로드 용량
-app.use(express.urlencoded({limit: '50mb', extended:false}));
+app.use(express.urlencoded({limit: '50mb', extended:true}));
 
 // mongoDB
 const uri = process.env.ATLAS_URI;
