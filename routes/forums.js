@@ -11,5 +11,6 @@ router.put('/update/:id', controllers.updateForum);
 router.patch('/heart/update/:id', controllers.updateForumHeart);
 
 router.delete('/delete/:id', controllers.deleteForum);
+router.delete('/delete', controllers.deleteForums);
 
 module.exports = router;

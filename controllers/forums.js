@@ -83,3 +83,12 @@ module.exports.deleteForum = async (req, res) => {
     if(Array.isArray(comment._forum)) comment.save()
 }
 
+module.exports.deleteForums = async (req, res) => {
+    Forum.deleteMany({})
+    .then(() => res.json(`Forums deleted`))
+    .catch(err => res.status(400).json('Error: ' + err));
+
+    const comment = await Comment.deleteMany({})
+    if(Array.isArray(comment._forum)) comment.save()
+}
+
