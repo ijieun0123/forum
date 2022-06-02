@@ -10,10 +10,9 @@ const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
     const [mainText, setMainText] = useState('')
     const [attachImage, setAttachImage] = useState('');
-    const [attachImageValue, setAttachImageValue] = useState('');
-    const fileInput = useRef(null);
 
     const [alertShow, setAlertShow] = useState(false);
+    const [alertShowMessage, setAlertShowMessage] = useState('');
 
     const user = useSelector(state => state.user.user);
     const { userId } = user;
@@ -33,71 +32,98 @@ const ForumWrite = () => {
         setMainText(newMain);
     }
 
-    const deleteAttachImage = () => {
-        setAttachImage('');
-        setAttachImageValue('');
+    const onChangeAttachImage = e => {
+        const newAttachImage = e.target.value;
+        console.log(newAttachImage)
+        setAttachImage(newAttachImage);
     }
 
-    const onChangeAttachImage = e => {
-        let reader = new FileReader();
-        const file = e.target.files[0];
-        if(file) reader.readAsDataURL(file);
-        setAttachImageValue(file.name)
-        reader.onload = () => {
-            if(reader.readyState === 2){
-                console.log(reader.result)
-                setAttachImage(reader.result);
-            }
-        }
+    const deleteAttachImage = () => {
+        setAttachImage('');
     }
   
     const formReset = () => {
         setTitleText('');
         setMainText('');
         setAttachImage('');
-        setAttachImageValue('');
-        fileInput.current.value="";
     }
 
-    const createForum = async () => {
-        const body = {
-            _user: userId,
-            attachImage: attachImage,
-            attachImageValue: attachImageValue,
-            titleText: titleText,
-            mainText: mainText,
-        }
-        try{
-            const res = await axios.post('/api/forum/post', body);
-            console.log(res.data)
-            formReset();
-            navigate(`/`);
-        } catch(err){
-            console.log(err);
+    const createForum = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.get('titleText');
+        formData.get('mainText');
+        formData.append('_user', userId)
+        formData.append('attachImage', attachImage);
+
+        if( !titleText || !mainText ) {
+            setAlertShowMessage('제목과 본문을 입력하세요.')
+            setAlertShow(true)
+        } else{
+            let config = {
+                method: "post",
+                url: "/api/forum/post",
+                headers: {
+                  "content-type": "application/json",
+                  "content-type": "multipart/form-data"
+                },
+                data: formData,
+            };
+    
+            try{
+                const res = await axios(config);
+                console.log(res.data)
+                formReset();
+                navigate(`/`);
+            } catch(err){
+                console.log(err);
+                if(err.response.status === 413) {
+                    setAlertShowMessage('사진이 용량을 초과하였습니다.')
+                    setAlertShow(true);
+                }
+            }
         }
     }
 
-    const updateForum = async () => {
-        const body = {
-            attachImage: attachImage,
-            attachImageValue: attachImageValue,
-            titleText: titleText,
-            mainText: mainText,
-        }
-        try{
-            const res = await axios.put(`/api/forum/update/${id}`, body);
-            console.log(res.data)
-            formReset();
-            navigate(`/`);
-        } catch(err){
-            console.log(err);
-            if(err.response.status === 413) setAlertShow(true);
+    const editForum = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.get('titleText');
+        formData.get('mainText');
+        formData.append('attachImage', attachImage);
+
+        if( !titleText || !mainText ) {
+            setAlertShowMessage('제목과 본문을 입력하세요.')
+            setAlertShow(true)
+        } else{
+            let config = {
+                method: "put",
+                url: `/api/forum/update/${id}`,
+                headers: {
+                  "content-type": "application/json",
+                  "content-type": "multipart/form-data"
+                },
+                data: formData,
+            };
+    
+            try{
+                const res = await axios(config);
+                console.log(res.data)
+                formReset();
+                navigate(`/`);
+            } catch(err){
+                console.log(err);
+                if(err.response.status === 413) {
+                    setAlertShowMessage('사진이 용량을 초과하였습니다.')
+                    setAlertShow(true);
+                }
+            }
         }
     }
 
     const onSubmit = e => {
         e.preventDefault();
-        (id ? updateForum() : createForum())
+        (id ? editForum(e) : createForum(e))
     }
 
     const getForum = async () => {
@@ -107,7 +133,6 @@ const ForumWrite = () => {
             setTitleText(data.titleText);
             setMainText(data.mainText);
             setAttachImage(data.attachImage);
-            setAttachImageValue(data.attachImageValue);
             console.log(data)
         } catch(err){
             console.log(err);
@@ -120,14 +145,6 @@ const ForumWrite = () => {
 
     return (
         <div>
-            <Title 
-                text='Forum Write'
-                deleteBtn={ false }
-                updateBtn={ true }
-                clickUpdateBtn={ onSubmit }
-                updateBtnText="저장하기"
-            />
-
             {
                 alertShow
                 ? 
@@ -135,7 +152,7 @@ const ForumWrite = () => {
                     onClickBtn={ alertClose } 
                     onClose={ () => {setAlertShow(false)} }
                     titleText="안내" 
-                    mainText="사진이 용량을 초과하였습니다."
+                    mainText={ alertShowMessage }
                     btnText="닫기"
                     variant="danger"
                     btnVariant="outline-danger"
@@ -144,9 +161,17 @@ const ForumWrite = () => {
             }
 
             <Form onSubmit={ onSubmit }>
+                <Title 
+                    text='Forum Write'
+                    deleteBtn={ false }
+                    updateBtn={ true }
+                    updateBtnText="저장하기"
+                />
+
                 <Form.Group controlId="formFile" className="mb-3">
                     <FloatingLabel controlId="floatingTextarea" label="제목" className="mb-3">
                         <Form.Control 
+                            name="titleText"
                             as="textarea" 
                             placeholder="Leave a comment here" 
                             value={ titleText }
@@ -158,6 +183,7 @@ const ForumWrite = () => {
                 <Form.Group controlId="formFile" className="mb-3">
                     <FloatingLabel controlId="floatingTextarea2" label="본문">
                         <Form.Control
+                            name="mainText"
                             as="textarea"
                             placeholder="Leave a comment here"
                             style={{ minHeight: '100px' }}
@@ -180,17 +206,16 @@ const ForumWrite = () => {
                         </div>
                         <div>
                             <Form.Control 
+                                name="attachImage"
                                 type="file" 
                                 onChange={ onChangeAttachImage }
                                 accept="image/jpg,image/png,image/jpeg"
-                                ref={ fileInput }
-                                multiple 
-                                style={{display:'none'}}
+                                style={{ display:'none' }}
                             />
                             <FloatingLabel controlId="floatingTextarea2" label="파일명">
                                 <Form.Control
                                     type="text" 
-                                    value={ attachImageValue }
+                                    value={ attachImage }
                                     readOnly
                                 />
                             </FloatingLabel>
@@ -198,7 +223,7 @@ const ForumWrite = () => {
                     </Stack>
                 </Form.Group>
 
-                <Button type="submit" style={{display:'none'}} />
+                <Button type="submit" style={{ display:'none' }}/>
             </Form>
         </div>
     )

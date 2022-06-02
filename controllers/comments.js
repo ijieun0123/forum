@@ -12,11 +12,6 @@ module.exports.postComment = async (req, res) => {
     const forum = await Forum.findById(body._forum)
     if(Array.isArray(forum._comment)) forum._comment.push(newComment);
     forum.save()
-    /*
-    const user = await User.findById(body._user)
-    if(Array.isArray(user._comment)) user._comment.push(newComment);
-    user.save()
-    */
 }
 
 module.exports.getComment = (req, res) => {

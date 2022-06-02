@@ -21,7 +21,6 @@ const ForumView = () => {
     const [viewCount, setViewCount] = useState('');
     const [writer, setWriter] = useState('');
     const [writerImg, setWriterImg] = useState('');
-    const [comments, setComments] = useState([]);
 
     const [alertShow, setAlertShow] = useState(false);
     const user = useSelector(state => state.user.user);
@@ -31,8 +30,12 @@ const ForumView = () => {
     const navigate = useNavigate();
     
     const deleteForum = async () => {
+        const params = {
+            attachImage: attachImage,
+        }
+
         try{            
-            const res = await axios.delete(`/api/forum/delete/${id}`);
+            const res = await axios.delete(`/api/forum/delete/${id}`, { params: params });
             console.log(res.data);
             setAlertShow(false);
             navigate(`/`);
@@ -134,7 +137,7 @@ const ForumView = () => {
                     </Stack>
                 </Card.Header>
                 <Card.Body>
-                    {attachImage? <Card.Img variant="top" src={ attachImage } /> : null}
+                    {attachImage? <Card.Img variant="top" src={ `../../uploads/${attachImage}` } /> : null}
                     <Card.Text>{mainText}</Card.Text>
                 </Card.Body>
                 <Card.Footer className="text-muted text-center">

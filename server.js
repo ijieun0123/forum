@@ -27,6 +27,9 @@ connection.once('open', () => {
     console.log(`MongoDB database connection established successfully`);
 })
 
+// 이미지 upload
+app.use("./uploads", express.static("uploads"));
+
 // router
 const usersRouter = require('./routes/users');
 const forumsRouter = require('./routes/forums');

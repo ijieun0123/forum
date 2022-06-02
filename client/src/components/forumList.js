@@ -41,8 +41,15 @@ const ForumList = () => {
     }
     
     const deleteForum = async () => {
+        const targetForum = forums.find(el => el._id === forumId);
+        const attachImage = targetForum.attachImage;
+        
+        const params = {
+            attachImage: attachImage
+        }
+
         try{            
-            const res = await axios.delete(`/api/forum/delete/${forumId}`);
+            const res = await axios.delete(`/api/forum/delete/${forumId}`, { params: params });
             console.log(res.data);
             setAlertShow(false);
             getForums(selectValue);

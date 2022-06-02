@@ -1,10 +1,15 @@
 let Comment = require('../models/comment.model');
-let User = require('../models/user.model');
 let Forum = require('../models/forum.model');
+const fs = require('fs')
 
-module.exports.postForum = async (req, res) => {
-    const body = req.body;
-    const newForum = new Forum(body);
+module.exports.postForum = (req, res) => {
+    const _user = req.body._user;
+    const titleText = req.body.titleText;
+    const mainText = req.body.mainText;
+    const attachImage = (req.file ? req.file.filename : '');
+    const data = { _user, titleText, mainText, attachImage };
+
+    const newForum = new Forum(data);
     newForum.save()
     .then(forum => res.json(forum))
     .catch(err => res.status(400).json('Error: ' + err));
@@ -46,11 +51,34 @@ module.exports.getForum = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.updateForum = (req, res) => {
-    const body = req.body;
+module.exports.updateForum = async (req, res) => {
     const id = req.params.id;
+    const titleText = req.body.titleText;
+    const mainText = req.body.mainText;
+    //const attachImagePath = "./client/public/uploads/" + attachImage;
     
-    Forum.findByIdAndUpdate(id, body)
+    const forum = await Forum.findById(id);
+    const oldAttachImage = forum.attachImage;
+    const oldAttachImagePath = "./client/public/uploads/" + oldAttachImage;
+    const attachImage = (req.file ? req.file.filename : '');
+
+    if(oldAttachImage && attachImage){
+        fs.unlinkSync(oldAttachImagePath)
+    } else if(oldAttachImage && !attachImage){
+        return 
+    } else if(!oldAttachImage && attachImage){
+        return 
+    } else{
+        return 
+    }
+    
+    const data = { 
+        titleText, 
+        mainText, 
+        attachImage
+    };
+    
+    Forum.findByIdAndUpdate(id, data)
     .then(() => res.json(`Forum updated`))
     .catch(err => res.status(400).json('Error: ' + err));
 }
@@ -74,11 +102,15 @@ module.exports.updateForumHeart = (req, res) => {
 
 module.exports.deleteForum = async (req, res) => {
     const id = req.params.id;
+    const filename = req.query.attachImage
+    const filePath = "./client/public/uploads/" + filename;
+
+    if(filename) fs.unlinkSync(filePath)
 
     Forum.findByIdAndDelete(id)
     .then(() => res.json(`Forum deleted`))
     .catch(err => res.status(400).json('Error: ' + err));
-
+    
     const comment = await Comment.deleteMany({_forum:id})
     if(Array.isArray(comment._forum)) comment.save()
 }
