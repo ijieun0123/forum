@@ -1,8 +1,6 @@
 const router = require('express').Router();
 const controllers = require('../controllers/forums');
 
-const fs = require('fs')
-
 // multer 모듈 불러오기
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
@@ -13,7 +11,7 @@ const uniqueId = uuidv4()
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, fs.mkdirSync(path.join(__dirname, "/client/public/uploads")));
+      cb(null, path.join(__dirname, "./../client/public/uploads"));
       //cb(null, './uploads');
     },
     filename: (req, file, cb) => {
