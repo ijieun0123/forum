@@ -22,11 +22,11 @@ const forumSchema = new Schema({
             ref: 'User'
         }]
     },
-    attachImage: {
+    attachImagePath: {
         type: String,
         required: false,
     },
-    attachImageValue: {
+    attachImageName: {
         type: String,
         required: false,
     },

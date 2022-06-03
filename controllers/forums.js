@@ -1,13 +1,15 @@
 let Comment = require('../models/comment.model');
 let Forum = require('../models/forum.model');
-const fs = require('fs')
+const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 
 module.exports.postForum = (req, res) => {
     const _user = req.body._user;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    const attachImage = (req.file ? req.file.filename : '');
-    const data = { _user, titleText, mainText, attachImage };
+    const attachImagePath = (req.file ? req.file.path : null);
+    const attachImageName = (req.file ? req.file.filename : null);
+    const data = { _user, titleText, mainText, attachImagePath, attachImageName };
 
     const newForum = new Forum(data);
     newForum.save()
@@ -55,7 +57,7 @@ module.exports.updateForum = async (req, res) => {
     const id = req.params.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    //const attachImagePath = "./client/public/uploads/" + attachImage;
+    const attachImagePath = req.file.path;
     
     const forum = await Forum.findById(id);
     const oldAttachImage = forum.attachImage;
@@ -102,10 +104,15 @@ module.exports.updateForumHeart = (req, res) => {
 
 module.exports.deleteForum = async (req, res) => {
     const id = req.params.id;
-    const filename = req.query.attachImage
-    const filePath = "./client/public/uploads/" + filename;
+    const attachImagePath = req.query.attachImagePath
+    const attachImageName = req.query.attachImageName
 
-    if(filename) fs.unlinkSync(filePath)
+    if(attachImagePath) {
+        cloudinary.uploader.destroy(
+            attachImageName, 
+            (err, res) => { console.log(res, err) }
+        )
+    }
 
     Forum.findByIdAndDelete(id)
     .then(() => res.json(`Forum deleted`))

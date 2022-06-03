@@ -9,7 +9,7 @@ import Warning from '../organisms/warning'
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
     const [mainText, setMainText] = useState('')
-    const [attachImage, setAttachImage] = useState('');
+    const [attachImagePath, setAttachImagePath] = useState('');
 
     const [alertShow, setAlertShow] = useState(false);
     const [alertShowMessage, setAlertShowMessage] = useState('');
@@ -32,20 +32,20 @@ const ForumWrite = () => {
         setMainText(newMain);
     }
 
-    const onChangeAttachImage = e => {
-        const newAttachImage = e.target.value;
-        console.log(newAttachImage)
-        setAttachImage(newAttachImage);
+    const onChangeattachImagePath = e => {
+        const newattachImagePath = e.target.value;
+        console.log(newattachImagePath)
+        setAttachImagePath(newattachImagePath);
     }
 
-    const deleteAttachImage = () => {
-        setAttachImage('');
+    const deleteattachImagePath = () => {
+        setAttachImagePath('');
     }
   
     const formReset = () => {
         setTitleText('');
         setMainText('');
-        setAttachImage('');
+        setAttachImagePath('');
     }
 
     const createForum = async (e) => {
@@ -54,7 +54,7 @@ const ForumWrite = () => {
         formData.get('titleText');
         formData.get('mainText');
         formData.append('_user', userId)
-        formData.append('attachImage', attachImage);
+        formData.append('attachImagePath', attachImagePath);
 
         if( !titleText || !mainText ) {
             setAlertShowMessage('제목과 본문을 입력하세요.')
@@ -90,7 +90,7 @@ const ForumWrite = () => {
         const formData = new FormData(e.target);
         formData.get('titleText');
         formData.get('mainText');
-        formData.append('attachImage', attachImage);
+        formData.append('attachImagePath', attachImagePath);
 
         if( !titleText || !mainText ) {
             setAlertShowMessage('제목과 본문을 입력하세요.')
@@ -132,7 +132,7 @@ const ForumWrite = () => {
             const data = res.data;
             setTitleText(data.titleText);
             setMainText(data.mainText);
-            setAttachImage(data.attachImage);
+            setAttachImagePath(data.attachImagePath);
             console.log(data)
         } catch(err){
             console.log(err);
@@ -201,21 +201,21 @@ const ForumWrite = () => {
                                 src="../../img/close.svg" 
                                 alt="삭제" 
                                 style={{ cursor:'pointer', width:25, marginLeft:5 }}
-                                onClick={ deleteAttachImage }
+                                onClick={ deleteattachImagePath }
                             />
                         </div>
                         <div>
                             <Form.Control 
-                                name="attachImage"
+                                name="attachImagePath"
                                 type="file" 
-                                onChange={ onChangeAttachImage }
+                                onChange={ onChangeattachImagePath }
                                 accept="image/jpg,image/png,image/jpeg"
                                 style={{ display:'none' }}
                             />
                             <FloatingLabel controlId="floatingTextarea2" label="파일명">
                                 <Form.Control
                                     type="text" 
-                                    value={ attachImage }
+                                    value={ attachImagePath }
                                     readOnly
                                 />
                             </FloatingLabel>

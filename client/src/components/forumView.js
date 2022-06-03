@@ -12,7 +12,8 @@ import EyeCount from '../atoms/eyeCount';
 
 const ForumView = () => {
 
-    const [attachImage, setAttachImage] = useState('');
+    const [attachImagePath, setAttachImagePath] = useState('');
+    const [attachImageName, setAttachImageName] = useState('')
     const [createdAt, setCreatedAt] = useState('');
     const [heartCount, setHeartCount] = useState(0);
     const [heartClickUsers, setHeartClickUsers] = useState([]);
@@ -31,7 +32,8 @@ const ForumView = () => {
     
     const deleteForum = async () => {
         const params = {
-            attachImage: attachImage,
+            attachImagePath: attachImagePath,
+            attachImageName: attachImageName
         }
 
         try{            
@@ -64,7 +66,8 @@ const ForumView = () => {
         try{
             const res = await axios.get(`/api/forum/get/${id}`)
             const data = res.data;
-            setAttachImage(data.attachImage)
+            setAttachImagePath(data.attachImagePath)
+            setAttachImageName(data.attachImageName)
             setCreatedAt(data.createdAt)
             setHeartCount(data.heart.count)
             setHeartClickUsers(data.heart.user)
@@ -137,7 +140,7 @@ const ForumView = () => {
                     </Stack>
                 </Card.Header>
                 <Card.Body>
-                    {attachImage? <Card.Img variant="top" src={ `../../uploads/${attachImage}` } /> : null}
+                    {attachImagePath? <Card.Img variant="top" src={ attachImagePath } /> : null}
                     <Card.Text>{mainText}</Card.Text>
                 </Card.Body>
                 <Card.Footer className="text-muted text-center">
