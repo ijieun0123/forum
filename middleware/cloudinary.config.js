@@ -2,9 +2,6 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-const { v4: uuidv4 } = require('uuid');
-const uniqueId = uuidv4();
-
 const {
     CLOUDINARY_HOST,
     CLOUDINARY_API_KEY,
@@ -21,8 +18,8 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'attachImage',
-        format: async () => 'png' || 'jpg' || 'jpeg',
-        public_id: (req, file) => uniqueId + file.filename,
+        format: async () => { 'png', 'jpg', 'jpeg' },
+        public_id: (req, file) => file.filename,
     },
 });
 

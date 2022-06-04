@@ -32,7 +32,6 @@ const ForumView = () => {
     
     const deleteForum = async () => {
         const params = {
-            attachImagePath: attachImagePath,
             attachImageName: attachImageName
         }
 

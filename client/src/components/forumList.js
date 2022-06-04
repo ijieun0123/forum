@@ -42,10 +42,10 @@ const ForumList = () => {
     
     const deleteForum = async () => {
         const targetForum = forums.find(el => el._id === forumId);
-        const attachImage = targetForum.attachImage;
-        
+        const attachImageName = targetForum.attachImageName;
+
         const params = {
-            attachImage: attachImage
+            attachImageName: attachImageName
         }
 
         try{            

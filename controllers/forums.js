@@ -1,6 +1,5 @@
 let Comment = require('../models/comment.model');
 let Forum = require('../models/forum.model');
-const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 
 module.exports.postForum = (req, res) => {
@@ -57,27 +56,36 @@ module.exports.updateForum = async (req, res) => {
     const id = req.params.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    const attachImagePath = req.file.path;
-    
-    const forum = await Forum.findById(id);
-    const oldAttachImage = forum.attachImage;
-    const oldAttachImagePath = "./client/public/uploads/" + oldAttachImage;
-    const attachImage = (req.file ? req.file.filename : '');
 
-    if(oldAttachImage && attachImage){
-        fs.unlinkSync(oldAttachImagePath)
-    } else if(oldAttachImage && !attachImage){
-        return 
-    } else if(!oldAttachImage && attachImage){
-        return 
-    } else{
-        return 
+    const attachImagePath = (req.file ? req.file.path : null);
+    const attachImageName = (req.file ? req.file.filename : null);
+
+    const oldAttachImageName = req.body.attachImageName;
+    /*
+    if(attachImageName) {
+        cloudinary.uploader.explicit(
+            attachImageName, 
+            {
+                type: 'upload',
+                overwrite: true,
+                invalidate: true
+            },
+            (err, res) => console.log(res, err)
+        )
     }
-    
+    */
+    if(oldAttachImageName) {
+        cloudinary.uploader.destroy(
+            oldAttachImageName, 
+            (err, res) => { console.log(res, err) }
+        )
+    }
+
     const data = { 
         titleText, 
         mainText, 
-        attachImage
+        attachImagePath,
+        attachImageName
     };
     
     Forum.findByIdAndUpdate(id, data)
@@ -104,10 +112,9 @@ module.exports.updateForumHeart = (req, res) => {
 
 module.exports.deleteForum = async (req, res) => {
     const id = req.params.id;
-    const attachImagePath = req.query.attachImagePath
     const attachImageName = req.query.attachImageName
 
-    if(attachImagePath) {
+    if(attachImageName) {
         cloudinary.uploader.destroy(
             attachImageName, 
             (err, res) => { console.log(res, err) }

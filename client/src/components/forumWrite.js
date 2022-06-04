@@ -10,6 +10,7 @@ const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
     const [mainText, setMainText] = useState('')
     const [attachImagePath, setAttachImagePath] = useState('');
+    const [attachImageName, setAttachImageName] = useState('');
 
     const [alertShow, setAlertShow] = useState(false);
     const [alertShowMessage, setAlertShowMessage] = useState('');
@@ -90,6 +91,7 @@ const ForumWrite = () => {
         const formData = new FormData(e.target);
         formData.get('titleText');
         formData.get('mainText');
+        formData.append('attachImageName', attachImageName);
         formData.append('attachImagePath', attachImagePath);
 
         if( !titleText || !mainText ) {
@@ -133,6 +135,7 @@ const ForumWrite = () => {
             setTitleText(data.titleText);
             setMainText(data.mainText);
             setAttachImagePath(data.attachImagePath);
+            setAttachImageName(data.attachImageName);
             console.log(data)
         } catch(err){
             console.log(err);
