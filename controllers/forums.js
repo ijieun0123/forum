@@ -6,8 +6,8 @@ module.exports.postForum = (req, res) => {
     const _user = req.body._user;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    const attachImagePath = (req.file ? req.file.path : null);
-    const attachImageName = (req.file ? req.file.filename : null);
+    const attachImagePath = (req.file ? req.file.path : '');
+    const attachImageName = (req.file ? req.file.filename : '');
     const data = { _user, titleText, mainText, attachImagePath, attachImageName };
 
     const newForum = new Forum(data);
@@ -18,7 +18,7 @@ module.exports.postForum = (req, res) => {
 
 module.exports.getForums = (req, res) => {
     Forum.find().sort({$natural:-1})
-    .populate('_user', 'profileImage nickname')
+    .populate('_user', 'profileImagePath nickname')
     .populate({
         path: '_comment',
         select: '_user',
@@ -31,7 +31,7 @@ module.exports.getSearchForums = (req, res) => {
     const searchValue = req.query.searchValue
 
     Forum.find({ $text: { $search: searchValue } })
-    .populate('_user', 'profileImage nickname')
+    .populate('_user', 'profileImagePath nickname')
     .then(forums => res.json(forums))
     .catch(err => res.status(400).json('Error: ' + err));
 }
@@ -43,10 +43,10 @@ module.exports.getForum = async (req, res) => {
     if(Array.isArray(forum)) forum.save()
 
     Forum.findById(id)
-    .populate('_user', 'profileImage nickname')
+    .populate('_user', 'profileImagePath nickname')
     .populate({
         path: '_comment',
-        populate: {path: '_user', select: 'nickname profileImage'}
+        populate: {path: '_user', select: 'nickname profileImagePath'}
     })
     .then(forum => res.json(forum))
     .catch(err => res.status(400).json('Error: ' + err));
@@ -56,25 +56,21 @@ module.exports.updateForum = async (req, res) => {
     const id = req.params.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-
-    const attachImagePath = (req.file ? req.file.path : null);
-    const attachImageName = (req.file ? req.file.filename : null);
-
+    const oldAttachImagePath = req.body.attachImagePath;
     const oldAttachImageName = req.body.attachImageName;
-    /*
-    if(attachImageName) {
-        cloudinary.uploader.explicit(
-            attachImageName, 
-            {
-                type: 'upload',
-                overwrite: true,
-                invalidate: true
-            },
-            (err, res) => console.log(res, err)
-        )
+    const attachImagePath = (req.file ? req.file.path : oldAttachImagePath);
+    let attachImageName = ''
+
+    if(req.file){ // 이미지 변경했을 때
+        attachImageName = req.file.filename
+    } else if(!req.file && !attachImagePath){ // 이미지 삭제했을 때
+        attachImageName = ''
+    } else{ // 이미지 변경 안했을 때
+        attachImageName = oldAttachImageName
     }
-    */
-    if(oldAttachImageName) {
+
+    // 이미지 변경했을 때 || 이미지 삭제했을 때 => Cloudinary oldAttachImage 삭제
+    if(oldAttachImageName && req.file || oldAttachImageName && !oldAttachImagePath) { 
         cloudinary.uploader.destroy(
             oldAttachImageName, 
             (err, res) => { console.log(res, err) }
@@ -89,7 +85,9 @@ module.exports.updateForum = async (req, res) => {
     };
     
     Forum.findByIdAndUpdate(id, data)
-    .then(() => res.json(`Forum updated`))
+    .then(() => 
+        res.json(`Forum updated`)  
+    )
     .catch(err => res.status(400).json('Error: ' + err));
 }
 

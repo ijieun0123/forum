@@ -25,7 +25,7 @@ const ForumView = () => {
 
     const [alertShow, setAlertShow] = useState(false);
     const user = useSelector(state => state.user.user);
-    const { nickname, profileImage ,userId } = user;
+    const { nickname, profileImagePath ,userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -74,7 +74,7 @@ const ForumView = () => {
             setTitleText(data.titleText)
             setViewCount(data.viewCount)
             setWriter(data._user.nickname)
-            setWriterImg(data._user.profileImage)
+            setWriterImg(data._user.profileImagePath)
             console.log(data)
         } catch(err){
             console.log(err);
@@ -150,7 +150,7 @@ const ForumView = () => {
             <Comment 
                 forumId={ id } 
                 nickname={ nickname }
-                profileImage={ profileImage }
+                profileImagePath={ profileImagePath }
                 userId={ userId }
             />  
         </div>

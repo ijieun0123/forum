@@ -10,7 +10,7 @@ import Btn from '../atoms/button';
 
 const Header = () => {
     const user = useSelector(state => state.user.user);
-    const { nickname, profileImage, signin } = user
+    const { nickname, profileImagePath, signin } = user
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -19,8 +19,8 @@ const Header = () => {
         e.preventDefault();
         dispatch(signout({
             userId:'',
-            profileImage: '',
-            profileImageValue: '',
+            profileImagePath: '',
+            profileImageName: '',
             userName: '',
             nickname: '',
             email: '',
@@ -49,7 +49,7 @@ const Header = () => {
                     <Navbar.Collapse className="justify-content-end">
                         <Navbar.Text>
                             <Link to='/user/profile'>
-                                <Profile src={ profileImage } nickname={ nickname }/>
+                                <Profile src={ profileImagePath } nickname={ nickname }/>
                             </Link>
                         </Navbar.Text>
                         <Navbar.Text>

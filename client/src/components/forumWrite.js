@@ -33,13 +33,13 @@ const ForumWrite = () => {
         setMainText(newMain);
     }
 
-    const onChangeattachImagePath = e => {
-        const newattachImagePath = e.target.value;
-        console.log(newattachImagePath)
-        setAttachImagePath(newattachImagePath);
+    const onChangeAttachImagePath = e => {
+        const newAttachImagePath = e.target.value;
+        console.log(newAttachImagePath)
+        setAttachImagePath(newAttachImagePath);
     }
 
-    const deleteattachImagePath = () => {
+    const deleteAttachImagePath = () => {
         setAttachImagePath('');
     }
   
@@ -204,14 +204,14 @@ const ForumWrite = () => {
                                 src="../../img/close.svg" 
                                 alt="삭제" 
                                 style={{ cursor:'pointer', width:25, marginLeft:5 }}
-                                onClick={ deleteattachImagePath }
+                                onClick={ deleteAttachImagePath }
                             />
                         </div>
                         <div>
                             <Form.Control 
                                 name="attachImagePath"
                                 type="file" 
-                                onChange={ onChangeattachImagePath }
+                                onChange={ onChangeAttachImagePath }
                                 accept="image/jpg,image/png,image/jpeg"
                                 style={{ display:'none' }}
                             />

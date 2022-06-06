@@ -3,11 +3,11 @@ const { default: mongoose } = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    profileImage: { 
+    profileImagePath: { 
         type: String, 
         default: '/img/profile_default.png' // 기본 프로필사진
     },
-    profileImageValue: { 
+    profileImageName: { 
         type: String, 
         default: '' 
     },

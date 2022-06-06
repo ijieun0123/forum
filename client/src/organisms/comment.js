@@ -8,7 +8,7 @@ import HeartCount from '../atoms/heartCount';
 import CommentWrite from './commentWrite'
 import axios from 'axios';
 
-const Comment = ({ forumId, nickname, profileImage, userId }) => {
+const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
     const [targetId, setTargetId] = useState('');
     const [commentText, setCommentText] = useState('')
@@ -103,7 +103,7 @@ const Comment = ({ forumId, nickname, profileImage, userId }) => {
                                 <Stack direction="horizontal" gap={3}>
                                     <div>
                                         <Profile 
-                                            src={ comment._user.profileImage } 
+                                            src={ comment._user.profileImagePath } 
                                             nickname={ comment._user.nickname } 
                                             nicknameColor="#000" 
                                         />
@@ -160,7 +160,7 @@ const Comment = ({ forumId, nickname, profileImage, userId }) => {
             {/* 댓글 write */}
             <CommentWrite 
                 nickname={ nickname }
-                profileImage={ profileImage }
+                profileImagePath={ profileImagePath }
                 userId={ userId }
                 forumId={ forumId }
                 getComments={ getComments }

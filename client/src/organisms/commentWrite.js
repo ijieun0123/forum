@@ -4,7 +4,7 @@ import Btn from '../atoms/button';
 import { useState } from 'react';
 import axios from 'axios';
 
-const CommentWrite = ({ profileImage, nickname, userId, forumId, getComments }) => {
+const CommentWrite = ({ profileImagePath, nickname, userId, forumId, getComments }) => {
 
     const [commentText, setCommentText] = useState('');
 
@@ -36,7 +36,7 @@ const CommentWrite = ({ profileImage, nickname, userId, forumId, getComments }) 
             <Card>
                 <Card.Header as="h5">
                     <Profile 
-                        src={ profileImage } 
+                        src={ profileImagePath } 
                         nickname={ nickname } 
                         nicknameColor="#000" 
                     />

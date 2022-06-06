@@ -17,7 +17,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'attachImage',
+        folder: 'image',
         format: async () => { 'png', 'jpg', 'jpeg' },
         public_id: (req, file) => file.filename,
     },

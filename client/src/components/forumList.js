@@ -210,7 +210,7 @@ const ForumList = () => {
                                         <Td>{1+i}</Td>
                                         <Td>
                                             <Profile 
-                                                src={forum._user.profileImage} 
+                                                src={forum._user.profileImagePath} 
                                                 nickname={forum._user.nickname} 
                                                 nicknameColor="#000" 
                                             />

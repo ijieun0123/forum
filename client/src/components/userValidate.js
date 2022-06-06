@@ -39,8 +39,8 @@ const UserValidate = () => {
             console.log(res.data);
             dispatch(signout({
                 userId: '',
-                profileImage: '',
-                profileImageValue: '',
+                profileImagePath: '',
+                profileImageName: '',
                 userName: '',
                 nickname: '',
                 email: '',
@@ -62,12 +62,12 @@ const UserValidate = () => {
             const res = await axios.post('/api/user/get', body);
             const data = res.data[0];
             console.log(data)
-            const { _id, profileImage, profileImageValue, userName, nickname, email, password } = data;
+            const { _id, profileImagePath, profileImageName, userName, nickname, email, password } = data;
             if(!user.signin){
                 dispatch(signin({
                     userId: _id,
-                    profileImage: profileImage,
-                    profileImageValue: profileImageValue,
+                    profileImagePath: profileImagePath,
+                    profileImageName: profileImageName,
                     userName: userName,
                     nickname: nickname,
                     email: email,
