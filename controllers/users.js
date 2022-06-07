@@ -2,6 +2,26 @@ let User = require('../models/user.model');
 const cloudinary = require('cloudinary').v2;
 const defaultProfileImage = "/img/profile_default.png";
 
+module.exports.duplicateCheckEmail = (req, res) => {
+    const email = req.body.email;
+    const signin = req.body.signin;
+    const _id = req.body._id;
+    
+    User.findOne( signin ? { _id : {$ne : _id}, email: email } : { email: email }  )
+    .then(user => res.json(user))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
+module.exports.duplicateCheckNickname = (req, res) => {
+    const nickname = req.body.nickname;
+    const signin = req.body.signin;
+    const _id = req.body._id;
+
+    User.findOne( signin ? { _id : {$ne : _id}, nickname: nickname } : { nickname: nickname } )
+    .then(user => res.json(user))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
 module.exports.postUser = (req, res) => {
     const userName = req.body.userName;
     const nickname = req.body.nickname;
