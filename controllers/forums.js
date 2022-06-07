@@ -63,7 +63,7 @@ module.exports.updateForum = async (req, res) => {
 
     if(req.file){ // 이미지 변경했을 때
         attachImageName = req.file.filename
-    } else if(!req.file && !attachImagePath){ // 이미지 삭제했을 때
+    } else if(oldAttachImageName && !oldAttachImagePath){ // 이미지 삭제했을 때
         attachImageName = ''
     } else{ // 이미지 변경 안했을 때
         attachImageName = oldAttachImageName

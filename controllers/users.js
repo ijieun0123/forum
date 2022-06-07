@@ -32,16 +32,16 @@ module.exports.updateUser = async (req, res) => {
     const email = req.body.email;
     const oldProfileImagePath = req.body.profileImagePath;
     const oldProfileImageName = req.body.profileImageName;
-    let profileImagePath = '';
-    let profileImageName = ''
+    let profileImagePath = defaultProfileImage;
+    let profileImageName = defaultProfileImage;
     
     if(req.file){ // 이미지 변경했을 때
         profileImagePath = req.file.path
         profileImageName = req.file.filename
-    } else if(!req.file && !profileImagePath){ // 이미지 변경 안했을 때
-        profileImagePath = oldProfileImagePath
-        profileImageName = oldProfileImageName
-    } else if(!req.file && profileImagePath){ // 이미지 삭제 했을 떄
+    } else if(oldProfileImageName && !oldProfileImagePath){ // 이미지 삭제 했을 떄
+        profileImagePath = defaultProfileImage
+        profileImageName = defaultProfileImage
+    } else if(oldProfileImageName && oldProfileImagePath){ // 이미지 변경 안했을 때
         profileImagePath = oldProfileImagePath
         profileImageName = oldProfileImageName
     }
