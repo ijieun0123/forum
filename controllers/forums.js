@@ -2,6 +2,43 @@ let Comment = require('../models/comment.model');
 let Forum = require('../models/forum.model');
 const cloudinary = require('cloudinary').v2;
 
+/* multiple 보류
+const cloudinaryImageUploadMethod = async file => {
+    return new Promise(resolve => {
+        cloudinary.uploader.upload( file , (err, res) => {
+          if (err) return res.status(500).send("upload image error")
+            console.log( res.secure_url )
+            resolve({
+              res: res.secure_url
+            }) 
+          }
+        ) 
+    })
+}
+
+module.exports.postForum = async (req, res) => {
+    let urls = [];
+    const files = req.files;
+    console.log(files)
+    for (const file of files) {
+        const { path } = file
+        const newPath = await cloudinaryImageUploadMethod(path)
+        urls.push(newPath)
+    }
+    
+    const _user = req.body._user;
+    const titleText = req.body.titleText;
+    const mainText = req.body.mainText;
+    const attachImagePath = urls.map( url => url.res );
+    //const attachImageName = (req.file ? req.file.filename : '');
+    const data = { _user, titleText, mainText, attachImagePath };
+
+    const newForum = new Forum(data);
+    newForum.save()
+    .then(forum => res.json(forum))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+*/
 module.exports.postForum = (req, res) => {
     const _user = req.body._user;
     const titleText = req.body.titleText;
@@ -28,9 +65,9 @@ module.exports.getForums = (req, res) => {
 }
 
 module.exports.getSearchForums = (req, res) => {
-    const searchValue = req.query.searchValue
+    const searchValue = req.query.searchValue;
 
-    Forum.find({ $text: { $search: searchValue } })
+    Forum.find( searchValue ? { $text: { $search: searchValue } } : null )
     .populate('_user', 'profileImagePath nickname')
     .then(forums => res.json(forums))
     .catch(err => res.status(400).json('Error: ' + err));

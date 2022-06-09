@@ -21,6 +21,8 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "fs": "0.0.1-security",
+    "jw-paginate": "^1.0.4",
+    "jw-react-pagination": "^1.1.0",
     "mongoose": "^6.3.0",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",

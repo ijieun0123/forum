@@ -22,6 +22,12 @@ const forumSchema = new Schema({
             ref: 'User'
         }]
     },
+    /*
+    attachImage: [{
+        type: String,
+        required: false
+    }],
+    */
     attachImagePath: {
         type: String,
         required: false,

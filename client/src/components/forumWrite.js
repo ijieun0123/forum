@@ -33,6 +33,28 @@ const ForumWrite = () => {
         setMainText(newMain);
     }
 
+    /* multiple 보류
+    const fillAttachImagePath = (newAttachImagePath) => {
+        setAttachImagePath(newAttachImagePath);
+        console.log(newAttachImagePath)
+    }
+    
+    const onChangeAttachImagePath = async (e) => {
+        let newAttachImagePath = [];
+        const fileBlobs = e.target.files;
+
+        for (let file of fileBlobs){
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                await newAttachImagePath.push(reader.result);
+            };
+        }
+
+        fillAttachImagePath(newAttachImagePath);
+    }
+    */
+
     const onChangeAttachImagePath = e => {
         const newAttachImagePath = e.target.value;
         console.log(newAttachImagePath)
@@ -211,6 +233,7 @@ const ForumWrite = () => {
                             <Form.Control 
                                 name="attachImagePath"
                                 type="file" 
+                                //multiple="multiple"
                                 onChange={ onChangeAttachImagePath }
                                 accept="image/jpg,image/png,image/jpeg"
                                 style={{ display:'none' }}
@@ -225,8 +248,6 @@ const ForumWrite = () => {
                         </div>
                     </Stack>
                 </Form.Group>
-
-                <Button type="submit" style={{ display:'none' }}/>
             </Form>
         </div>
     )

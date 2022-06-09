@@ -1,4 +1,4 @@
-import { Table, Row, Col, FloatingLabel, Form } from 'react-bootstrap'
+import { Table, Row, Col, FloatingLabel, Form, Pagination } from 'react-bootstrap'
 import { useEffect, useState } from 'react';
 import Title from '../atoms/title'
 import CircleBtn from '../atoms/circleBtn'
@@ -11,6 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 import axios from 'axios'
+import JwPagination from 'jw-react-pagination'
 
 const Td = styled.td`
     line-height:45px;
@@ -26,6 +27,8 @@ const ForumList = () => {
     const [alertShow, setAlertShow] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [selectValue, setSelectValue] = useState('latestOrder');
+
+    const [pageOfForums, setPageOfForums] = useState([]);
 
     const navigate = useNavigate();
 
@@ -81,6 +84,20 @@ const ForumList = () => {
         }
     }
 
+    const paginationStyle = {
+        ul: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin:'30px auto'
+        },
+    };
+
+    const onChangePage = (pageOfForums) => {
+        console.log(pageOfForums)
+        setPageOfForums(pageOfForums)
+    }
+
     const getSearchForums = async (e) => {
         e.preventDefault();
         const body = {
@@ -90,8 +107,8 @@ const ForumList = () => {
             const res = await axios.get('/api/forum/search/get', {params: body})
             const data = res.data;
             console.log(data)
-            setForums(data);
             setSelectValue('latestOrder')
+            setForums(data);
         } catch(err){
             console.log(err);
         }
@@ -102,22 +119,26 @@ const ForumList = () => {
             const res = await axios.get('/api/forum/get')
             const data = res.data;
             setSearchValue('')
-           
+
             if(selectValue === 'latestOrder' || selectValue === undefined){
                 setForums(data);
                 console.log(data)
             } else if(selectValue === 'viewOrder'){
                 const viewOrder = data.sort((a, b) => b.viewCount - a.viewCount)
                 setForums(viewOrder);
+                console.log(viewOrder)
             } else if(selectValue === 'heartOrder'){
                 const heartOrder = data.sort((a, b) => b.heart.count - a.heart.count)
                 setForums(heartOrder);
+                console.log(heartOrder)
             } else if(selectValue === 'whatIWrote'){
                 const whatIWrote = data.filter(el => el._user._id === userId)
                 setForums(whatIWrote);
+                console.log(whatIWrote)
             } else{
                 const whatILike = data.filter(el => el.heart.user.includes(userId))
                 setForums(whatILike);
+                console.log(whatILike)
             }
         } catch(err){
             console.log(err);
@@ -186,7 +207,7 @@ const ForumList = () => {
                 </Row>
             }
 
-            {
+            { /* forumList */
                 forums.length !== 0
                 ?
                 <Table hover>
@@ -204,7 +225,7 @@ const ForumList = () => {
                     </thead>
                     <tbody>
                         {
-                            forums.map((forum, i) => {
+                            pageOfForums.map((forum, i) => {
                                 return (
                                     <tr key={i}>
                                         <Td>{1+i}</Td>
@@ -257,6 +278,15 @@ const ForumList = () => {
                 :
                 <p>게시물이 없습니다.</p>
             }
+
+            {/* 페이지네이션 */}
+            <JwPagination 
+                items={forums} 
+                onChangePage={ pageOfForums => onChangePage(pageOfForums) } 
+                pageSize={5}
+                maxPages={5}
+                styles={paginationStyle}
+            />
             
             <Link to="/forum/write">
                 <CircleBtn src={true}/>

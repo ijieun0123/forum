@@ -61,10 +61,11 @@ const UserUpdate = () => {
         }
     }
 
-    const onChangeProfileImageSrc = (fileBlob) => {
+    const onChangeProfileImageSrc = (e) => {
+        const fileBlob = e.target.files[0];
         const reader = new FileReader();
         reader.readAsDataURL(fileBlob);
-
+        console.log(e.target.files)
         return new Promise((resolve) => {
             reader.onload = () => {
                 setProfileImageSrc(reader.result);
@@ -325,6 +326,8 @@ const UserUpdate = () => {
             setUserName(user.userName)
             setNickname(user.nickname)
             setEmail(user.email)
+            setDuplicateCheckEmail(true)
+            setDuplicateCheckNickname(true)
         } 
     }, [user])
 
@@ -371,7 +374,7 @@ const UserUpdate = () => {
                         <Form.Control 
                             name="profileImagePath"
                             type="file" 
-                            onChange={ e => { onChangeProfileImagePath(e); onChangeProfileImageSrc(e.target.files[0]); } }
+                            onChange={ e => { onChangeProfileImagePath(e); onChangeProfileImageSrc(e); } }
                             accept="image/jpg,image/png,image/jpeg"
                             style={{display:'none'}}
                             id="profileImagePath"
