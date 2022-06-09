@@ -1,7 +1,6 @@
 import { Table, Row, Col, FloatingLabel, Form, Pagination } from 'react-bootstrap'
 import { useEffect, useState } from 'react';
 import Title from '../atoms/title'
-import CircleBtn from '../atoms/circleBtn'
 import Profile from '../atoms/profile'
 import EyeCount from '../atoms/eyeCount'
 import HeartCount from '../atoms/heartCount'
@@ -71,6 +70,7 @@ const ForumList = () => {
     }
     
     const updateForumHeart = async (e, forumId, heartClickUsers) => {
+        e.preventDefault();
         const body = {
             userId: userId,
             heartClickUsers: heartClickUsers
@@ -83,6 +83,13 @@ const ForumList = () => {
             console.log(err);
         }
     }
+
+    const paginationLabels = {
+        first: '<<',
+        last: '>>',
+        previous: '<',
+        next: '>'
+    };
 
     const paginationStyle = {
         ul: {
@@ -151,7 +158,12 @@ const ForumList = () => {
     
     return (
         <div>
-            <Title text='Forum' />
+            <Title 
+                titleText='Forum' 
+                primaryBtn={true}
+                primaryBtnText='글쓰기'
+                clickPrimaryBtn={ () => navigate('/forum/write') }
+            />
 
             {
                 alertShow  
@@ -167,46 +179,45 @@ const ForumList = () => {
                 : null
             }
 
-            {/* 서치박스 & 셀렉박스 */
-                <Row className="g-2" style={{ marginBottom:50 }}>
-                    <Col md>
-                        <Form onSubmit={ getSearchForums }>
-                            <FloatingLabel 
-                                controlId="floatingInputGrid" 
-                                label="Search" 
-                            >
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="검색하세요" 
-                                    value={ searchValue }
-                                    onChange={ onChangeSearch }
-                                />
-                            </FloatingLabel>
-                        </Form>
-                    </Col>
-                    <Col md>
-                        <FloatingLabel controlId="floatingSelectGrid" label="Select">
-                            <Form.Select 
-                                aria-label="Select" 
-                                onChange={ onChangeSelect } 
-                                value={ selectValue }
-                            >
-                                <option value="latestOrder">최신순</option>
-                                <option value="viewOrder">조회순</option>
-                                <option value="heartOrder">인기순</option>
-                                { signin
-                                    ?   <>
-                                            <option value="whatIWrote">내가 쓴 글</option>
-                                            <option value="whatILike">내가 좋아한 글</option>
-                                        </>
-                                    : null
-                                }
-                            </Form.Select>
+            {/* 서치박스 & 셀렉박스 */}
+            <Row className="g-2" style={{ marginBottom:50 }}>
+                <Col md>
+                    <Form onSubmit={ getSearchForums }>
+                        <FloatingLabel 
+                            controlId="floatingInputGrid" 
+                            label="Search" 
+                        >
+                            <Form.Control 
+                                type="text" 
+                                placeholder="검색하세요" 
+                                value={ searchValue }
+                                onChange={ onChangeSearch }
+                            />
                         </FloatingLabel>
-                    </Col>
-                </Row>
-            }
-
+                    </Form>
+                </Col>
+                <Col md>
+                    <FloatingLabel controlId="floatingSelectGrid" label="Select">
+                        <Form.Select 
+                            aria-label="Select" 
+                            onChange={ onChangeSelect } 
+                            value={ selectValue }
+                        >
+                            <option value="latestOrder">최신순</option>
+                            <option value="viewOrder">조회순</option>
+                            <option value="heartOrder">인기순</option>
+                            { signin
+                                ?   <>
+                                        <option value="whatIWrote">내가 쓴 글</option>
+                                        <option value="whatILike">내가 좋아한 글</option>
+                                    </>
+                                : null
+                            }
+                        </Form.Select>
+                    </FloatingLabel>
+                </Col>
+            </Row>
+            
             { /* forumList */
                 forums.length !== 0
                 ?
@@ -286,11 +297,8 @@ const ForumList = () => {
                 pageSize={5}
                 maxPages={5}
                 styles={paginationStyle}
+                labels={paginationLabels}
             />
-            
-            <Link to="/forum/write">
-                <CircleBtn src={true}/>
-            </Link>
         </div>
     )
 }

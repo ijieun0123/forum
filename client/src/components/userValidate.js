@@ -94,16 +94,6 @@ const UserValidate = () => {
 
     return (
         <div>
-            <Title 
-                text={ user.signin ? 'Validation' : 'Sign in' } 
-                deleteBtn={ user.signin ? true : false }
-                updateBtn={ user.signin ? false : true }
-                clickDeleteBtn={ getUser }
-                clickUpdateBtn={ onSubmit }
-                updateBtnText="로그인"
-                deleteBtnText={ '탈퇴하기' }
-            />
-
             {
                 alertShow
                 ? 
@@ -120,12 +110,27 @@ const UserValidate = () => {
             }
 
             <Form onSubmit={ onSubmit }>
+                <Title 
+                    titleText={ user.signin ? 'Validation' : 'Sign in' } 
+                    warnBtn={ user.signin ? true : false }
+                    primaryBtn={ user.signin ? false : true }
+                    clickWarnBtn={ getUser }
+                    clickPrimaryBtn={ onSubmit }
+                    primaryBtnText="로그인"
+                    warnBtnText={ '탈퇴하기' }
+                />
+
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
                     <Form.Label column sm={2}>
                         Email
                     </Form.Label>
                     <Col sm={10}>
-                        <Form.Control type="email" placeholder="Email" value={email} onChange={ onChangeEmail }/>
+                        <Form.Control 
+                            type="email" 
+                            placeholder="Email" 
+                            value={email} 
+                            onChange={ onChangeEmail }
+                        />
                     </Col>
                 </Form.Group>
 
@@ -134,11 +139,14 @@ const UserValidate = () => {
                         Password
                     </Form.Label>
                     <Col sm={10}>
-                        <Form.Control type="password" placeholder="Password" value={password} onChange={ onChangePassword }/>
+                        <Form.Control 
+                            type="password" 
+                            placeholder="Password" 
+                            value={password} 
+                            onChange={ onChangePassword }
+                        />
                     </Col>
                 </Form.Group>
-
-                <Button type="submit" style={{display:'none'}}>로그인</Button>
             </Form>
         </div>
     )

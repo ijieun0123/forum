@@ -187,10 +187,9 @@ const ForumWrite = () => {
 
             <Form onSubmit={ onSubmit }>
                 <Title 
-                    text='Forum Write'
-                    deleteBtn={ false }
-                    updateBtn={ true }
-                    updateBtnText="저장하기"
+                    titleText='Forum Write'
+                    primaryBtn={ true }
+                    primaryBtnText="저장하기"
                 />
 
                 <Form.Group controlId="formFile" className="mb-3">

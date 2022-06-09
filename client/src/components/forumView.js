@@ -88,13 +88,13 @@ const ForumView = () => {
     return (
         <div>
             <Title 
-                text='Forum View' 
-                deleteBtn={ nickname === writer ? true : false }
-                updateBtn={ nickname === writer ? true : false }
-                clickDeleteBtn={ () => {setAlertShow(true)}  }
-                clickUpdateBtn={ () => navigate(`/forum/update/${id}`) }
-                updateBtnText="수정하기"
-                deleteBtnText="삭제하기"
+                titleText='Forum View' 
+                warnBtn={ nickname === writer ? true : false }
+                primaryBtn={ nickname === writer ? true : false }
+                clickWarnBtn={ () => {setAlertShow(true)}  }
+                clickPrimaryBtn={ () => navigate(`/forum/update/${id}`) }
+                primaryBtnText="수정하기"
+                warnBtnText="삭제하기"
             />
                
             {

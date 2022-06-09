@@ -350,12 +350,12 @@ const UserUpdate = () => {
 
             <Form noValidate onSubmit={ onSubmit }>
                 <Title 
-                    text={ user.signin ? 'Profile' : 'Sign up' } 
-                    deleteBtn={ user.signin ? true : false }
-                    updateBtn={ true }
-                    clickDeleteBtn={ () => navigate(`/user/validate`) }
-                    updateBtnText={ user.signin ? '수정하기' : '회원가입' }
-                    deleteBtnText="탈퇴하기"
+                    titleText={ user.signin ? 'Profile' : 'Sign up' } 
+                    warnBtn={ user.signin ? true : false }
+                    primaryBtn={ true }
+                    clickWarnBtn={ () => navigate(`/user/validate`) }
+                    primaryBtnText={ user.signin ? '수정하기' : '회원가입' }
+                    warnBtnText="탈퇴하기"
                 />
                 
                 {

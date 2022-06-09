@@ -15,33 +15,41 @@ const H3 = styled.h3`
     color:#2a2a2a;
 `
 
-const Title = ({ text, deleteBtn, updateBtn, clickDeleteBtn, clickUpdateBtn, updateBtnText, deleteBtnText }) => {
+const Title = ({ 
+    titleText, 
+    warnBtn, 
+    primaryBtn, 
+    clickWarnBtn, 
+    clickPrimaryBtn, 
+    primaryBtnText, 
+    warnBtnText 
+}) => {
     return (
         <TitleBox>
-            <H3>{ text }</H3>
+            <H3>{ titleText }</H3>
 
             <div>
                 {
-                    updateBtn
+                    primaryBtn
                     ? 
                     <Button 
                         variant="outline-primary" 
                         style={{marginRight:10}} 
-                        onClick={ clickUpdateBtn }
+                        onClick={ clickPrimaryBtn }
                         type="submit"
                     >
-                        { updateBtnText }
+                        { primaryBtnText }
                     </Button>
                     : null
                 }
                 {
-                    deleteBtn
+                    warnBtn
                     ? 
                     <Button 
                         variant="outline-danger" 
-                        onClick={ clickDeleteBtn }
+                        onClick={ clickWarnBtn }
                     >
-                        { deleteBtnText }
+                        { warnBtnText }
                     </Button>
                     : null
                 }
