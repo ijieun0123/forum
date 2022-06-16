@@ -25,7 +25,6 @@ const ForumView = () => {
 
     const [alertShow, setAlertShow] = useState(false);
     const user = useSelector(state => state.user.user);
-    const { nickname, profileImagePath ,userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -47,7 +46,6 @@ const ForumView = () => {
 
     const updateForumHeart = async () => {
         const body = {
-            userId: userId,
             heartClickUsers: heartClickUsers
         }
         try{            
@@ -61,6 +59,16 @@ const ForumView = () => {
         }
     }
   
+    const updateViewCount = async () => {
+        try{
+            const res = await axios.patch(`/api/forum/viewCount/update/${id}`)
+            const data = res.data;
+            console.log(data)
+        } catch(err){
+            console.log(err);
+        }
+    }
+
     const getForum = async () => {
         try{
             const res = await axios.get(`/api/forum/get/${id}`)
@@ -82,6 +90,7 @@ const ForumView = () => {
     }
 
     useEffect(() => {
+        updateViewCount();
         getForum();
     }, [])
 
@@ -89,8 +98,8 @@ const ForumView = () => {
         <div>
             <Title 
                 titleText='Forum View' 
-                warnBtn={ nickname === writer ? true : false }
-                primaryBtn={ nickname === writer ? true : false }
+                warnBtn={ user.nickname === writer ? true : false }
+                primaryBtn={ user.nickname === writer ? true : false }
                 clickWarnBtn={ () => {setAlertShow(true)}  }
                 clickPrimaryBtn={ () => navigate(`/forum/update/${id}`) }
                 primaryBtnText="수정하기"
@@ -132,7 +141,7 @@ const ForumView = () => {
                             <HeartCount 
                                 src={false} 
                                 count={heartCount} 
-                                fill={heartClickUsers.includes(userId) ? true : false} 
+                                fill={heartClickUsers.includes(user._id) ? true : false} 
                                 onClick={ updateForumHeart } 
                             />
                         </div>
@@ -149,9 +158,9 @@ const ForumView = () => {
 
             <Comment 
                 forumId={ id } 
-                nickname={ nickname }
-                profileImagePath={ profileImagePath }
-                userId={ userId }
+                nickname={ user.nickname }
+                profileImagePath={ user.profileImagePath }
+                userId={ user._id }
             />  
         </div>
     )

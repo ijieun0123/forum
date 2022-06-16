@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import Profile from '../atoms/profile';
 import Title from '../atoms/title';
 import Btn from '../atoms/button';
-import CommentCard from '../molecules/card';
 import HeartCount from '../atoms/heartCount';
 import CommentWrite from './commentWrite'
 import axios from 'axios';
+import Warning from './warning'
 
 const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
@@ -14,6 +14,11 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
     const [commentText, setCommentText] = useState('')
     const [heartClickUsers, setHeartClickUsers] = useState([]);
     const [comments, setComments] = useState([]);
+
+    const [alertShow, setAlertShow] = useState(false);
+    const [alertShowMessage, setAlertShowMessage] = useState('');
+
+    const alertClose = () => setAlertShow(false);
 
     const onChangeComment = e => {
         const newCommentText = e.target.value;
@@ -63,6 +68,8 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             setTargetId('');
         } catch(err){
             console.log(err);
+            setAlertShowMessage(err.response.data);
+            setAlertShow(true);
         }
     }
 
@@ -93,7 +100,22 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
     return (
         <>
-            <Title text='Comment' />
+            <Title titleText='Comment' />
+
+            {
+                alertShow
+                ? 
+                <Warning 
+                    onClickBtn={ alertClose } 
+                    onClose={ alertClose }
+                    titleText="안내" 
+                    mainText={ alertShowMessage }
+                    btnText="닫기"
+                    variant="danger"
+                    btnVariant="outline-danger"
+                />
+                : null
+            }
 
             { /* 댓글 view */
                 comments.map((comment, i) => {

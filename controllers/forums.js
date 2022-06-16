@@ -2,82 +2,55 @@ let Comment = require('../models/comment.model');
 let Forum = require('../models/forum.model');
 const cloudinary = require('cloudinary').v2;
 
-/* multiple 보류
-const cloudinaryImageUploadMethod = async file => {
-    return new Promise(resolve => {
-        cloudinary.uploader.upload( file , (err, res) => {
-          if (err) return res.status(500).send("upload image error")
-            console.log( res.secure_url )
-            resolve({
-              res: res.secure_url
-            }) 
-          }
-        ) 
-    })
-}
-
 module.exports.postForum = async (req, res) => {
-    let urls = [];
-    const files = req.files;
-    console.log(files)
-    for (const file of files) {
-        const { path } = file
-        const newPath = await cloudinaryImageUploadMethod(path)
-        urls.push(newPath)
-    }
-    
-    const _user = req.body._user;
-    const titleText = req.body.titleText;
-    const mainText = req.body.mainText;
-    const attachImagePath = urls.map( url => url.res );
-    //const attachImageName = (req.file ? req.file.filename : '');
-    const data = { _user, titleText, mainText, attachImagePath };
-
-    const newForum = new Forum(data);
-    newForum.save()
-    .then(forum => res.json(forum))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-*/
-module.exports.postForum = (req, res) => {
-    const _user = req.body._user;
+    const _user = req.user.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
     const attachImagePath = (req.file ? req.file.path : '');
     const attachImageName = (req.file ? req.file.filename : '');
     const data = { _user, titleText, mainText, attachImagePath, attachImageName };
 
-    const newForum = new Forum(data);
-    newForum.save()
-    .then(forum => res.json(forum))
-    .catch(err => res.status(400).json('Error: ' + err));
+    try{   
+        const newForum = new Forum(data);
+        newForum.save()
+        res.status(200).json('Forum saved');
+    } catch (err) {
+        res.status(500).json('server error');
+    }
 }
 
-module.exports.getForums = (req, res) => {
-    Forum.find().sort({$natural:-1})
-    .populate('_user', 'profileImagePath nickname')
-    .populate({
-        path: '_comment',
-        select: '_user',
-    })
-    .then(forums => res.json(forums))
-    .catch(err => res.status(400).json('Error: ' + err));
+module.exports.getForums = async (req, res) => {
+    try{
+        const forum = await Forum.find().sort({$natural:-1})
+        .populate('_user', 'profileImagePath nickname')
+        .populate({
+            path: '_comment',
+            select: '_user',
+        })
+        res.status(200).json(forum);
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ msg: err });
+    }
 }
 
-module.exports.getSearchForums = (req, res) => {
+module.exports.getSearchForums = async (req, res) => {
     const searchValue = req.query.searchValue;
 
-    Forum.find( searchValue ? { $text: { $search: searchValue } } : null )
-    .populate('_user', 'profileImagePath nickname')
-    .then(forums => res.json(forums))
-    .catch(err => res.status(400).json('Error: ' + err));
+    try{
+        const forum = await Forum
+        .find({ titleText: { $regex: searchValue, $options: 'i' } }) // 부분검색 허용, 대소문자구분x
+        .sort({$natural:-1})
+        .populate('_user', 'profileImagePath nickname')
+        res.status(200).json(forum);
+    } catch (err){
+        console.error(err);
+        res.status(400).json({ msg: err });
+    }
 }
 
 module.exports.getForum = async (req, res) => {
     const id = req.params.id;
-
-    const forum = await Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } })
-    if(Array.isArray(forum)) forum.save()
 
     Forum.findById(id)
     .populate('_user', 'profileImagePath nickname')
@@ -86,6 +59,14 @@ module.exports.getForum = async (req, res) => {
         populate: {path: '_user', select: 'nickname profileImagePath'}
     })
     .then(forum => res.json(forum))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
+module.exports.updateViewCount = async (req, res) => {
+    const id = req.params.id;
+
+    Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } }, {new: true})
+    .then(() => res.json('ViewCount updated'))
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
@@ -106,7 +87,14 @@ module.exports.updateForum = async (req, res) => {
         attachImageName = oldAttachImageName
     }
 
-    // 이미지 변경했을 때 || 이미지 삭제했을 때 => Cloudinary oldAttachImage 삭제
+    const data = { 
+        titleText, 
+        mainText, 
+        attachImagePath,
+        attachImageName
+    };
+
+    // Cloudinary oldAttachImage 삭제 ( 이미지 변경했을 때 || 이미지 삭제했을 때 )
     if(oldAttachImageName && req.file || oldAttachImageName && !oldAttachImagePath) { 
         cloudinary.uploader.destroy(
             oldAttachImageName, 
@@ -114,23 +102,14 @@ module.exports.updateForum = async (req, res) => {
         )
     }
 
-    const data = { 
-        titleText, 
-        mainText, 
-        attachImagePath,
-        attachImageName
-    };
-    
     Forum.findByIdAndUpdate(id, data)
-    .then(() => 
-        res.json(`Forum updated`)  
-    )
-    .catch(err => res.status(400).json('Error: ' + err));
+    .then(() => res.json('forum updated'))
+    .catch(err => res.status(400).json(err.message))
 }
 
 module.exports.updateForumHeart = (req, res) => {
     const id = req.params.id;
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const heartClickUsers = req.body.heartClickUsers;
 
     Forum.findByIdAndUpdate(id,
@@ -149,19 +128,24 @@ module.exports.deleteForum = async (req, res) => {
     const id = req.params.id;
     const attachImageName = req.query.attachImageName
 
-    if(attachImageName) {
-        cloudinary.uploader.destroy(
-            attachImageName, 
-            (err, res) => { console.log(res, err) }
-        )
-    }
+    try{
+        const forum = await Forum.findByIdAndDelete(id)
+        if(Array.isArray(forum)) forum.save()
+        res.status(200).send('Forum deleted');
 
-    Forum.findByIdAndDelete(id)
-    .then(() => res.json(`Forum deleted`))
-    .catch(err => res.status(400).json('Error: ' + err));
-    
-    const comment = await Comment.deleteMany({_forum:id})
-    if(Array.isArray(comment._forum)) comment.save()
+        const comment = await Comment.deleteMany({_forum:id})
+        if(Array.isArray(comment._forum)) comment.save()
+
+        if(attachImageName) {
+            cloudinary.uploader.destroy(
+                attachImageName, 
+                (err, res) => { console.log(res, err) }
+            )
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(400).send({ msg: err });
+    }
 }
 
 module.exports.deleteForums = async (req, res) => {

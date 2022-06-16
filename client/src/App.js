@@ -2,68 +2,101 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Header from './components/header';
-import UserValidate from './components/userValidate';
-import UserUpdate from './components/userUpdate';
+import Signin from './components/signin';
+import Signup from './components/signup';
+import Profile from './components/profile';
+import Withdrawal from './components/withdrawal';
 import ForumList from './components/forumList';
 import ForumWrite from './components/forumWrite';
 import ForumView from './components/forumView';
-import { useSelector } from 'react-redux'
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react';
 import Warning from './organisms/warning';
 import { useNavigate } from 'react-router-dom';
+import setAuthToken from './utils/setAuthToken';
+import jwt_decode from 'jwt-decode';
+import { SIGNIN, SIGNOUT } from './features/userSlice'
 
 function App() {
-  const user = useSelector(state => state.user.user);
-  const { signin } = user;
+  const signin = useSelector(state => state.user.signin);
 
-  const [alertShow, setAlertShow] = useState(true);
+  const [alertShow, setAlertShow] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const token = localStorage.getItem('token');
+
+  if (token) {
+      setAuthToken();
+      const decoded = jwt_decode(token);
+      // 토큰 유효기간 만료시 => 경고창
+      const currentTime = Date.now() / 1000; // to get in milliseconds
+      if (decoded.exp < currentTime) {
+          dispatch(SIGNOUT({}));
+          localStorage.removeItem('token');
+          navigate('/user/signin')
+          setAlertShow(true);
+      }
+  }
+  
   return (
     <div className="App">
         <Header />
 
+        {
+          alertShow 
+          ?  <Warning 
+              onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
+              onClose={() => {navigate('/'); setAlertShow(false);}}
+              titleText={'경고창'}
+              mainText={'로그인이 필요합니다. ( 토큰 유효기간 만료 )'}
+              btnText={'sign in'}
+              variant="danger"
+              btnVariant="outline-danger"
+            />
+          : null
+        }
+
         <Container>
             <Routes>
-                <Route path="/user/signin" element={ <UserValidate /> } />
-                <Route path="/user/validate" element={ <UserValidate /> } />
-                <Route path="/user/signup" element={ <UserUpdate /> } />
-                <Route path="/user/profile" element={ <UserUpdate /> } />
+                <Route path="/user/signin" element={ <Signin /> } />
+                <Route path="/user/withdrawal" element={ <Withdrawal /> } />
+                <Route path="/user/signup" element={ <Signup /> } />
+                <Route path="/user/profile" element={ <Profile /> } />
                 <Route path="/" element={ <ForumList /> } />
                 <Route 
-                  path="/forum/write" 
+                  path='/forum/write'
                   element={ 
-                    signin 
+                    signin
                     ? <ForumWrite /> 
                     : <Warning 
-                        alertShow={alertShow}
-                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(true);}}
-                        onClose={() => {navigate('/')}}
+                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
+                        onClose={() => {navigate('/'); setAlertShow(false);}}
                         titleText={'경고창'}
-                        mainText={'로그인 후 글쓰기 작성이 가능합니다.'}
+                        mainText={'로그인이 필요합니다.'}
                         btnText={'sign in'}
                         variant="danger"
                         btnVariant="outline-danger"
                       /> 
                   }
                 />
-                <Route path="/forum/update/:id" element={ signin ? <ForumWrite /> : <Warning /> } />
+                <Route path="/forum/update/:id" element={ <ForumWrite /> } />
                 <Route 
                   path="/forum/view/:id" 
                   element={ 
-                    signin 
+                    signin
                     ? <ForumView /> 
                     : <Warning 
-                        alertShow={alertShow}
-                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(true);}}
-                        onClose={() => {navigate('/')}}
+                        onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
+                        onClose={() => {navigate('/'); setAlertShow(false);}}
                         titleText={'경고창'}
-                        mainText={'회원만 접근가능 합니다.'}
+                        mainText={'로그인이 필요합니다.'}
                         btnText={'sign in'}
                         variant="danger"
                         btnVariant="outline-danger"
                       /> 
-                  } 
+                  }
                 />
             </Routes>
         </Container>

@@ -22,12 +22,6 @@ const forumSchema = new Schema({
             ref: 'User'
         }]
     },
-    /*
-    attachImage: [{
-        type: String,
-        required: false
-    }],
-    */
     attachImagePath: {
         type: String,
         required: false,
@@ -38,11 +32,11 @@ const forumSchema = new Schema({
     },
     titleText: {
         type: String,
-        required: true,
+        required: true
     },
     mainText: {
         type: String,
-        required: true,
+        required: true
     },
     viewCount: {
         type: Number,
@@ -52,10 +46,6 @@ const forumSchema = new Schema({
     timestamps: true,
 })
 
-forumSchema.index({ titleText: 'text' });
-
 const Forum = mongoose.model('Forum', forumSchema);
-
-Forum.createIndexes();
 
 module.exports = Forum;

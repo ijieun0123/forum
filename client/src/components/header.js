@@ -3,30 +3,23 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from "react-router-dom";
-import { signout } from '../features/userSlice'
-
+import { SIGNOUT } from '../features/userSlice'
+import setAuthToken from '../utils/setAuthToken';
 import Profile from '../atoms/profile';
 import Btn from '../atoms/button';
 
 const Header = () => {
     const user = useSelector(state => state.user.user);
-    const { nickname, profileImagePath, signin } = user
+    const signin = useSelector(state => state.user.signin);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
     const clickSignOutBtn = (e) => {
         e.preventDefault();
-        dispatch(signout({
-            userId:'',
-            profileImagePath: '',
-            profileImageName: '',
-            userName: '',
-            nickname: '',
-            email: '',
-            password: '',
-            signin: false
-        }));
+        localStorage.removeItem('token');
+        setAuthToken();
+        dispatch(SIGNOUT({}));
         navigate('/');
     }   
     
@@ -49,7 +42,7 @@ const Header = () => {
                     <Navbar.Collapse className="justify-content-end">
                         <Navbar.Text>
                             <Link to='/user/profile'>
-                                <Profile src={ profileImagePath } nickname={ nickname }/>
+                                <Profile src={ user.profileImagePath } nickname={ user.nickname }/>
                             </Link>
                         </Navbar.Text>
                         <Navbar.Text>

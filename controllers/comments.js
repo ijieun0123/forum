@@ -3,13 +3,17 @@ let User = require('../models/user.model');
 let Forum = require('../models/forum.model');
 
 module.exports.postComment = async (req, res) => {
-    const body = req.body;
-    const newComment = new Comment(body);
+    const _user = req.user.id;
+    const _forum = req.body._forum;
+    const commentText = req.body.commentText;
+    const data = { _user, _forum, commentText };
+    const newComment = new Comment(data);
+    
     newComment.save()
     .then(comment => res.json(comment))
     .catch(err => res.status(400).json('Error: ' + err));
 
-    const forum = await Forum.findById(body._forum)
+    const forum = await Forum.findById(_forum)
     if(Array.isArray(forum._comment)) forum._comment.push(newComment);
     forum.save()
 }
@@ -24,7 +28,7 @@ module.exports.getComment = (req, res) => {
 }
 
 module.exports.getMyComment = (req, res) => {
-    const _user = req.body._user;
+    const _user = req.user.id;
 
     Comment.find({_user: _user})
     .then(comments => res.json(comments))
@@ -47,7 +51,7 @@ module.exports.updateComment = async (req, res) => {
 
 module.exports.updateCommentHeart = async (req, res) => {
     const commentId = req.params.id;
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const heartClickUsers = req.body.heartClickUsers;
     const forumId = req.body.forumId;
 

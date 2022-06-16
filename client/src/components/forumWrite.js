@@ -2,7 +2,6 @@ import { FloatingLabel, Form, Stack, Button } from 'react-bootstrap';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../atoms/title';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Warning from '../organisms/warning'
 
@@ -14,9 +13,6 @@ const ForumWrite = () => {
 
     const [alertShow, setAlertShow] = useState(false);
     const [alertShowMessage, setAlertShowMessage] = useState('');
-
-    const user = useSelector(state => state.user.user);
-    const { userId } = user;
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -32,28 +28,6 @@ const ForumWrite = () => {
         const newMain = e.target.value;
         setMainText(newMain);
     }
-
-    /* multiple 보류
-    const fillAttachImagePath = (newAttachImagePath) => {
-        setAttachImagePath(newAttachImagePath);
-        console.log(newAttachImagePath)
-    }
-    
-    const onChangeAttachImagePath = async (e) => {
-        let newAttachImagePath = [];
-        const fileBlobs = e.target.files;
-
-        for (let file of fileBlobs){
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                await newAttachImagePath.push(reader.result);
-            };
-        }
-
-        fillAttachImagePath(newAttachImagePath);
-    }
-    */
 
     const onChangeAttachImagePath = e => {
         const newAttachImagePath = e.target.value;
@@ -76,35 +50,26 @@ const ForumWrite = () => {
         const formData = new FormData(e.target);
         formData.get('titleText');
         formData.get('mainText');
-        formData.append('_user', userId)
         formData.append('attachImagePath', attachImagePath);
 
-        if( !titleText || !mainText ) {
-            setAlertShowMessage('제목과 본문을 입력하세요.')
+        let config = {
+            method: "post",
+            url: "/api/forum/post",
+            headers: {
+                "content-type": "application/json",
+                "content-type": "multipart/form-data"
+            },
+            data: formData,
+        };
+
+        try{
+            const res = await axios(config);
+            console.log(res.data)
+            formReset();
+            navigate(`/`);
+        } catch(err){
+            setAlertShowMessage(err.response.data)
             setAlertShow(true)
-        } else{
-            let config = {
-                method: "post",
-                url: "/api/forum/post",
-                headers: {
-                  "content-type": "application/json",
-                  "content-type": "multipart/form-data"
-                },
-                data: formData,
-            };
-    
-            try{
-                const res = await axios(config);
-                console.log(res.data)
-                formReset();
-                navigate(`/`);
-            } catch(err){
-                console.log(err);
-                if(err.response.status === 413) {
-                    setAlertShowMessage('사진이 용량을 초과하였습니다.')
-                    setAlertShow(true);
-                }
-            }
         }
     }
 
@@ -116,32 +81,24 @@ const ForumWrite = () => {
         formData.append('attachImageName', attachImageName);
         formData.append('attachImagePath', attachImagePath);
 
-        if( !titleText || !mainText ) {
-            setAlertShowMessage('제목과 본문을 입력하세요.')
+        let config = {
+            method: "put",
+            url: `/api/forum/update/${id}`,
+            headers: {
+                "content-type": "application/json",
+                "content-type": "multipart/form-data"
+            },
+            data: formData,
+        };
+
+        try{
+            const res = await axios(config);
+            console.log(res.data)
+            formReset();
+            navigate(`/`);
+        } catch(err){
+            setAlertShowMessage(err.response.data)
             setAlertShow(true)
-        } else{
-            let config = {
-                method: "put",
-                url: `/api/forum/update/${id}`,
-                headers: {
-                  "content-type": "application/json",
-                  "content-type": "multipart/form-data"
-                },
-                data: formData,
-            };
-    
-            try{
-                const res = await axios(config);
-                console.log(res.data)
-                formReset();
-                navigate(`/`);
-            } catch(err){
-                console.log(err);
-                if(err.response.status === 413) {
-                    setAlertShowMessage('사진이 용량을 초과하였습니다.')
-                    setAlertShow(true);
-                }
-            }
         }
     }
 
@@ -175,7 +132,7 @@ const ForumWrite = () => {
                 ? 
                 <Warning 
                     onClickBtn={ alertClose } 
-                    onClose={ () => {setAlertShow(false)} }
+                    onClose={ alertClose }
                     titleText="안내" 
                     mainText={ alertShowMessage }
                     btnText="닫기"

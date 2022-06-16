@@ -48,6 +48,7 @@ const Title = ({
                     <Button 
                         variant="outline-danger" 
                         onClick={ clickWarnBtn }
+                        type="submit"
                     >
                         { warnBtnText }
                     </Button>

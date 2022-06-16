@@ -1,4 +1,4 @@
-import { Table, Row, Col, FloatingLabel, Form, Pagination } from 'react-bootstrap'
+import { Table, Row, Col, FloatingLabel, Form } from 'react-bootstrap'
 import { useEffect, useState } from 'react';
 import Title from '../atoms/title'
 import Profile from '../atoms/profile'
@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-import JwPagination from 'jw-react-pagination'
+import Pagination from '../organisms/pagination'
 
 const Td = styled.td`
     line-height:45px;
@@ -18,15 +18,14 @@ const Td = styled.td`
 `
 
 const ForumList = () => {
+    const signin = useSelector(state => state.user.signin);
     const user = useSelector(state => state.user.user);
-    const { signin, userId } = user;
 
     const [forums, setForums] = useState([]);
     const [forumId, setForumId] = useState('');
     const [alertShow, setAlertShow] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [selectValue, setSelectValue] = useState('latestOrder');
-
     const [pageOfForums, setPageOfForums] = useState([]);
 
     const navigate = useNavigate();
@@ -69,10 +68,9 @@ const ForumList = () => {
         navigate(`/forum/update/${id}`)
     }
     
-    const updateForumHeart = async (e, forumId, heartClickUsers) => {
+    const updateForumHeart = async (e, forumId, heartClickUsers) => {  
         e.preventDefault();
         const body = {
-            userId: userId,
             heartClickUsers: heartClickUsers
         }
         try{
@@ -83,22 +81,6 @@ const ForumList = () => {
             console.log(err);
         }
     }
-
-    const paginationLabels = {
-        first: '<<',
-        last: '>>',
-        previous: '<',
-        next: '>'
-    };
-
-    const paginationStyle = {
-        ul: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin:'30px auto'
-        },
-    };
 
     const onChangePage = (pageOfForums) => {
         console.log(pageOfForums)
@@ -120,40 +102,36 @@ const ForumList = () => {
             console.log(err);
         }
     }
-    
+
     const getForums = async (selectValue) => {
         try{
             const res = await axios.get('/api/forum/get')
             const data = res.data;
-            setSearchValue('')
+            console.log(data)
 
             if(selectValue === 'latestOrder' || selectValue === undefined){
                 setForums(data);
-                console.log(data)
             } else if(selectValue === 'viewOrder'){
                 const viewOrder = data.sort((a, b) => b.viewCount - a.viewCount)
                 setForums(viewOrder);
-                console.log(viewOrder)
             } else if(selectValue === 'heartOrder'){
                 const heartOrder = data.sort((a, b) => b.heart.count - a.heart.count)
                 setForums(heartOrder);
-                console.log(heartOrder)
             } else if(selectValue === 'whatIWrote'){
-                const whatIWrote = data.filter(el => el._user._id === userId)
+                const whatIWrote = data.filter(el => el._user._id === user._id)
                 setForums(whatIWrote);
-                console.log(whatIWrote)
             } else{
-                const whatILike = data.filter(el => el.heart.user.includes(userId))
+                const whatILike = data.filter(el => el.heart.user.includes(user._id))
                 setForums(whatILike);
-                console.log(whatILike)
             }
+            setSearchValue('')
         } catch(err){
             console.log(err);
         }
     }
-    
+
     useEffect(() => {
-        getForums();
+        getForums()
     }, [])
     
     return (
@@ -256,9 +234,9 @@ const ForumList = () => {
                                         </Td>
                                         <Td>
                                             <HeartCount 
-                                                src={false} 
+                                                src={ false }
                                                 count={forum.heart.count} 
-                                                fill={(forum.heart.user.includes(userId) ? true : false)} 
+                                                fill={(forum.heart.user.includes(user._id) ? true : false)} 
                                                 onClick={ (e) => {updateForumHeart(e, forum._id, forum.heart.user)} } 
                                             />
                                         </Td>
@@ -268,7 +246,7 @@ const ForumList = () => {
                                                 value="수정"
                                                 variant="secondary"
                                                 size="sm"
-                                                disabled={ forum._user._id === userId ? false : true }
+                                                disabled={ forum._user._id === user._id ? false : true }
                                             />
                                         </Td>
                                         <Td>
@@ -277,7 +255,7 @@ const ForumList = () => {
                                                 value="삭제"
                                                 variant="danger"
                                                 size="sm"
-                                                disabled={ forum._user._id === userId ? false : true }
+                                                disabled={ forum._user._id === user._id ? false : true }
                                             />
                                         </Td>
                                     </tr>
@@ -291,13 +269,9 @@ const ForumList = () => {
             }
 
             {/* 페이지네이션 */}
-            <JwPagination 
-                items={forums} 
+            <Pagination 
+                items={forums}
                 onChangePage={ pageOfForums => onChangePage(pageOfForums) } 
-                pageSize={5}
-                maxPages={5}
-                styles={paginationStyle}
-                labels={paginationLabels}
             />
         </div>
     )

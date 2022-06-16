@@ -1,11 +1,14 @@
 const router = require('express').Router();
 const controllers = require('../controllers/comments');
+const auth = require('../middleware/auth');
+const checkSchema = require('../validation/checkSchema');
+const validate = require('../validation/validate');
 
-router.post('/post', controllers.postComment);
+router.post('/post', auth, validate(checkSchema('comment')), controllers.postComment);
 router.get('/get/:id', controllers.getComment);
-router.get('/myComment/get', controllers.getMyComment);
-router.patch('/heart/update/:id', controllers.updateCommentHeart);
-router.patch('/update/:id', controllers.updateComment);
-router.delete('/delete/:id', controllers.deleteComment);
+router.get('/myComment/get', auth, controllers.getMyComment);
+router.patch('/heart/update/:id', auth, controllers.updateCommentHeart);
+router.patch('/update/:id', auth, validate(checkSchema('comment')), controllers.updateComment);
+router.delete('/delete/:id', auth, controllers.deleteComment);
 
 module.exports = router;

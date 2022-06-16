@@ -1,28 +1,11 @@
 let User = require('../models/user.model');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const cloudinary = require('cloudinary').v2;
+
 const defaultProfileImage = "/img/profile_default.png";
 
-module.exports.duplicateCheckEmail = (req, res) => {
-    const email = req.body.email;
-    const signin = req.body.signin;
-    const _id = req.body._id;
-    
-    User.findOne( signin ? { _id : {$ne : _id}, email: email } : { email: email }  )
-    .then(user => res.json(user))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-module.exports.duplicateCheckNickname = (req, res) => {
-    const nickname = req.body.nickname;
-    const signin = req.body.signin;
-    const _id = req.body._id;
-
-    User.findOne( signin ? { _id : {$ne : _id}, nickname: nickname } : { nickname: nickname } )
-    .then(user => res.json(user))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-module.exports.postUser = (req, res) => {
+module.exports.postUser = async (req, res) => {
     const userName = req.body.userName;
     const nickname = req.body.nickname;
     const email = req.body.email;
@@ -31,22 +14,64 @@ module.exports.postUser = (req, res) => {
     const profileImageName = (req.file ? req.file.filename : defaultProfileImage);
     const data = { userName, nickname, email, password, profileImagePath, profileImageName };
 
-    const newUser = new User(data);
-    newUser.save()
-    .then(() => res.json(`Sign up success`))
-    .catch(err => res.status(400).json('Error: ' + err));
+    try {
+        // creates a new user ( hash user password )
+        const newUser = new User(data);
+        const salt = await bcrypt.genSalt(10);
+        newUser.password = await bcrypt.hash(password, salt);
+        await newUser.save();
+        res.status(200).send('User saved');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
 }
 
-module.exports.getUser = (req, res) => {
-    const body = req.body;
+module.exports.getToken = async (req, res) => {
+    const { email } = req.body;
 
-    User.find( {$and: [ body, { "active": "true" }]})
-    .then(user => res.json(user))
-    .catch(err => res.status(400).json('Error: ' + err));
+    try{
+        const user = await User.findOne({$and: [ { "email": email }, { "active": "true" } ]} );
+
+        const payload = {
+            user: {
+                id: user._id
+            }
+        }
+
+        // return jwt
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '30m' },   // 만료기간 테스트
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            }
+        )
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+}
+
+module.exports.getUser = async (req, res) => {
+    const id = req.user.id;
+
+    try {
+        const user = await User.findById(id)
+        .select('-password')
+        .select('-createdAt')
+        .select('-updatedAt')
+        .select('-__v')
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json(error);
+    }
 }
 
 module.exports.updateUser = async (req, res) => {
-    const id = req.params.id;
+    const id = req.user.id;
     const userName = req.body.userName;
     const nickname = req.body.nickname;
     const email = req.body.email;
@@ -87,10 +112,10 @@ module.exports.updateUser = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.deleteUser = (req, res) => {
-    const id = req.params.id;
+module.exports.deleteUser = async (req, res) => {
+    const id = req.user.id;
 
     User.findByIdAndUpdate(id, {active: false})
-    .then(() => res.json(`User deleted`))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .then(() => res.json('탈퇴되었습니다.'))
+    .catch(err => res.status(400).json(err));
 }

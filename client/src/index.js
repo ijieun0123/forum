@@ -10,7 +10,6 @@ import { persistStore } from 'redux-persist'
 
 let persistor = persistStore(store);
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -21,5 +20,3 @@ root.render(
     </PersistGate>
   </Provider>
 );
-
-

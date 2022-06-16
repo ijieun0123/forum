@@ -16,8 +16,7 @@ const Count = styled.span`
 `
 
 const HeartCount = ({ count, onClick, fill }) => {
-    const user = useSelector(state => state.user.user);
-    const { signin } = user;
+    const signin = useSelector(state => state.user.signin);
 
     return (
         <Box onClick={ signin ? onClick : null }>

@@ -4,17 +4,17 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Title from '../atoms/title'
 import { useDispatch, useSelector } from 'react-redux'
-import { signin, signout } from '../features/userSlice'
+import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
+import setAuthToken from '../utils/setAuthToken';
 
-const UserValidate = () => {
+const Signin = () => {
 
-    const user = useSelector(state => state.user.user);
+    const signin = useSelector(state => state.user.signin);
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const [validation, setValidation] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertShow, setAlertShow] = useState(false);
 
@@ -33,63 +33,42 @@ const UserValidate = () => {
         setPassword(newPassword);
     }
 
-    const deleteUser = async () => {
+    const getUser = async () => {
         try{
-            const res = await axios.post(`/api/user/delete/${user.userId}`);
-            console.log(res.data);
-            dispatch(signout({
-                userId: '',
-                profileImagePath: '',
-                profileImageName: '',
-                userName: '',
-                nickname: '',
-                email: '',
-                password: '',
-                signin: false
-            }));
-            navigate('/');
-        } catch(err){
+            const res = await axios.get('/api/user/get');
+            const data = res.data.user;
+            console.log(data);
+            if(!signin){
+                dispatch(SIGNIN(data));
+                navigate('/');
+            }
+        } catch(err) {
             console.log(err);
         }
     }
 
-    const getUser = async () => {
+    const getToken = async () => {
         const body = {
             email: email,
             password: password
         }
         try{
-            const res = await axios.post('/api/user/get', body);
-            const data = res.data[0];
-            console.log(data)
-            const { _id, profileImagePath, profileImageName, userName, nickname, email, password } = data;
-            if(!user.signin){
-                dispatch(signin({
-                    userId: _id,
-                    profileImagePath: profileImagePath,
-                    profileImageName: profileImageName,
-                    userName: userName,
-                    nickname: nickname,
-                    email: email,
-                    password: password,
-                    signin: true
-                }));
-                navigate('/');
-            } else{
-                setValidation(true);
-                setAlertMessage('탈퇴할 경우, 회원정보 복구가 어렵습니다. 정말 탈퇴하시겠습니까?');
-                setAlertShow(true);
-            }
+            const res = await axios.post('/api/user/get/token', body);
+            const { token } = res.data;
+            console.log(token)
+            localStorage.setItem('token', token);
+            setAuthToken();
+            getUser();
         } catch(err){
-            console.log(err);
-            setAlertMessage('아이디와 비밀번호를 다시 확인해주세요!');
+            console.log(err.response.data);
+            setAlertMessage(err.response.data);
             setAlertShow(true);
         }
     }
 
     const onSubmit = e => {
         e.preventDefault();
-        getUser();
+        getToken();
     }
 
     return (
@@ -98,11 +77,11 @@ const UserValidate = () => {
                 alertShow
                 ? 
                 <Warning 
-                    onClickBtn={ validation ? deleteUser : alertClose } 
-                    onClose={ () => { setAlertShow(false)} }
+                    onClickBtn={ alertClose } 
+                    onClose={ alertClose }
                     titleText="경고" 
                     mainText={ alertMessage }
-                    btnText={ validation ? "탈퇴하기" : "닫기" }
+                    btnText='닫기'
                     variant={ "danger" }
                     btnVariant={ "outline-danger" }
                 />
@@ -111,13 +90,10 @@ const UserValidate = () => {
 
             <Form onSubmit={ onSubmit }>
                 <Title 
-                    titleText={ user.signin ? 'Validation' : 'Sign in' } 
-                    warnBtn={ user.signin ? true : false }
-                    primaryBtn={ user.signin ? false : true }
-                    clickWarnBtn={ getUser }
+                    titleText='Sign in'
+                    primaryBtn={ true }
                     clickPrimaryBtn={ onSubmit }
                     primaryBtnText="로그인"
-                    warnBtnText={ '탈퇴하기' }
                 />
 
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
@@ -152,4 +128,4 @@ const UserValidate = () => {
     )
 }
 
-export default UserValidate;
+export default Signin;
