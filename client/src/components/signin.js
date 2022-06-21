@@ -9,9 +9,6 @@ import Warning from '../organisms/warning'
 import instance from '../utils/instance';
 
 const Signin = () => {
-
-    const signin = useSelector(state => state.user.signin);
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://protected-wildwood-11173.herokuapp.com",
   headers: {
     "Content-Type": "application/json",
   },
