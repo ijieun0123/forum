@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../atoms/title';
 import axios from 'axios';
 import Warning from '../organisms/warning'
+import instance from '../utils/instance';
 
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
@@ -63,7 +64,7 @@ const ForumWrite = () => {
         };
 
         try{
-            const res = await axios(config);
+            const res = await instance(config);
             console.log(res.data)
             formReset();
             navigate(`/`);
@@ -92,7 +93,7 @@ const ForumWrite = () => {
         };
 
         try{
-            const res = await axios(config);
+            const res = await instance(config);
             console.log(res.data)
             formReset();
             navigate(`/`);
@@ -109,7 +110,7 @@ const ForumWrite = () => {
 
     const getForum = async () => {
         try{
-            const res = await axios.get(`/api/forum/get/${id}`);
+            const res = await instance.get(`/api/forum/get/${id}`);
             const data = res.data;
             setTitleText(data.titleText);
             setMainText(data.mainText);

@@ -4,9 +4,10 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from "react-router-dom";
 import { SIGNOUT } from '../features/userSlice'
-import setAuthToken from '../utils/setAuthToken';
 import Profile from '../atoms/profile';
 import Btn from '../atoms/button';
+import axios from 'axios';
+import instance from '../utils/instance'
 
 const Header = () => {
     const user = useSelector(state => state.user.user);
@@ -15,12 +16,19 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
-    const clickSignOutBtn = (e) => {
+    const clickSignOutBtn = async (e) => {
         e.preventDefault();
-        localStorage.removeItem('token');
-        setAuthToken();
-        dispatch(SIGNOUT({}));
-        navigate('/');
+
+        try{
+            const res = await instance.delete('/api/user/delete/refreshToken')
+            console.log(res.data.msg);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshTokenId');
+            dispatch(SIGNOUT({}));
+            navigate('/');
+        } catch (err) {
+            console.log(err)
+        }
     }   
     
     return (

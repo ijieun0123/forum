@@ -6,6 +6,7 @@ import Title from '../atoms/title'
 import { useDispatch, useSelector } from 'react-redux'
 import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
+import instance from '../utils/instance';
 
 const Withdrawal = () => {
 
@@ -34,6 +35,22 @@ const Withdrawal = () => {
         setPassword(newPassword);
     }
 
+    const deleteToken = async () => {
+        try{
+            const res = await instance.delete(`/api/user/delete/refreshToken`);
+            console.log(res.data);
+            setAlertMessage('탈퇴되었습니다.');
+            dispatch(SIGNOUT({}));
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshTokenId');
+            navigate('/');
+            deleteToken();
+        } catch(err){
+            console.log(err);
+            setAlertMessage(err.response.data);
+        }
+    }
+
     const deleteUser = async () => {
         setEnsureDelete(true)
         
@@ -42,11 +59,9 @@ const Withdrawal = () => {
             password: password
         }
         try{
-            const res = await axios.post(`/api/user/delete`, body);
+            const res = await instance.post(`/api/user/delete`, body);
             console.log(res.data);
-            dispatch(SIGNOUT({}));
-            localStorage.removeItem('token');
-            navigate('/');
+            deleteToken();
         } catch(err){
             console.log(err);
             setAlertMessage(err.response.data);

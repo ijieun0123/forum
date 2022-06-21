@@ -2,6 +2,9 @@ let User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cloudinary = require('cloudinary').v2;
+const generateTokens = require('../utils/generateTokens');
+const verifyRefreshToken = require('../utils/verifyRefreshToken');
+const Token = require('../models/token.model');
 
 const defaultProfileImage = "/img/profile_default.png";
 
@@ -27,31 +30,53 @@ module.exports.postUser = async (req, res) => {
     }
 }
 
-module.exports.getToken = async (req, res) => {
-    const { email } = req.body;
+module.exports.getAccessToken = async (req, res) => {
+    const refreshTokenId = req.body.refreshTokenId;
+    const token = await Token.findOne({ _id: refreshTokenId })
+    const refreshToken = token.token;
 
-    try{
-        const user = await User.findOne({$and: [ { "email": email }, { "active": "true" } ]} );
-
+    verifyRefreshToken(refreshToken)
+    .then(({ tokenDetails }) => {
+        console.log(tokenDetails)
         const payload = {
             user: {
-                id: user._id
+                id: tokenDetails.user.id
             }
         }
-
-        // return jwt
-        jwt.sign(
+        const accessToken = jwt.sign(
             payload,
-            process.env.JWT_SECRET,
-            { expiresIn: '30m' },   // 만료기간 테스트
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-            }
+            process.env.ACCESS_TOKEN_PRIVATE_KEY,
+            { expiresIn: '30m' }
         )
+        res.status(200).json({
+            error: false,
+            accessToken,
+            msg: 'Access token created successfully'
+        })
+    })
+    .catch(err => res.status(400).json(err));
+}
+
+module.exports.getTokens = async (req, res) => {
+    try{
+        const { email } = req.body;
+        const user = await User.findOne({$and: [ { "email": email }, { "active": "true" } ]} );
+        const { accessToken, refreshToken } = await generateTokens(user);
+        const refreshTokenId = await Token.findOne({ token: refreshToken }).select('_id')
+
+        res.status(200).json({
+            error: false,
+            accessToken,
+            refreshToken,
+            refreshTokenId,
+            msg: 'Logged in successfully'
+        })
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        console.log(err);
+        res.status(500).json({
+            error: true,
+            msg: 'Server Error'
+        })
     }
 }
 
@@ -67,6 +92,29 @@ module.exports.getUser = async (req, res) => {
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json(error);
+    }
+}
+
+module.exports.deleteToken = async (req, res) => {  // signout, withdrawal
+    const id = req.user.id;
+
+    try{
+        const token = await Token.findOne({ _user: id })
+        if (!token) return res.status(200).json({
+            error: false,
+            msg: 'Logged Out Sucessfully'
+        })
+        await token.remove();
+        res.status(200).json({
+            error: false,
+            msg: 'Loggod Out Successfully'
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            error: true,
+            msg: 'Server Error'
+        })
     }
 }
 

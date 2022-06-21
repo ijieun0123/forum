@@ -9,6 +9,7 @@ import Profile from '../atoms/profile';
 import HeartCount from '../atoms/heartCount'
 import { useSelector } from 'react-redux'
 import EyeCount from '../atoms/eyeCount';
+import instance from '../utils/instance';
 
 const ForumView = () => {
 
@@ -35,7 +36,7 @@ const ForumView = () => {
         }
 
         try{            
-            const res = await axios.delete(`/api/forum/delete/${id}`, { params: params });
+            const res = await instance.delete(`/api/forum/delete/${id}`, { params: params });
             console.log(res.data);
             setAlertShow(false);
             navigate(`/`);
@@ -49,7 +50,7 @@ const ForumView = () => {
             heartClickUsers: heartClickUsers
         }
         try{            
-            const res = await axios.patch(`/api/forum/heart/update/${id}`, body);
+            const res = await instance.patch(`/api/forum/heart/update/${id}`, body);
             const data = res.data;
             setHeartCount(data.heart.count)
             setHeartClickUsers(data.heart.user)
@@ -71,7 +72,7 @@ const ForumView = () => {
 
     const getForum = async () => {
         try{
-            const res = await axios.get(`/api/forum/get/${id}`)
+            const res = await instance.get(`/api/forum/get/${id}`)
             const data = res.data;
             setAttachImagePath(data.attachImagePath)
             setAttachImageName(data.attachImageName)

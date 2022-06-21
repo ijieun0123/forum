@@ -7,15 +7,17 @@ import Signup from './components/signup';
 import Profile from './components/profile';
 import Withdrawal from './components/withdrawal';
 import ForumList from './components/forumList';
+import Comment from './organisms/comment';
+import CommentWrite from './organisms/commentWrite';
 import ForumWrite from './components/forumWrite';
 import ForumView from './components/forumView';
 import { useSelector, useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react';
 import Warning from './organisms/warning';
 import { useNavigate } from 'react-router-dom';
-import setAuthToken from './utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
 import { SIGNIN, SIGNOUT } from './features/userSlice'
+import axios from 'axios';
 
 function App() {
   const signin = useSelector(state => state.user.signin);
@@ -25,21 +27,6 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const token = localStorage.getItem('token');
-
-  if (token) {
-      setAuthToken();
-      const decoded = jwt_decode(token);
-      // 토큰 유효기간 만료시 => 경고창
-      const currentTime = Date.now() / 1000; // to get in milliseconds
-      if (decoded.exp < currentTime) {
-          dispatch(SIGNOUT({}));
-          localStorage.removeItem('token');
-          navigate('/user/signin')
-          setAlertShow(true);
-      }
-  }
-  
   return (
     <div className="App">
         <Header />
@@ -86,7 +73,7 @@ function App() {
                   path="/forum/view/:id" 
                   element={ 
                     signin
-                    ? <ForumView /> 
+                    ? <ForumView />
                     : <Warning 
                         onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
                         onClose={() => {navigate('/'); setAlertShow(false);}}
@@ -98,6 +85,16 @@ function App() {
                       /> 
                   }
                 />
+                
+                <Route 
+                  path="/forum/view/:id" 
+                  element={ <CommentWrite /> }
+                />
+                <Route 
+                  path="/forum/view/:id" 
+                  element={ <Comment /> }
+                />
+                
             </Routes>
         </Container>
     </div>

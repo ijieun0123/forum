@@ -4,6 +4,7 @@ import Btn from '../atoms/button';
 import { useState } from 'react';
 import axios from 'axios';
 import Warning from './warning'
+import instance from '../utils/instance';
 
 const CommentWrite = ({ profileImagePath, nickname, forumId, getComments }) => {
 
@@ -27,7 +28,7 @@ const CommentWrite = ({ profileImagePath, nickname, forumId, getComments }) => {
             commentText: commentText
         }
         try{
-            const res = await axios.post(`/api/comment/post`, body);
+            const res = await instance.post(`/api/comment/post`, body);
             console.log(res.data)
             setCommentText('');
             getComments();

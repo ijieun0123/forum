@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import Pagination from '../organisms/pagination'
+import instance from '../utils/instance';
 
 const Td = styled.td`
     line-height:45px;
@@ -50,7 +51,7 @@ const ForumList = () => {
         }
 
         try{            
-            const res = await axios.delete(`/api/forum/delete/${forumId}`, { params: params });
+            const res = await instance.delete(`/api/forum/delete/${forumId}`, { params: params });
             console.log(res.data);
             setAlertShow(false);
             getForums(selectValue);
@@ -74,7 +75,7 @@ const ForumList = () => {
             heartClickUsers: heartClickUsers
         }
         try{
-            const res = await axios.patch(`/api/forum/heart/update/${forumId}`, body);
+            const res = await instance.patch(`/api/forum/heart/update/${forumId}`, body);
             console.log(res.data);
             ( searchValue ? getSearchForums(e) : getForums(selectValue) )
         } catch(err){
@@ -118,10 +119,10 @@ const ForumList = () => {
                 const heartOrder = data.sort((a, b) => b.heart.count - a.heart.count)
                 setForums(heartOrder);
             } else if(selectValue === 'whatIWrote'){
-                const whatIWrote = data.filter(el => el._user._id === user._id)
+                const whatIWrote = data.filter(el => el._user.nickname === user.nickname)
                 setForums(whatIWrote);
             } else{
-                const whatILike = data.filter(el => el.heart.user.includes(user._id))
+                const whatILike = data.filter((el, i) => el.heart.user._id.includes(user._id))
                 setForums(whatILike);
             }
             setSearchValue('')
@@ -246,7 +247,7 @@ const ForumList = () => {
                                                 value="수정"
                                                 variant="secondary"
                                                 size="sm"
-                                                disabled={ forum._user._id === user._id ? false : true }
+                                                disabled={ forum._user.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
                                         <Td>
@@ -255,7 +256,7 @@ const ForumList = () => {
                                                 value="삭제"
                                                 variant="danger"
                                                 size="sm"
-                                                disabled={ forum._user._id === user._id ? false : true }
+                                                disabled={ forum._user.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
                                     </tr>

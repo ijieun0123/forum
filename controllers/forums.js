@@ -10,7 +10,7 @@ module.exports.postForum = async (req, res) => {
     const attachImageName = (req.file ? req.file.filename : '');
     const data = { _user, titleText, mainText, attachImagePath, attachImageName };
 
-    try{   
+    try{
         const newForum = new Forum(data);
         newForum.save()
         res.status(200).json('Forum saved');
@@ -22,11 +22,7 @@ module.exports.postForum = async (req, res) => {
 module.exports.getForums = async (req, res) => {
     try{
         const forum = await Forum.find().sort({$natural:-1})
-        .populate('_user', 'profileImagePath nickname')
-        .populate({
-            path: '_comment',
-            select: '_user',
-        })
+        .populate('_user', 'profileImagePath nickname -_id')
         res.status(200).json(forum);
     } catch (err) {
         console.error(err);
@@ -41,7 +37,7 @@ module.exports.getSearchForums = async (req, res) => {
         const forum = await Forum
         .find({ titleText: { $regex: searchValue, $options: 'i' } }) // 부분검색 허용, 대소문자구분x
         .sort({$natural:-1})
-        .populate('_user', 'profileImagePath nickname')
+        .populate('_user', 'profileImagePath nickname -_id')
         res.status(200).json(forum);
     } catch (err){
         console.error(err);
@@ -53,10 +49,10 @@ module.exports.getForum = async (req, res) => {
     const id = req.params.id;
 
     Forum.findById(id)
-    .populate('_user', 'profileImagePath nickname')
+    .populate('_user', 'profileImagePath nickname -_id')
     .populate({
         path: '_comment',
-        populate: {path: '_user', select: 'nickname profileImagePath'}
+        populate: {path: '_user', select: 'nickname profileImagePath -_id'}
     })
     .then(forum => res.json(forum))
     .catch(err => res.status(400).json('Error: ' + err));

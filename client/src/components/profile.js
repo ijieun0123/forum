@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import instance from '../utils/instance';
 
 const Img = styled.img`
     display:block;
@@ -106,7 +107,7 @@ const Profile = () => {
         };
 
         try{
-            const res = await axios(config);;
+            const res = await instance(config);;
             const data = res.data;
             console.log(data);
             dispatch(SIGNIN(data));

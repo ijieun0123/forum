@@ -6,7 +6,7 @@ import Title from '../atoms/title'
 import { useDispatch, useSelector } from 'react-redux'
 import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
-import setAuthToken from '../utils/setAuthToken';
+import instance from '../utils/instance';
 
 const Signin = () => {
 
@@ -35,40 +35,36 @@ const Signin = () => {
 
     const getUser = async () => {
         try{
-            const res = await axios.get('/api/user/get');
+            const res = await instance.get('/api/user/get');
             const data = res.data.user;
             console.log(data);
-            if(!signin){
-                dispatch(SIGNIN(data));
-                navigate('/');
-            }
+            dispatch(SIGNIN(data));
+            navigate('/');
         } catch(err) {
             console.log(err);
         }
     }
 
-    const getToken = async () => {
+    const getTokens = async (e) => {
+        e.preventDefault();
         const body = {
             email: email,
             password: password
         }
         try{
-            const res = await axios.post('/api/user/get/token', body);
-            const { token } = res.data;
-            console.log(token)
-            localStorage.setItem('token', token);
-            setAuthToken();
+            const res = await axios.post('/api/user/get/tokens', body);
+            const { accessToken } = res.data;
+            const refreshTokenId = res.data.refreshTokenId._id;
+            console.log(accessToken)
+            console.log(refreshTokenId)
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshTokenId', refreshTokenId);
             getUser();
         } catch(err){
             console.log(err.response.data);
             setAlertMessage(err.response.data);
             setAlertShow(true);
         }
-    }
-
-    const onSubmit = e => {
-        e.preventDefault();
-        getToken();
     }
 
     return (
@@ -88,11 +84,11 @@ const Signin = () => {
                 : null
             }
 
-            <Form onSubmit={ onSubmit }>
+            <Form onSubmit={ getTokens }>
                 <Title 
                     titleText='Sign in'
                     primaryBtn={ true }
-                    clickPrimaryBtn={ onSubmit }
+                    clickPrimaryBtn={ getTokens }
                     primaryBtnText="로그인"
                 />
 

@@ -10,7 +10,7 @@ module.exports.postComment = async (req, res) => {
     const newComment = new Comment(data);
     
     newComment.save()
-    .then(comment => res.json(comment))
+    .then(() => res.json('Comment save'))
     .catch(err => res.status(400).json('Error: ' + err));
 
     const forum = await Forum.findById(_forum)
@@ -18,11 +18,11 @@ module.exports.postComment = async (req, res) => {
     forum.save()
 }
 
-module.exports.getComment = (req, res) => {
+module.exports.getComments = (req, res) => {
     const _forum = req.params.id;
 
     Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname')
+    .populate('_user', 'profileImagePath nickname -_id')
     .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
 }
@@ -44,7 +44,7 @@ module.exports.updateComment = async (req, res) => {
     if(Array.isArray(comment)) comment.save()
     
     Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname')
+    .populate('_user', 'profileImagePath nickname -_id')
     .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
 }
@@ -66,7 +66,7 @@ module.exports.updateCommentHeart = async (req, res) => {
     if(Array.isArray(comment)) comment.save()
 
     Comment.find({_forum: forumId})
-    .populate('_user', 'profileImagePath nickname')
+    .populate('_user', 'profileImagePath nickname -_id')
     .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
 }
@@ -83,7 +83,7 @@ module.exports.deleteComment = async (req, res) => {
     forum.save()
     
     Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname')
+    .populate('_user', 'profileImagePath nickname -_id')
     .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
 }

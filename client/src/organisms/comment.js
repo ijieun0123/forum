@@ -7,6 +7,7 @@ import HeartCount from '../atoms/heartCount';
 import CommentWrite from './commentWrite'
 import axios from 'axios';
 import Warning from './warning'
+import instance from '../utils/instance';
 
 const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
@@ -30,7 +31,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             _forum: forumId
         }
         try{            
-            const res = await axios.delete(`/api/comment/delete/${targetId}`, {params: body});
+            const res = await instance.delete(`/api/comment/delete/${targetId}`, {params: body});
             const data = res.data;
             console.log(data);
             setComments(data);
@@ -46,7 +47,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             forumId: forumId
         }
         try{            
-            const res = await axios.patch(`/api/comment/heart/update/${targetId}`, body);
+            const res = await instance.patch(`/api/comment/heart/update/${targetId}`, body);
             const data = res.data;
             console.log(data);
             setComments(data);
@@ -61,7 +62,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             _forum: forumId
         }
         try{
-            const res = await axios.patch(`/api/comment/update/${targetId}`, body);
+            const res = await instance.patch(`/api/comment/update/${targetId}`, body);
             const data = res.data;
             console.log(data)
             setComments(data);
@@ -85,7 +86,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
     const getComments = async () => {
         try{
-            const res = await axios.get(`/api/comment/get/${forumId}`)
+            const res = await instance.get(`/api/comment/get/${forumId}`)
             const data = res.data;
             setComments(data);
             console.log(data)
