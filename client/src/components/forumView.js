@@ -59,20 +59,10 @@ const ForumView = () => {
             console.log(err);
         }
     }
-  
-    const updateViewCount = async () => {
-        try{
-            const res = await axios.patch(`/api/forum/viewCount/update/${id}`)
-            const data = res.data;
-            console.log(data)
-        } catch(err){
-            console.log(err);
-        }
-    }
 
     const getForum = async () => {
         try{
-            const res = await instance.get(`/api/forum/get/${id}`)
+            const res = await instance.get(`/api/forum/view/get/${id}`)
             const data = res.data;
             setAttachImagePath(data.attachImagePath)
             setAttachImageName(data.attachImageName)
@@ -91,7 +81,6 @@ const ForumView = () => {
     }
 
     useEffect(() => {
-        updateViewCount();
         getForum();
     }, [])
 

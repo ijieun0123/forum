@@ -30,40 +30,28 @@ const Signin = () => {
         setPassword(newPassword);
     }
 
-    const getUser = async () => {
-        try{
-            const res = await instance.get('/api/user/get');
-            const data = res.data.user;
-            console.log(data);
-            dispatch(SIGNIN(data));
-            navigate('/');
-        } catch(err) {
-            console.log(err);
-        }
-    }
-
-    const getTokens = async (e) => {
+    const signin = async (e) => {
         e.preventDefault();
         const body = {
             email: email,
             password: password
         }
         try{
-            const res = await axios.post('/api/user/get/tokens', body);
-            const { accessToken } = res.data;
-            const refreshTokenId = res.data.refreshTokenId._id;
+            const res = await axios.post('/api/user/signin', body);
+            const { accessToken, refreshTokenId, user } = res.data;
             console.log(accessToken)
             console.log(refreshTokenId)
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshTokenId', refreshTokenId);
-            getUser();
+            dispatch(SIGNIN(user));
+            navigate('/');
         } catch(err){
             console.log(err.response.data);
             setAlertMessage(err.response.data);
             setAlertShow(true);
         }
     }
-
+    
     return (
         <div>
             {
@@ -81,11 +69,10 @@ const Signin = () => {
                 : null
             }
 
-            <Form onSubmit={ getTokens }>
+            <Form onSubmit={ signin }>
                 <Title 
                     titleText='Sign in'
                     primaryBtn={ true }
-                    clickPrimaryBtn={ getTokens }
                     primaryBtnText="로그인"
                 />
 

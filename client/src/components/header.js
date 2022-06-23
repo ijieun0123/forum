@@ -16,11 +16,11 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
-    const clickSignOutBtn = async (e) => {
+    const signout = async (e) => {
         e.preventDefault();
 
         try{
-            const res = await instance.delete('/api/user/delete/refreshToken')
+            const res = await instance.delete('/api/user/signout')
             console.log(res.data.msg);
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshTokenId');
@@ -55,7 +55,7 @@ const Header = () => {
                         </Navbar.Text>
                         <Navbar.Text>
                             <Btn 
-                                onClick={ clickSignOutBtn } 
+                                onClick={ signout } 
                                 value="Sign out"
                                 variant="outline-light"
                                 margin='0 0 0 30px'

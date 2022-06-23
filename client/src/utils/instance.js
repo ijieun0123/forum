@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://protected-wildwood-11173.herokuapp.com",
+  baseURL: "",  // setUpProxy.js cors 에러 방지 => baseURL 필요없음
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 instance.interceptors.request.use(

@@ -110,7 +110,7 @@ const ForumWrite = () => {
 
     const getForum = async () => {
         try{
-            const res = await instance.get(`/api/forum/get/${id}`);
+            const res = await instance.get(`/api/forum/write/get/${id}`);
             const data = res.data;
             setTitleText(data.titleText);
             setMainText(data.mainText);

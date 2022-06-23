@@ -35,33 +35,22 @@ const Withdrawal = () => {
         setPassword(newPassword);
     }
 
-    const deleteToken = async () => {
+    const withdrawal = async () => {
+        setEnsureDelete(true)
+
+        const body = {
+            email: email,
+            password: password
+        }
+
         try{
-            const res = await instance.delete(`/api/user/delete/refreshToken`);
+            const res = await instance.post(`/api/user/withdrawal`, body);
             console.log(res.data);
             setAlertMessage('탈퇴되었습니다.');
             dispatch(SIGNOUT({}));
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshTokenId');
             navigate('/');
-            deleteToken();
-        } catch(err){
-            console.log(err);
-            setAlertMessage(err.response.data);
-        }
-    }
-
-    const deleteUser = async () => {
-        setEnsureDelete(true)
-        
-        const body = {
-            email: email,
-            password: password
-        }
-        try{
-            const res = await instance.post(`/api/user/delete`, body);
-            console.log(res.data);
-            deleteToken();
         } catch(err){
             console.log(err);
             setAlertMessage(err.response.data);
@@ -80,7 +69,7 @@ const Withdrawal = () => {
                 alertShow
                 ? 
                 <Warning 
-                    onClickBtn={ ensureDelete ? alertClose : deleteUser } 
+                    onClickBtn={ ensureDelete ? alertClose : withdrawal } 
                     onClose={ alertClose }
                     titleText="경고" 
                     mainText={ alertMessage }

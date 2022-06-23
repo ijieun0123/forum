@@ -2,7 +2,7 @@ let Comment = require('../models/comment.model');
 let User = require('../models/user.model');
 let Forum = require('../models/forum.model');
 
-module.exports.postComment = async (req, res) => {
+const postComment = async (req, res, next) => {
     const _user = req.user.id;
     const _forum = req.body._forum;
     const commentText = req.body.commentText;
@@ -10,16 +10,18 @@ module.exports.postComment = async (req, res) => {
     const newComment = new Comment(data);
     
     newComment.save()
-    .then(() => res.json('Comment save'))
+    .then(() => next())
     .catch(err => res.status(400).json('Error: ' + err));
-
+    /*
     const forum = await Forum.findById(_forum)
     if(Array.isArray(forum._comment)) forum._comment.push(newComment);
     forum.save()
+    */
 }
 
-module.exports.getComments = (req, res) => {
+const getComments = (req, res) => {
     const _forum = req.params.id;
+    //const _forum = req.body._forum;
 
     Comment.find({_forum: _forum})
     .populate('_user', 'profileImagePath nickname -_id')
@@ -27,7 +29,7 @@ module.exports.getComments = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.getMyComment = (req, res) => {
+const getMyComment = (req, res) => {
     const _user = req.user.id;
 
     Comment.find({_user: _user})
@@ -35,7 +37,7 @@ module.exports.getMyComment = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.updateComment = async (req, res) => {
+const updateComment = async (req, res) => {
     const id = req.params.id;
     const commentText = req.body.commentText;
     const _forum = req.body._forum;
@@ -49,7 +51,7 @@ module.exports.updateComment = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.updateCommentHeart = async (req, res) => {
+const updateCommentHeart = async (req, res) => {
     const commentId = req.params.id;
     const userId = req.user.id;
     const heartClickUsers = req.body.heartClickUsers;
@@ -71,19 +73,28 @@ module.exports.updateCommentHeart = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.deleteComment = async (req, res) => {
+const deleteComment = async (req, res) => {
     const _comment = req.params.id;
     const _forum = req.query._forum
 
     const comment = await Comment.findByIdAndDelete(_comment)
     if(Array.isArray(comment)) comment.save()
-    
+    /*
     const forum = await Forum.findById(_forum)
     if(Array.isArray(forum._comment)) forum._comment.pull(_comment);
     forum.save()
-    
+    */
     Comment.find({_forum: _forum})
     .populate('_user', 'profileImagePath nickname -_id')
     .then(comments => res.json(comments))
     .catch(err => res.status(400).json('Error: ' + err));
+}
+
+module.exports = {
+    postComment,
+    getComments,
+    getMyComment,
+    updateComment,
+    updateCommentHeart,
+    deleteComment,
 }

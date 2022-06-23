@@ -92,7 +92,7 @@ const Signup = () => {
         setPasswordConfirm('');
     }
 
-    const postUser = async (e) => {
+    const signup = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('userName');
@@ -104,7 +104,7 @@ const Signup = () => {
 
         let config = {
             method: "post",
-            url: "/api/user/post",
+            url: "/api/user/signup",
             headers: {
               "content-type": "application/json",
               "content-type": "multipart/form-data"
@@ -143,7 +143,7 @@ const Signup = () => {
                 : null
             }
 
-            <Form noValidate onSubmit={ postUser }>
+            <Form noValidate onSubmit={ signup }>
                 <Title 
                     titleText='Sign up'
                     primaryBtn={ true }

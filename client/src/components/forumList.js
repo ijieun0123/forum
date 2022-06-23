@@ -122,7 +122,7 @@ const ForumList = () => {
                 const whatIWrote = data.filter(el => el._user.nickname === user.nickname)
                 setForums(whatIWrote);
             } else{
-                const whatILike = data.filter((el, i) => el.heart.user._id.includes(user._id))
+                const whatILike = data.filter(el => el.heart.user.includes(user._id))
                 setForums(whatILike);
             }
             setSearchValue('')

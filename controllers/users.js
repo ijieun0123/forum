@@ -8,7 +8,7 @@ const Token = require('../models/token.model');
 
 const defaultProfileImage = "/img/profile_default.png";
 
-module.exports.postUser = async (req, res) => {
+const postUser = async (req, res) => {
     const userName = req.body.userName;
     const nickname = req.body.nickname;
     const email = req.body.email;
@@ -30,7 +30,7 @@ module.exports.postUser = async (req, res) => {
     }
 }
 
-module.exports.getAccessToken = async (req, res) => {
+const getAccessToken = async (req, res) => {
     const refreshTokenId = req.body.refreshTokenId;
     const token = await Token.findOne({ _id: refreshTokenId })
     const refreshToken = token.token;
@@ -57,57 +57,79 @@ module.exports.getAccessToken = async (req, res) => {
     .catch(err => res.status(400).json(err));
 }
 
-module.exports.getTokens = async (req, res) => {
+const getTokens = async (req, res, next) => {
     try{
         const { email } = req.body;
         const user = await User.findOne({$and: [ { "email": email }, { "active": "true" } ]} );
         const { accessToken, refreshToken } = await generateTokens(user);
         const refreshTokenId = await Token.findOne({ token: refreshToken }).select('_id')
-
-        res.status(200).json({
-            error: false,
-            accessToken,
-            refreshToken,
-            refreshTokenId,
-            msg: 'Logged in successfully'
-        })
+        
+        req.refreshTokenId = refreshTokenId;
+        req.accessToken = accessToken;
+        req.user = user;
+        
+        next()
     } catch (err) {
         console.log(err);
         res.status(500).json({
+            error: true,
+            msg: 'Server Error tokens'
+        })
+    }
+}
+
+const getUser = async (req, res) => {
+    const refreshTokenId = req.refreshTokenId._id;
+    const accessToken = req.accessToken;
+    const userId = req.user._id;
+    
+    try {
+        const user = await User.findById(userId)
+        .select('-password')
+        .select('-createdAt')
+        .select('-updatedAt')
+        .select('-__v')
+        res.status(200).json({ 
+            user, 
+            refreshTokenId, 
+            accessToken 
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: true,
+            msg: 'Server Error user'
+        })
+    }
+}
+
+const deleteUser = async (req, res, next) => {
+    const id = req.user.id;
+
+    try{
+        await User.findByIdAndUpdate(id, {active: false})
+        next();
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
             error: true,
             msg: 'Server Error'
         })
     }
 }
 
-module.exports.getUser = async (req, res) => {
-    const id = req.user.id;
-
-    try {
-        const user = await User.findById(id)
-        .select('-password')
-        .select('-createdAt')
-        .select('-updatedAt')
-        .select('-__v')
-        res.status(200).json({ user });
-    } catch (error) {
-        res.status(500).json(error);
-    }
-}
-
-module.exports.deleteToken = async (req, res) => {  // signout, withdrawal
+const deleteToken = async (req, res) => {  // signout, withdrawal
     const id = req.user.id;
 
     try{
         const token = await Token.findOne({ _user: id })
         if (!token) return res.status(200).json({
             error: false,
-            msg: 'Logged Out Sucessfully'
+            msg: 'token deleted'
         })
         await token.remove();
         res.status(200).json({
             error: false,
-            msg: 'Loggod Out Successfully'
+            msg: 'token deleted'
         })
     } catch (err) {
         console.log(err)
@@ -118,7 +140,7 @@ module.exports.deleteToken = async (req, res) => {  // signout, withdrawal
     }
 }
 
-module.exports.updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
     const id = req.user.id;
     const userName = req.body.userName;
     const nickname = req.body.nickname;
@@ -160,10 +182,12 @@ module.exports.updateUser = async (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.deleteUser = async (req, res) => {
-    const id = req.user.id;
-
-    User.findByIdAndUpdate(id, {active: false})
-    .then(() => res.json('탈퇴되었습니다.'))
-    .catch(err => res.status(400).json(err));
+module.exports = {
+    postUser,
+    getAccessToken,
+    getTokens,
+    getUser,
+    deleteToken,
+    updateUser,
+    deleteUser
 }

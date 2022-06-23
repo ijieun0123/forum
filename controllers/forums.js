@@ -2,7 +2,7 @@ let Comment = require('../models/comment.model');
 let Forum = require('../models/forum.model');
 const cloudinary = require('cloudinary').v2;
 
-module.exports.postForum = async (req, res) => {
+const postForum = async (req, res, next) => {
     const _user = req.user.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
@@ -14,12 +14,13 @@ module.exports.postForum = async (req, res) => {
         const newForum = new Forum(data);
         newForum.save()
         res.status(200).json('Forum saved');
+        next()
     } catch (err) {
         res.status(500).json('server error');
     }
 }
 
-module.exports.getForums = async (req, res) => {
+const getForums = async (req, res) => {
     try{
         const forum = await Forum.find().sort({$natural:-1})
         .populate('_user', 'profileImagePath nickname -_id')
@@ -30,7 +31,7 @@ module.exports.getForums = async (req, res) => {
     }
 }
 
-module.exports.getSearchForums = async (req, res) => {
+const getSearchForums = async (req, res) => {
     const searchValue = req.query.searchValue;
 
     try{
@@ -45,28 +46,24 @@ module.exports.getSearchForums = async (req, res) => {
     }
 }
 
-module.exports.getForum = async (req, res) => {
+const updateViewCount = async (req, res, next) => {
+    const id = req.params.id;
+
+    Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } }, {new: true})
+    .then(() => next())
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
+const getForum = async (req, res) => {
     const id = req.params.id;
 
     Forum.findById(id)
     .populate('_user', 'profileImagePath nickname -_id')
-    .populate({
-        path: '_comment',
-        populate: {path: '_user', select: 'nickname profileImagePath -_id'}
-    })
     .then(forum => res.json(forum))
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
-module.exports.updateViewCount = async (req, res) => {
-    const id = req.params.id;
-
-    Forum.findByIdAndUpdate(id, { $inc: { viewCount: 1 } }, {new: true})
-    .then(() => res.json('ViewCount updated'))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-module.exports.updateForum = async (req, res) => {
+const updateForum = async (req, res) => {
     const id = req.params.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
@@ -103,7 +100,7 @@ module.exports.updateForum = async (req, res) => {
     .catch(err => res.status(400).json(err.message))
 }
 
-module.exports.updateForumHeart = (req, res) => {
+const updateForumHeart = (req, res) => {
     const id = req.params.id;
     const userId = req.user.id;
     const heartClickUsers = req.body.heartClickUsers;
@@ -120,7 +117,7 @@ module.exports.updateForumHeart = (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err))
 }
 
-module.exports.deleteForum = async (req, res) => {
+const deleteForum = async (req, res) => {
     const id = req.params.id;
     const attachImageName = req.query.attachImageName
 
@@ -144,12 +141,24 @@ module.exports.deleteForum = async (req, res) => {
     }
 }
 
-module.exports.deleteForums = async (req, res) => {
+const deleteForums = async (req, res) => {
     Forum.deleteMany({})
     .then(() => res.json(`Forums deleted`))
     .catch(err => res.status(400).json('Error: ' + err));
 
     const comment = await Comment.deleteMany({})
     if(Array.isArray(comment._forum)) comment.save()
+}
+
+module.exports = {
+    postForum,
+    getForums,
+    getSearchForums,
+    getForum,
+    updateViewCount,
+    updateForum,
+    updateForumHeart,
+    deleteForum,
+    deleteForums
 }
 

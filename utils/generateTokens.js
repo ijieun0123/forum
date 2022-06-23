@@ -1,6 +1,6 @@
 /*
 utils > generateTokens.js
-1. access token, refresth token 생성
+1. access token, refresh token 생성
 2. refresh token db에 저장
 */
 const jwt = require('jsonwebtoken');
