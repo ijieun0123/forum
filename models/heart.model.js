@@ -3,14 +3,11 @@ const { default: mongoose } = require('mongoose');
 const Schema = mongoose.Schema;
 
 const heartSchema = new Schema({
-    heartCount: {
-        type: Number,
-        default:0
-    },
-    _user: [{
+    _user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+        ref: 'User',
+        required: true
+    },
     _forum: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Forum'

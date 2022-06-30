@@ -1,32 +1,101 @@
 let Comment = require('../models/comment.model');
 let User = require('../models/user.model');
-let Forum = require('../models/forum.model');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
-const postComment = async (req, res, next) => {
+const postComment = async (req, res) => {
     const _user = req.user.id;
     const _forum = req.body._forum;
     const commentText = req.body.commentText;
     const data = { _user, _forum, commentText };
     const newComment = new Comment(data);
+
+    const user = await User.findById(_user)
     
     newComment.save()
-    .then(() => next())
+    .then((comment) => res.json({
+        commentId: comment._id,
+        commentText: comment.commentText,
+        createdAt: comment.createdAt,
+        heartCount: 0,
+        heartFill: false,
+        nickname: user.nickname,
+        profileImagePath: user.profileImagePath
+    }))
     .catch(err => res.status(400).json('Error: ' + err));
-    /*
-    const forum = await Forum.findById(_forum)
-    if(Array.isArray(forum._comment)) forum._comment.push(newComment);
-    forum.save()
-    */
 }
 
-const getComments = (req, res) => {
-    const _forum = req.params.id;
-    //const _forum = req.body._forum;
+const getComments = async (req, res) => {
+    const _user = req.user.id
+    const _forum = ( req._forum ? req._forum : req.params.id );
 
-    Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname -_id')
-    .then(comments => res.json(comments))
-    .catch(err => res.status(400).json('Error: ' + err));
+    const userObjectId = ObjectId(_user)
+    const forumObjectId = ObjectId(_forum)
+
+    try{
+        const comments = await Comment
+        .aggregate([
+            { 
+                $match : { _forum: forumObjectId } 
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_user",
+                    foreignField: "_id",
+                    as: "_user",
+                },
+            },
+            {  $unwind: "$_user" },
+            {
+                $lookup: {
+                    from: "hearts",
+                    localField: "_id",
+                    foreignField: "_comment",
+                    as: "_heart",
+                },
+            },
+            { 
+                $group: {
+                    _id: "$_id",
+                    commentId: { $first: "$_id" },
+                    heartClickUsers: { $first: "$_heart._user" },
+                    profileImagePath: { $first: "$_user.profileImagePath" },
+                    nickname: { $first: "$_user.nickname" },
+                    commentText: { $first: "$commentText" },
+                    createdAt: { $first: "$createdAt" },
+                }
+            },
+            {  $unwind: "$_id" },
+            { 
+                $sort : { createdAt : 1 } 
+            },
+            { 
+                $addFields: {
+                    heartFill: { 
+                        $cond: {
+                            if: { $in: [ userObjectId, "$heartClickUsers"  ] }, 
+                            then: true,
+                            else: false,
+                        }
+                    },
+                    heartCount: { $size: '$heartClickUsers' }
+                } 
+            },
+            { 
+                $project: { 
+                    _id:0,
+                    _forum:0,
+                    updatedAt:0,
+                    __v: 0,
+                    heartClickUsers:0
+                } 
+            }
+        ])
+        res.status(200).json(comments)
+    } catch (err) {
+        res.status(400).json('Error: ' + err)
+    }
 }
 
 const getMyComment = (req, res) => {
@@ -40,53 +109,36 @@ const getMyComment = (req, res) => {
 const updateComment = async (req, res) => {
     const id = req.params.id;
     const commentText = req.body.commentText;
-    const _forum = req.body._forum;
 
-    const comment = await Comment.findByIdAndUpdate(id, { $set:{ commentText: commentText } })
-    if(Array.isArray(comment)) comment.save()
-    
-    Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname -_id')
-    .then(comments => res.json(comments))
-    .catch(err => res.status(400).json('Error: ' + err));
+    Comment.findByIdAndUpdate(id, { $set:{ commentText: commentText } }, {new: true})
+    .then((comment) => res.json({ 
+        commentText: comment.commentText 
+    }))
+    .catch((err) => res.status(400).json('Error: ' + err))
 }
 
-const updateCommentHeart = async (req, res) => {
-    const commentId = req.params.id;
-    const userId = req.user.id;
-    const heartClickUsers = req.body.heartClickUsers;
-    const forumId = req.body.forumId;
-
-    const comment = await Comment.findByIdAndUpdate(commentId,
-        (
-            heartClickUsers.includes(userId)
-            ? { $pull: {'heart.user':userId}, $inc: { 'heart.count': -1 } }
-            : { $push: {'heart.user':userId}, $inc: { 'heart.count': +1 } }
-        ),
-        {new: true}
-    )
-    if(Array.isArray(comment)) comment.save()
-
-    Comment.find({_forum: forumId})
-    .populate('_user', 'profileImagePath nickname -_id')
-    .then(comments => res.json(comments))
-    .catch(err => res.status(400).json('Error: ' + err));
-}
-
-const deleteComment = async (req, res) => {
+const deleteComment = async (req, res, next) => {
     const _comment = req.params.id;
-    const _forum = req.query._forum
+    const _forum = req.query._forum;
 
-    const comment = await Comment.findByIdAndDelete(_comment)
-    if(Array.isArray(comment)) comment.save()
-    /*
-    const forum = await Forum.findById(_forum)
-    if(Array.isArray(forum._comment)) forum._comment.pull(_comment);
-    forum.save()
-    */
-    Comment.find({_forum: _forum})
-    .populate('_user', 'profileImagePath nickname -_id')
-    .then(comments => res.json(comments))
+    req._comment = _comment;
+    req._forum = _forum;
+
+    try{
+        const comment = await Comment.findByIdAndDelete(_comment)
+        if(Array.isArray(comment)) await comment.save()
+        
+        next();
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const deleteComments = (req, res) => {
+    const _forum = req._forum
+
+    Comment.deleteMany({_forum:_forum})
+    .then(() => res.json('Forum, Comments, hearts deleted'))
     .catch(err => res.status(400).json('Error: ' + err));
 }
 
@@ -95,6 +147,6 @@ module.exports = {
     getComments,
     getMyComment,
     updateComment,
-    updateCommentHeart,
     deleteComment,
+    deleteComments
 }

@@ -34,16 +34,17 @@ const ForumList = () => {
     const onChangeSearch = (e) => {
         let newSearchValue = e.target.value;
         setSearchValue(newSearchValue);
+        setSelectValue('latestOrder')
     }
 
     const onChangeSelect = (e) => {
         const newSelectValue = e.target.value;
         setSelectValue(newSelectValue);
-        getForums(newSelectValue);
+        setSearchValue('');
     }
     
     const deleteForum = async () => {
-        const targetForum = forums.find(el => el._id === forumId);
+        const targetForum = forums.find(forum => forum._id === forumId);
         const attachImageName = targetForum.attachImageName;
 
         const params = {
@@ -53,8 +54,9 @@ const ForumList = () => {
         try{            
             const res = await instance.delete(`/api/forum/delete/${forumId}`, { params: params });
             console.log(res.data);
+            const newForums = forums.filter(forum => forum._id !== forumId);
             setAlertShow(false);
-            getForums(selectValue);
+            setForums(newForums)
         } catch(err){
             console.log(err);
         }
@@ -69,63 +71,55 @@ const ForumList = () => {
         navigate(`/forum/update/${id}`)
     }
     
-    const updateForumHeart = async (e, forumId, heartClickUsers) => {  
+    const updateHeart = async (e, forumId) => {  
         e.preventDefault();
+
         const body = {
-            heartClickUsers: heartClickUsers
+            _forum: forumId,
         }
+
         try{
-            const res = await instance.patch(`/api/forum/heart/update/${forumId}`, body);
-            console.log(res.data);
-            ( searchValue ? getSearchForums(e) : getForums(selectValue) )
+            const res = await instance.post(`/api/heart/update`, body);
+            console.log(res.data.msg);
+          
+            const newForums = [...forums];
+            const findIndex = forums.findIndex(el => el._id == forumId);
+            const newHeartCount = forums[findIndex].heartCount + res.data.fixHeartCount;
+            const newHeartFill = res.data.heartFill;
+            
+            if(findIndex !== -1) {
+                if(selectValue === 'heartOrder' || selectValue === 'whatILike'){
+                    getForums()
+                } else{
+                    newForums[findIndex] = {
+                        ...newForums[findIndex], 
+                        heartCount: newHeartCount, 
+                        heartFill: newHeartFill
+                    };
+                    setForums(newForums)
+                }
+            }
         } catch(err){
             console.log(err);
         }
     }
 
     const onChangePage = (pageOfForums) => {
-        console.log(pageOfForums)
         setPageOfForums(pageOfForums)
     }
 
-    const getSearchForums = async (e) => {
-        e.preventDefault();
+    const getForums = async () => {
         const body = {
-            searchValue: searchValue
+            selectValue: selectValue,
+            searchValue: searchValue,
+            nickname: user.nickname
         }
+
         try{
-            const res = await axios.get('/api/forum/search/get', {params: body})
+            const res = await axios.post('/api/forum/get', body)
             const data = res.data;
             console.log(data)
-            setSelectValue('latestOrder')
-            setForums(data);
-        } catch(err){
-            console.log(err);
-        }
-    }
-
-    const getForums = async (selectValue) => {
-        try{
-            const res = await axios.get('/api/forum/get')
-            const data = res.data;
-            console.log(data)
-
-            if(selectValue === 'latestOrder' || selectValue === undefined){
-                setForums(data);
-            } else if(selectValue === 'viewOrder'){
-                const viewOrder = data.sort((a, b) => b.viewCount - a.viewCount)
-                setForums(viewOrder);
-            } else if(selectValue === 'heartOrder'){
-                const heartOrder = data.sort((a, b) => b.heart.count - a.heart.count)
-                setForums(heartOrder);
-            } else if(selectValue === 'whatIWrote'){
-                const whatIWrote = data.filter(el => el._user.nickname === user.nickname)
-                setForums(whatIWrote);
-            } else{
-                const whatILike = data.filter(el => el.heart.user.includes(user._id))
-                setForums(whatILike);
-            }
-            setSearchValue('')
+            setForums(data)
         } catch(err){
             console.log(err);
         }
@@ -133,7 +127,7 @@ const ForumList = () => {
 
     useEffect(() => {
         getForums()
-    }, [])
+    }, [selectValue, searchValue])
     
     return (
         <div>
@@ -161,19 +155,17 @@ const ForumList = () => {
             {/* 서치박스 & 셀렉박스 */}
             <Row className="g-2" style={{ marginBottom:50 }}>
                 <Col md>
-                    <Form onSubmit={ getSearchForums }>
-                        <FloatingLabel 
-                            controlId="floatingInputGrid" 
-                            label="Search" 
-                        >
-                            <Form.Control 
-                                type="text" 
-                                placeholder="검색하세요" 
-                                value={ searchValue }
-                                onChange={ onChangeSearch }
-                            />
-                        </FloatingLabel>
-                    </Form>
+                    <FloatingLabel 
+                        controlId="floatingInputGrid" 
+                        label="Search" 
+                    >
+                        <Form.Control 
+                            type="text" 
+                            placeholder="검색하세요" 
+                            value={ searchValue }
+                            onChange={ onChangeSearch }
+                        />
+                    </FloatingLabel>
                 </Col>
                 <Col md>
                     <FloatingLabel controlId="floatingSelectGrid" label="Select">
@@ -185,13 +177,8 @@ const ForumList = () => {
                             <option value="latestOrder">최신순</option>
                             <option value="viewOrder">조회순</option>
                             <option value="heartOrder">인기순</option>
-                            { signin
-                                ?   <>
-                                        <option value="whatIWrote">내가 쓴 글</option>
-                                        <option value="whatILike">내가 좋아한 글</option>
-                                    </>
-                                : null
-                            }
+                            <option value="whatIWrote" disabled={!signin}>내가 쓴 글</option>
+                            <option value="whatILike" disabled={!signin}>내가 좋아한 글</option>
                         </Form.Select>
                     </FloatingLabel>
                 </Col>
@@ -221,8 +208,8 @@ const ForumList = () => {
                                         <Td>{1+i}</Td>
                                         <Td>
                                             <Profile 
-                                                src={forum._user.profileImagePath} 
-                                                nickname={forum._user.nickname} 
+                                                src={forum.profileImagePath} 
+                                                nickname={forum.nickname} 
                                                 nicknameColor="#000" 
                                             />
                                         </Td>
@@ -236,9 +223,9 @@ const ForumList = () => {
                                         <Td>
                                             <HeartCount 
                                                 src={ false }
-                                                count={forum.heart.count} 
-                                                fill={(forum.heart.user.includes(user._id) ? true : false)} 
-                                                onClick={ (e) => {updateForumHeart(e, forum._id, forum.heart.user)} } 
+                                                count={forum.heartCount} 
+                                                fill={forum.heartFill} 
+                                                onClick={ (e) => {updateHeart(e, forum._id)} } 
                                             />
                                         </Td>
                                         <Td>
@@ -247,7 +234,7 @@ const ForumList = () => {
                                                 value="수정"
                                                 variant="secondary"
                                                 size="sm"
-                                                disabled={ forum._user.nickname === user.nickname ? false : true }
+                                                disabled={ forum.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
                                         <Td>
@@ -256,7 +243,7 @@ const ForumList = () => {
                                                 value="삭제"
                                                 variant="danger"
                                                 size="sm"
-                                                disabled={ forum._user.nickname === user.nickname ? false : true }
+                                                disabled={ forum.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
                                     </tr>

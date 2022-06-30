@@ -17,7 +17,7 @@ const ForumView = () => {
     const [attachImageName, setAttachImageName] = useState('')
     const [createdAt, setCreatedAt] = useState('');
     const [heartCount, setHeartCount] = useState(0);
-    const [heartClickUsers, setHeartClickUsers] = useState([]);
+    const [heartFill, setHeartFill] = useState(false);
     const [mainText, setMainText] = useState('');
     const [titleText, setTitleText] = useState('');
     const [viewCount, setViewCount] = useState('');
@@ -45,16 +45,16 @@ const ForumView = () => {
         }
     }
 
-    const updateForumHeart = async () => {
+    const updateHeart = async () => {
         const body = {
-            heartClickUsers: heartClickUsers
+            _forum: id
         }
         try{            
-            const res = await instance.patch(`/api/forum/heart/update/${id}`, body);
-            const data = res.data;
-            setHeartCount(data.heart.count)
-            setHeartClickUsers(data.heart.user)
-            console.log(data);
+            const res = await instance.post(`/api/heart/update`, body);
+            const newHeartCount = heartCount + res.data.fixHeartCount;
+            const newHeartFill =  res.data.heartFill
+            setHeartCount(newHeartCount)
+            setHeartFill(newHeartFill)
         } catch(err){
             console.log(err);
         }
@@ -63,17 +63,17 @@ const ForumView = () => {
     const getForum = async () => {
         try{
             const res = await instance.get(`/api/forum/view/get/${id}`)
-            const data = res.data;
+            const data = res.data[0];
             setAttachImagePath(data.attachImagePath)
             setAttachImageName(data.attachImageName)
             setCreatedAt(data.createdAt)
-            setHeartCount(data.heart.count)
-            setHeartClickUsers(data.heart.user)
+            setHeartCount(data.heartCount)
+            setHeartFill(data.heartFill)
             setMainText(data.mainText)
             setTitleText(data.titleText)
             setViewCount(data.viewCount)
-            setWriter(data._user.nickname)
-            setWriterImg(data._user.profileImagePath)
+            setWriter(data.nickname)
+            setWriterImg(data.profileImagePath)
             console.log(data)
         } catch(err){
             console.log(err);
@@ -131,8 +131,8 @@ const ForumView = () => {
                             <HeartCount 
                                 src={false} 
                                 count={heartCount} 
-                                fill={heartClickUsers.includes(user._id) ? true : false} 
-                                onClick={ updateForumHeart } 
+                                fill={heartFill} 
+                                onClick={ updateHeart } 
                             />
                         </div>
                     </Stack>

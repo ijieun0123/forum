@@ -13,7 +13,6 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
 
     const [targetId, setTargetId] = useState('');
     const [commentText, setCommentText] = useState('')
-    const [heartClickUsers, setHeartClickUsers] = useState([]);
     const [comments, setComments] = useState([]);
 
     const [alertShow, setAlertShow] = useState(false);
@@ -34,23 +33,39 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             const res = await instance.delete(`/api/comment/delete/${targetId}`, {params: body});
             const data = res.data;
             console.log(data);
-            setComments(data);
+            const newComments = comments.filter(comment => comment.commentId !== targetId);
+            setComments(newComments)
         } catch(err){
             console.log(err);
         }
     }
 
-    const updateCommentHeart = async (targetId, heartClickUsers) => {
+    const updateHeart = async (commentId) => {
         const body = {
-            userId: userId,
-            heartClickUsers: heartClickUsers,
-            forumId: forumId
+            _forum: forumId,
+            _comment: commentId
         }
+
         try{            
-            const res = await instance.patch(`/api/comment/heart/update/${targetId}`, body);
+            const res = await instance.post(`/api/heart/update`, body);
             const data = res.data;
-            console.log(data);
-            setComments(data);
+
+            const newComents = [...comments];
+            const findIndex = comments.findIndex(el => el.commentId == commentId);
+            const newHeartCount = comments[findIndex].heartCount + res.data.fixHeartCount;
+            const newHeartFill = res.data.heartFill;
+
+            if(findIndex !== -1) {
+                newComents[findIndex] = {
+                    ...newComents[findIndex], 
+                    heartCount: newHeartCount, 
+                    heartFill: newHeartFill
+                };
+
+                setComments(newComents)
+                setTargetId('');
+                console.log(data.msg)
+            }
         } catch(err){
             console.log(err);
         }
@@ -59,14 +74,24 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
     const updateComment = async () => {
         const body = {
             commentText: commentText,
-            _forum: forumId
         }
         try{
             const res = await instance.patch(`/api/comment/update/${targetId}`, body);
-            const data = res.data;
-            console.log(data)
-            setComments(data);
-            setTargetId('');
+            const newComents = [...comments];
+            const newCommentText = res.data.commentText;
+            const findIndex = newComents.findIndex(el => el.commentId == targetId);
+            console.log(newCommentText)
+
+            if(findIndex !== -1) {
+                newComents[findIndex] = {
+                    ...newComents[findIndex], 
+                    commentText: newCommentText, 
+                };
+
+                setComments(newComents)
+                setTargetId('');
+            }
+
         } catch(err){
             console.log(err);
             setAlertShowMessage(err.response.data);
@@ -126,24 +151,24 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                                 <Stack direction="horizontal" gap={3}>
                                     <div>
                                         <Profile 
-                                            src={ comment._user.profileImagePath } 
-                                            nickname={ comment._user.nickname } 
+                                            src={ comment.profileImagePath } 
+                                            nickname={ comment.nickname } 
                                             nicknameColor="#000" 
                                         />
                                     </div>
                                     <div className="ms-auto" style={{ color:'#888', fontSize:15 }}>
                                         <HeartCount 
                                             src={false} 
-                                            count={ comment.heart.count } 
-                                            fill={ comment.heart.user.includes(userId) ? true : false } 
-                                            onClick={ () => updateCommentHeart(comment._id, comment.heart.user) }
+                                            count={ comment.heartCount } 
+                                            fill={ comment.heartFill } 
+                                            onClick={ () => updateHeart(comment.commentId) }
                                         />
                                     </div>
                                 </Stack>
                             </Card.Header>
                             <Card.Body>
                                 {
-                                    targetId === comment._id?
+                                    targetId === comment.commentId?
                                     <Form.Control
                                         as="textarea"
                                         placeholder="Leave a comment here"
@@ -154,19 +179,19 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                                     : <Card.Text>{ comment.commentText }</Card.Text>
                                 }
                                 {
-                                    nickname === comment._user.nickname?
+                                    nickname === comment.nickname?
                                     <div>
                                         <Btn 
                                             value={ targetId ? "Save" : "Update" } 
                                             variant="outline-primary"
                                             margin='10px 10px 0 0'
-                                            onClick={ targetId ? updateComment : () => clickUpdateBtn(comment._id, comment.commentText) }
+                                            onClick={ targetId ? updateComment : () => clickUpdateBtn(comment.commentId, comment.commentText) }
                                         />
                                         <Btn 
                                             value={ targetId ? "Cancel" : "Delete" }
                                             variant="outline-danger"
                                             margin='10px 0 0 0'
-                                            onClick={ targetId ? () => clickCancelBtn(comment.commentText) : () => deleteComment(comment._id) }
+                                            onClick={ targetId ? () => clickCancelBtn(comment.commentText) : () => deleteComment(comment.commentId) }
                                         />
                                     </div>
                                     : null
@@ -187,6 +212,8 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                 userId={ userId }
                 forumId={ forumId }
                 getComments={ getComments }
+                comments={ comments }
+                setComments={ setComments }
             />
         </>
     )

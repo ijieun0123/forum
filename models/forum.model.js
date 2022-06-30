@@ -8,10 +8,12 @@ const forumSchema = new Schema({
         ref: 'User',
         required: true
     },
+    /*
     _comment: [{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Comment'
     }],
+    */
     heart: {
         count: {
             type: Number,

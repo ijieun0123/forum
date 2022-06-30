@@ -6,7 +6,7 @@ import axios from 'axios';
 import Warning from './warning'
 import instance from '../utils/instance';
 
-const CommentWrite = ({ profileImagePath, nickname, forumId, getComments }) => {
+const CommentWrite = ({ profileImagePath, nickname, forumId, comments, setComments }) => {
 
     const [commentText, setCommentText] = useState('');
 
@@ -29,9 +29,10 @@ const CommentWrite = ({ profileImagePath, nickname, forumId, getComments }) => {
         }
         try{
             const res = await instance.post(`/api/comment/post`, body);
-            console.log(res.data)
+            const newComment = res.data
+            const newComments = [...comments, newComment];
+            setComments(newComments)
             setCommentText('');
-            getComments();
         } catch(err){
             console.log(err);
             setAlertShowMessage(err.response.data);

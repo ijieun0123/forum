@@ -1,12 +1,9 @@
 const router = require('express').Router();
-const controllers = require('../controllers/heart');
+const auth = require('../middleware/auth');
+const {
+    updateHeart
+} = require('../controllers/hearts');
 
-router.post('/post', controllers.postHeart);
-//router.get('/forum/get', controllers.getForumHearts);
-//router.get('/forum/get/:id', controllers.getForumHeart);
-//router.get('/comment/get/:id', controllers.getCommentHearts);
-//router.patch('/update', controllers.updateHeart);
-//router.delete('/forum/delete/:id', controllers.deleteForumHeart);
-//router.delete('/comment/delete/:id', controllers.deleteCommentHeart);
+router.post('/update', auth, updateHeart);
 
 module.exports = router;

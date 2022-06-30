@@ -111,7 +111,7 @@ const ForumWrite = () => {
     const getForum = async () => {
         try{
             const res = await instance.get(`/api/forum/write/get/${id}`);
-            const data = res.data;
+            const data = res.data[0];
             setTitleText(data.titleText);
             setMainText(data.mainText);
             setAttachImagePath(data.attachImagePath);
