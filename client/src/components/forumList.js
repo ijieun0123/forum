@@ -82,22 +82,25 @@ const ForumList = () => {
             const res = await instance.post(`/api/heart/update`, body);
             console.log(res.data.msg);
           
-            const newForums = [...forums];
+            let newForums = [...forums];
             const findIndex = forums.findIndex(el => el._id == forumId);
             const newHeartCount = forums[findIndex].heartCount + res.data.fixHeartCount;
             const newHeartFill = res.data.heartFill;
             
             if(findIndex !== -1) {
-                if(selectValue === 'heartOrder' || selectValue === 'whatILike'){
-                    getForums()
-                } else{
-                    newForums[findIndex] = {
-                        ...newForums[findIndex], 
-                        heartCount: newHeartCount, 
-                        heartFill: newHeartFill
-                    };
-                    setForums(newForums)
-                }
+                newForums[findIndex] = {
+                    ...newForums[findIndex], 
+                    heartCount: newHeartCount, 
+                    heartFill: newHeartFill
+                };
+                
+                if(selectValue === 'whatILike'){
+                    newForums = newForums.filter(forum => forum.heartFill === true);
+                } else if(selectValue === 'heartOrder') {
+                    newForums = newForums.sort((a, b) => b.heartCount - a.heartCount)
+                } 
+    
+                setForums(newForums)
             }
         } catch(err){
             console.log(err);

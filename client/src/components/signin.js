@@ -43,7 +43,13 @@ const Signin = () => {
             console.log(refreshTokenId)
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshTokenId', refreshTokenId);
-            dispatch(SIGNIN(user));
+            dispatch(SIGNIN({
+                userName:user.userName,
+                email:user.email,
+                nickname:user.nickname,
+                profileImageName:user.profileImageName,
+                profileImagePath:user.profileImagePath
+            }));
             navigate('/');
         } catch(err){
             console.log(err.response.data);

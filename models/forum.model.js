@@ -8,22 +8,6 @@ const forumSchema = new Schema({
         ref: 'User',
         required: true
     },
-    /*
-    _comment: [{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Comment'
-    }],
-    */
-    heart: {
-        count: {
-            type: Number,
-            default:0
-        },
-        user: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }]
-    },
     attachImagePath: {
         type: String,
         required: false,

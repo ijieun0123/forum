@@ -12,14 +12,15 @@ const postForum = async (req, res) => {
     const attachImagePath = (req.file ? req.file.path : '');
     const attachImageName = (req.file ? req.file.filename : '');
     const data = { _user, titleText, mainText, attachImagePath, attachImageName };
-
+    
     try{
         const newForum = new Forum(data);
         newForum.save()
-        res.status(200).json('Forum saved');
+        res.status(200).json(newForum)
     } catch (err) {
         res.status(500).json('server error');
     }
+
 }
 
 const getNewForums = async (req, res) => {
@@ -206,7 +207,7 @@ const getForum = async (req, res) => {
                 $project: { 
                     updatedAt:0,
                     __v: 0,
-                    heartClickUsers:0
+                    heartClickUsers:0,
                 } 
             }
         ])
@@ -222,7 +223,7 @@ const updateForum = async (req, res) => {
     const mainText = req.body.mainText;
     const oldAttachImagePath = req.body.attachImagePath;
     const oldAttachImageName = req.body.attachImageName;
-    const attachImagePath = (req.file ? req.file.path : oldAttachImagePath);
+    const attachImagePath = ( req.file ? req.file.path : oldAttachImagePath );
     let attachImageName = ''
 
     if(req.file){ // 이미지 변경했을 때

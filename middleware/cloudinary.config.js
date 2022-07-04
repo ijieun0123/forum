@@ -30,4 +30,11 @@ const upload = multer({
     },
 });
 
-module.exports = upload;
+const attachImageUpload = upload.single('attachImagePath');
+const profileImageUpload = upload.single('profileImagePath');
+
+module.exports = {
+    attachImageUpload,
+    profileImageUpload
+}
+

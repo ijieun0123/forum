@@ -89,6 +89,7 @@ const getUser = async (req, res) => {
         .select('-createdAt')
         .select('-updatedAt')
         .select('-__v')
+        .select('-_id')
         res.status(200).json({ 
             user, 
             refreshTokenId, 
@@ -178,6 +179,12 @@ const updateUser = async (req, res) => {
     };
 
     User.findByIdAndUpdate(id, data, {new: true})
+    .select('-password')
+    .select('-createdAt')
+    .select('-updatedAt')
+    .select('-__v')
+    .select('-_id')
+    .select('-active')
     .then(user => res.json(user))
     .catch(err => res.status(400).json('Error: ' + err));
 }

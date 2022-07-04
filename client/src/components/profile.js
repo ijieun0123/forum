@@ -110,7 +110,13 @@ const Profile = () => {
             const res = await instance(config);;
             const data = res.data;
             console.log(data);
-            dispatch(SIGNIN(data));
+            dispatch(SIGNIN({
+                userName:data.userName,
+                email:data.email,
+                nickname:data.nickname,
+                profileImageName:data.profileImageName,
+                profileImagePath:data.profileImagePath
+            }));
             setValidation(true);
             setAlertMessage('프로필이 변경되었습니다!')
             setAlertShow(true)

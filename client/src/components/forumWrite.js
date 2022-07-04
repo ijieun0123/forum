@@ -52,7 +52,7 @@ const ForumWrite = () => {
         formData.get('titleText');
         formData.get('mainText');
         formData.append('attachImagePath', attachImagePath);
-
+ 
         let config = {
             method: "post",
             url: "/api/forum/post",
