@@ -2,9 +2,9 @@ import { Row, Form, Col, Stack, FloatingLabel } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import Warning from '../organisms/warning'
-import axios from 'axios';
 import Title from '../atoms/title'
 import styled from 'styled-components';
+import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
 
 const Img = styled.img`
     display:block;
@@ -39,46 +39,48 @@ const Signup = () => {
         setProfileImagePath('');
     }
 
-    const onChangeProfileImageSrc = (e) => {
-        const fileBlob = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(fileBlob);
-        console.log(e.target.files)
-        return new Promise((resolve) => {
-            reader.onload = () => {
-                setProfileImageSrc(reader.result);
-                resolve();
-            };
-        });
+    const onChangeProfileImageSrc = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if(e.target.files){
+            const fileBlob = e.target.files[0]
+            const reader = new FileReader();
+            reader.readAsDataURL(fileBlob);
+            console.log(e.target.files)
+            return new Promise<void>((resolve) => {
+                reader.onload = () => {
+                    setProfileImageSrc(reader.result as string);
+                    resolve();
+                };
+            });
+        }
     }
 
-    const onChangeProfileImagePath = (e) => {
+    const onChangeProfileImagePath = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newProfileImagePath = e.target.value;
         console.log(newProfileImagePath)
         setProfileImagePath(newProfileImagePath);
     }
 
-    const onChangeUserName = e => {
+    const onChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newUserName = e.target.value;
         setUserName(newUserName);
     }
 
-    const onChangeNickName = e => {
+    const onChangeNickName = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newNickName = e.target.value;
         setNickname(newNickName);
     }
 
-    const onChangeEmail = e => {
+    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newemail = e.target.value;
         setEmail(newemail);
     }
 
-    const onChangePassword = e => {
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
     }
 
-    const onChangePasswordConfirm = e => {
+    const onChangePasswordConfirm = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newPasswordConfirm = e.target.value;
         setPasswordConfirm(newPasswordConfirm);
     }
@@ -92,7 +94,7 @@ const Signup = () => {
         setPasswordConfirm('');
     }
 
-    const signup = async (e) => {
+    const signup = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('userName');
@@ -102,24 +104,23 @@ const Signup = () => {
         formData.get('passwordConfirm');
         formData.append('profileImagePath', profileImagePath)
 
-        let config = {
+        let config: AxiosRequestConfig = {
             method: "post",
             url: "/api/user/signup",
             headers: {
-              "content-type": "application/json",
               "content-type": "multipart/form-data"
             },
             data: formData,
         };
 
         try{
-            const res = await axios(config);
+            const res: AxiosResponse = await axios(config);
             console.log(res.data);
             setValidation(true);
             setAlertMessage('회원가입을 축하합니다!')
             setAlertShow(true)
             formReset();
-        } catch(err){
+        } catch(err: any){
             console.log(err);
             setAlertMessage(err.response.data)
             setAlertShow(true)
@@ -166,7 +167,7 @@ const Signup = () => {
                         <Form.Control 
                             name="profileImagePath"
                             type="file" 
-                            onChange={ e => { onChangeProfileImagePath(e); onChangeProfileImageSrc(e); } }
+                            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => { onChangeProfileImagePath(e); onChangeProfileImageSrc(e); } }
                             accept="image/jpg,image/png,image/jpeg"
                             style={{display:'none'}}
                             id="profileImagePath"

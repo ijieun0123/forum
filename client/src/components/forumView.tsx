@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Title from '../atoms/title';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -10,6 +9,8 @@ import HeartCount from '../atoms/heartCount'
 import { useSelector } from 'react-redux'
 import EyeCount from '../atoms/eyeCount';
 import instance from '../utils/instance';
+import { ReducerType } from '../app/store';
+import { User } from '../features/userSlice'
 
 const ForumView = () => {
 
@@ -20,12 +21,13 @@ const ForumView = () => {
     const [heartFill, setHeartFill] = useState(false);
     const [mainText, setMainText] = useState('');
     const [titleText, setTitleText] = useState('');
-    const [viewCount, setViewCount] = useState('');
+    const [viewCount, setViewCount] = useState(0);
     const [writer, setWriter] = useState('');
     const [writerImg, setWriterImg] = useState('');
 
     const [alertShow, setAlertShow] = useState(false);
-    const user = useSelector(state => state.user.user);
+    
+    const user = useSelector<ReducerType, User['user']>(state => state.user.user);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -143,7 +145,6 @@ const ForumView = () => {
                         </div>
                         <div>
                             <HeartCount 
-                                src={false} 
                                 count={heartCount} 
                                 fill={heartFill} 
                                 onClick={ updateHeart } 
@@ -161,10 +162,9 @@ const ForumView = () => {
             </Card>
 
             <Comment 
-                forumId={ id } 
-                nickname={ user.nickname }
-                profileImagePath={ user.profileImagePath }
-                userId={ user._id }
+                forumId={ id! } 
+                nickname={ user.nickname! }
+                profileImagePath={ user.profileImagePath! }
             />  
         </div>
     )

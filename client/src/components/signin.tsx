@@ -1,5 +1,5 @@
 import { Row, Form, Col, Button, Modal } from 'react-bootstrap';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Title from '../atoms/title'
@@ -8,84 +8,78 @@ import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
 import instance from '../utils/instance';
 
-const Withdrawal = () => {
-
+const Signin = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [ensureDelete, setEnsureDelete] = useState(false)
 
     const [alertMessage, setAlertMessage] = useState('');
     const [alertShow, setAlertShow] = useState(false);
 
-    const alertClose = () => { 
-        setAlertShow(false); 
-        setEnsureDelete(false); 
-    }
+    const alertClose = () => setAlertShow(false);
 
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const onChangeEmail = e => {
+    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newEmail = e.target.value;
         setEmail(newEmail);
     }
 
-    const onChangePassword = e => {
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newPassword = e.target.value;
         setPassword(newPassword);
     }
 
-    const withdrawal = async () => {
-        setEnsureDelete(true)
-
+    const signin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         const body = {
             email: email,
             password: password
         }
-
         try{
-            const res = await instance.post(`/api/user/withdrawal`, body);
-            console.log(res.data);
-            setAlertMessage('탈퇴되었습니다.');
-            dispatch(SIGNOUT({}));
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshTokenId');
+            const res = await axios.post('/api/user/signin', body);
+            const { accessToken, refreshTokenId, user } = res.data;
+            console.log(accessToken)
+            console.log(refreshTokenId)
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshTokenId', refreshTokenId);
+            dispatch(SIGNIN({
+                userName:user.userName,
+                email:user.email,
+                nickname:user.nickname,
+                profileImageName:user.profileImageName,
+                profileImagePath:user.profileImagePath
+            }));
             navigate('/');
-        } catch(err){
-            console.log(err);
+        } catch(err: any){
+            console.log(err.response.data);
             setAlertMessage(err.response.data);
+            setAlertShow(true);
         }
     }
-
-    const onSubmit = (e) => {
-        e.preventDefault();
-        setAlertShow(true); 
-        setAlertMessage('정말 탈퇴하시겠습니까?');
-    }
-
+    
     return (
         <div>
             {
                 alertShow
                 ? 
                 <Warning 
-                    onClickBtn={ ensureDelete ? alertClose : withdrawal } 
+                    onClickBtn={ alertClose } 
                     onClose={ alertClose }
                     titleText="경고" 
                     mainText={ alertMessage }
-                    btnText={ ensureDelete ? '닫기' : '탈퇴하기' } 
+                    btnText='닫기'
                     variant={ "danger" }
                     btnVariant={ "outline-danger" }
                 />
                 : null
             }
 
-            <Form onSubmit={ onSubmit }>
+            <Form onSubmit={ signin }>
                 <Title 
-                    titleText='Withdrawal'
-                    warnBtn={ true }
-                    primaryBtn={ false }
-                    warnBtnText={ '탈퇴하기' }
+                    titleText='Sign in'
+                    primaryBtn={ true }
+                    primaryBtnText="로그인"
                 />
 
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
@@ -120,4 +114,4 @@ const Withdrawal = () => {
     )
 }
 
-export default Withdrawal;
+export default Signin;

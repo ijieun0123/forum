@@ -12,6 +12,7 @@ instance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
+      if (!config.headers) config.headers = {};
       config.headers["x-auth-token"] = accessToken; // for Node.js Express back-end
     }
     return config;

@@ -8,78 +8,84 @@ import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
 import instance from '../utils/instance';
 
-const Signin = () => {
+const Withdrawal = () => {
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [ensureDelete, setEnsureDelete] = useState(false)
 
     const [alertMessage, setAlertMessage] = useState('');
     const [alertShow, setAlertShow] = useState(false);
 
-    const alertClose = () => setAlertShow(false);
+    const alertClose = () => { 
+        setAlertShow(false); 
+        setEnsureDelete(false); 
+    }
 
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const onChangeEmail = e => {
+    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newEmail = e.target.value;
         setEmail(newEmail);
     }
 
-    const onChangePassword = e => {
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newPassword = e.target.value;
         setPassword(newPassword);
     }
 
-    const signin = async (e) => {
-        e.preventDefault();
+    const withdrawal = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setEnsureDelete(true)
+
         const body = {
             email: email,
             password: password
         }
+
         try{
-            const res = await axios.post('/api/user/signin', body);
-            const { accessToken, refreshTokenId, user } = res.data;
-            console.log(accessToken)
-            console.log(refreshTokenId)
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshTokenId', refreshTokenId);
-            dispatch(SIGNIN({
-                userName:user.userName,
-                email:user.email,
-                nickname:user.nickname,
-                profileImageName:user.profileImageName,
-                profileImagePath:user.profileImagePath
-            }));
+            const res = await instance.post(`/api/user/withdrawal`, body);
+            console.log(res.data);
+            setAlertMessage('탈퇴되었습니다.');
+            dispatch(SIGNOUT({}));
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshTokenId');
             navigate('/');
-        } catch(err){
-            console.log(err.response.data);
+        } catch(err: any){
+            console.log(err);
             setAlertMessage(err.response.data);
-            setAlertShow(true);
         }
     }
-    
+
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setAlertShow(true); 
+        setAlertMessage('정말 탈퇴하시겠습니까?');
+    }
+
     return (
         <div>
             {
                 alertShow
                 ? 
                 <Warning 
-                    onClickBtn={ alertClose } 
+                    onClickBtn={ ensureDelete ? alertClose : withdrawal } 
                     onClose={ alertClose }
                     titleText="경고" 
                     mainText={ alertMessage }
-                    btnText='닫기'
+                    btnText={ ensureDelete ? '닫기' : '탈퇴하기' } 
                     variant={ "danger" }
                     btnVariant={ "outline-danger" }
                 />
                 : null
             }
 
-            <Form onSubmit={ signin }>
+            <Form onSubmit={ onSubmit }>
                 <Title 
-                    titleText='Sign in'
-                    primaryBtn={ true }
-                    primaryBtnText="로그인"
+                    titleText='Withdrawal'
+                    warnBtn={ true }
+                    primaryBtn={ false }
+                    warnBtnText={ '탈퇴하기' }
                 />
 
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
@@ -114,4 +120,4 @@ const Signin = () => {
     )
 }
 
-export default Signin;
+export default Withdrawal;

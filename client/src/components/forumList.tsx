@@ -10,8 +10,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-import Pagination from '../organisms/pagination'
+import { ReducerType } from '../app/store';
+import { User } from '../features/userSlice'
 import instance from '../utils/instance';
+import Paging from '../organisms/pagination';
 
 const Td = styled.td`
     line-height:45px;
@@ -19,25 +21,48 @@ const Td = styled.td`
 `
 
 const ForumList = () => {
-    const signin = useSelector(state => state.user.signin);
-    const user = useSelector(state => state.user.user);
+    const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
+    const user = useSelector<ReducerType, User['user']>(state => state.user.user);
 
-    const [forums, setForums] = useState([]);
+    interface Forums {
+        _id: string;
+        titleText: string;
+        profileImagePath: string;
+        attachImageName: string;
+        viewCount: number;
+        heartCount: number;
+        heartFill: boolean;
+        nickname: string;
+        createdAt: string;
+    }
+
+    const [forums, setForums] = useState<Forums[]>([]);
     const [forumId, setForumId] = useState('');
     const [alertShow, setAlertShow] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [selectValue, setSelectValue] = useState('latestOrder');
-    const [pageOfForums, setPageOfForums] = useState([]);
+
+    const [totalItemsCount, setTotalItemsCount] = useState(0); 
+    const [activePage, setActivePage] = useState(1); 
+    const [itemsCountPerPage] = useState(5); //페이지당 아이템 개수
+
+    const [indexOfLastPost, setIndexOfLastPost] = useState(0);
+    const [indexOfFirstPost, setIndexOfFirstPost] = useState(0);
+    const [pageOfForums, setPageOfForums] = useState<Forums[]>([]);
+
+    const onChangePage = (pageNumber: number) => {
+        setActivePage(pageNumber);
+    };
 
     const navigate = useNavigate();
 
-    const onChangeSearch = (e) => {
+    const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
         let newSearchValue = e.target.value;
         setSearchValue(newSearchValue);
         setSelectValue('latestOrder')
     }
 
-    const onChangeSelect = (e) => {
+    const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>): void => {
         const newSelectValue = e.target.value;
         setSelectValue(newSelectValue);
         setSearchValue('');
@@ -45,7 +70,9 @@ const ForumList = () => {
     
     const deleteForum = async () => {
         const targetForum = forums.find(forum => forum._id === forumId);
-        const attachImageName = targetForum.attachImageName;
+        let attachImageName = '';
+
+        if(targetForum) attachImageName = targetForum.attachImageName;
 
         const params = {
             attachImageName: attachImageName
@@ -62,16 +89,16 @@ const ForumList = () => {
         }
     }
 
-    const clickDeleteBtn = (forumId) => {
+    const clickDeleteBtn = (forumId: string) => {
         setForumId(forumId);
         setAlertShow(true);
     }
 
-    const clickUpdateBtn = (id) => {
+    const clickUpdateBtn = (id: string) => {
         navigate(`/forum/update/${id}`)
     }
     
-    const updateHeart = async (e, forumId) => {  
+    const updateHeart = async (e: React.MouseEvent<HTMLDivElement>, forumId: string) => {  
         e.preventDefault();
 
         const body = {
@@ -107,10 +134,6 @@ const ForumList = () => {
         }
     }
 
-    const onChangePage = (pageOfForums) => {
-        setPageOfForums(pageOfForums)
-    }
-
     const getForums = async () => {
         const body = {
             selectValue: selectValue,
@@ -123,6 +146,7 @@ const ForumList = () => {
             const data = res.data;
             console.log(data)
             setForums(data)
+            setActivePage(1);
         } catch(err){
             console.log(err);
         }
@@ -131,6 +155,13 @@ const ForumList = () => {
     useEffect(() => {
         getForums()
     }, [selectValue, searchValue])
+
+    useEffect(() => {
+        setTotalItemsCount(forums.length);
+        setIndexOfLastPost(activePage * itemsCountPerPage);
+        setIndexOfFirstPost(indexOfLastPost - itemsCountPerPage);
+        setPageOfForums(forums.slice(indexOfFirstPost, indexOfLastPost));
+    }, [activePage, indexOfFirstPost, indexOfLastPost, forums, itemsCountPerPage]);
     
     return (
         <div>
@@ -225,7 +256,6 @@ const ForumList = () => {
                                         </Td>
                                         <Td>
                                             <HeartCount 
-                                                src={ false }
                                                 count={forum.heartCount} 
                                                 fill={forum.heartFill} 
                                                 onClick={ (e) => {updateHeart(e, forum._id)} } 
@@ -237,6 +267,7 @@ const ForumList = () => {
                                                 value="수정"
                                                 variant="secondary"
                                                 size="sm"
+                                                margin="none"
                                                 disabled={ forum.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
@@ -246,6 +277,7 @@ const ForumList = () => {
                                                 value="삭제"
                                                 variant="danger"
                                                 size="sm"
+                                                margin="none"
                                                 disabled={ forum.nickname === user.nickname ? false : true }
                                             />
                                         </Td>
@@ -260,9 +292,11 @@ const ForumList = () => {
             }
 
             {/* 페이지네이션 */}
-            <Pagination 
-                items={forums}
-                onChangePage={ pageOfForums => onChangePage(pageOfForums) } 
+            <Paging
+                activePage={activePage}
+                itemsCountPerPage={itemsCountPerPage}
+                totalItemsCount={totalItemsCount}
+                onChangePage={onChangePage}
             />
         </div>
     )

@@ -1,12 +1,47 @@
 import { Card, Form } from 'react-bootstrap';
 import Profile from '../atoms/profile';
 import Btn from '../atoms/button';
-import { useState } from 'react';
-import axios from 'axios';
+import React, { useState, Dispatch, SetStateAction } from 'react';
 import Warning from './warning'
 import instance from '../utils/instance';
+import axios, {AxiosError} from 'axios';
+import ServerError from 'axios';
 
-const CommentWrite = ({ profileImagePath, nickname, forumId, comments, setComments }) => {
+interface Comment {
+    commentId: string;
+    commentText: string;
+    createdAt: string;
+    heartCount: number;
+    heartFill: boolean;
+    nickname: string;
+    profileImagePath: string;
+}
+
+interface CommentWrite {
+    profileImagePath: string
+    nickname: string;
+    forumId: string;
+    comments: Array<Comment>;
+    setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
+}
+/*
+type CreateCommentRes = {
+    commentId: string;
+    commentText: string;
+    createdAt: string;
+    heartCount: number;
+    heartFill: boolean | undefined;
+    nickname: string | undefined;
+    profileImagePath: string | undefined;
+};
+*/
+const CommentWrite = ({ 
+    profileImagePath, 
+    nickname, 
+    forumId, 
+    comments, 
+    setComments 
+}: CommentWrite): React.ReactElement => {
 
     const [commentText, setCommentText] = useState('');
 
@@ -15,28 +50,29 @@ const CommentWrite = ({ profileImagePath, nickname, forumId, comments, setCommen
 
     const alertClose = () => setAlertShow(false);
 
-    const onChangeComment = e => {
+    const onChangeComment = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const newCommentText = e.target.value;
         setCommentText(newCommentText);
     }
 
-    const createComment = async (e) => {
+    const createComment = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         const body = {
             _forum: forumId,
             commentText: commentText
         }
+
         try{
             const res = await instance.post(`/api/comment/post`, body);
             const newComment = res.data
             const newComments = [...comments, newComment];
             setComments(newComments)
             setCommentText('');
-        } catch(err){
-            console.log(err);
-            setAlertShowMessage(err.response.data);
+        } catch(err: any){
+            setAlertShowMessage(err.response.data); 
             setAlertShow(true);
+            console.log(err)
         }
     }
 
@@ -46,6 +82,7 @@ const CommentWrite = ({ profileImagePath, nickname, forumId, comments, setCommen
                 alertShow
                 ? 
                 <Warning 
+                    alertShow={ alertShow }
                     onClickBtn={ alertClose } 
                     onClose={ alertClose }
                     titleText="안내" 

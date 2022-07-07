@@ -12,7 +12,7 @@ module.exports = (method) => {
         }
         case 'comment': {
             return [ 
-                check('commentText', '댓글을 입력하세요.').notEmpty(),
+                check('commentText', '댓글을 입력하세요.').notEmpty()
             ]   
         }
         case 'signup': {

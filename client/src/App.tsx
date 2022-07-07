@@ -7,43 +7,26 @@ import Signup from './components/signup';
 import Profile from './components/profile';
 import Withdrawal from './components/withdrawal';
 import ForumList from './components/forumList';
-import Comment from './organisms/comment';
-import CommentWrite from './organisms/commentWrite';
 import ForumWrite from './components/forumWrite';
 import ForumView from './components/forumView';
 import { useSelector, useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react';
 import Warning from './organisms/warning';
 import { useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
-import { SIGNIN, SIGNOUT } from './features/userSlice'
-import axios from 'axios';
+import { ReducerType } from './app/store';
+import { User } from './features/userSlice'
 
-function App() {
-  const signin = useSelector(state => state.user.signin);
+const App: React.FC = (): JSX.Element => {
+
+  const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
 
   const [alertShow, setAlertShow] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   return (
-    <div className="App">
+    <div className="App">  
         <Header />
-
-        {
-          alertShow 
-          ?  <Warning 
-              onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
-              onClose={() => {navigate('/'); setAlertShow(false);}}
-              titleText={'경고창'}
-              mainText={'로그인이 필요합니다. ( 토큰 유효기간 만료 )'}
-              btnText={'sign in'}
-              variant="danger"
-              btnVariant="outline-danger"
-            />
-          : null
-        }
 
         <Container>
             <Routes>
@@ -85,16 +68,6 @@ function App() {
                       /> 
                   }
                 />
-                
-                <Route 
-                  path="/forum/view/:id" 
-                  element={ <CommentWrite /> }
-                />
-                <Route 
-                  path="/forum/view/:id" 
-                  element={ <Comment /> }
-                />
-                
             </Routes>
         </Container>
     </div>

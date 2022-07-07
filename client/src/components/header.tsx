@@ -8,15 +8,18 @@ import Profile from '../atoms/profile';
 import Btn from '../atoms/button';
 import axios from 'axios';
 import instance from '../utils/instance'
+import { ReducerType } from '../app/store';
+import { User } from '../features/userSlice'
+import React from 'react';
 
 const Header = () => {
-    const user = useSelector(state => state.user.user);
-    const signin = useSelector(state => state.user.signin);
+    const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
+    const user = useSelector<ReducerType, User['user']>(state => state.user.user);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
-    const signout = async (e) => {
+    const signout = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         try{
@@ -37,6 +40,7 @@ const Header = () => {
                 <Navbar.Brand>
                     <Link to="/">
                         <Btn 
+                            variant="primary"
                             value="Forum"
                             margin='0 5px'
                             size="lg"
@@ -50,7 +54,10 @@ const Header = () => {
                     <Navbar.Collapse className="justify-content-end">
                         <Navbar.Text>
                             <Link to='/user/profile'>
-                                <Profile src={ user.profileImagePath } nickname={ user.nickname }/>
+                                <Profile 
+                                    src={ user.profileImagePath! } 
+                                    nickname={ user.nickname! }
+                                />
                             </Link>
                         </Navbar.Text>
                         <Navbar.Text>

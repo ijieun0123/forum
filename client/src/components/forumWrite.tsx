@@ -2,9 +2,9 @@ import { FloatingLabel, Form, Stack, Button } from 'react-bootstrap';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../atoms/title';
-import axios from 'axios';
 import Warning from '../organisms/warning'
 import instance from '../utils/instance';
+import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
 
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
@@ -20,18 +20,18 @@ const ForumWrite = () => {
 
     const alertClose = () => setAlertShow(false);
 
-    const onChangeTitle = e => {
+    const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTitle = e.target.value;
         setTitleText(newTitle);
     }
 
-    const onChangeMain = e => {
+    const onChangeMain = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newMain = e.target.value;
         setMainText(newMain);
     }
 
-    const onChangeAttachImagePath = e => {
-        const newAttachImagePath = e.target.value;
+    const onChangeAttachImagePath = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newAttachImagePath = e.target.value; 
         console.log(newAttachImagePath)
         setAttachImagePath(newAttachImagePath);
     }
@@ -46,35 +46,34 @@ const ForumWrite = () => {
         setAttachImagePath('');
     }
 
-    const createForum = async (e) => {
+    const createForum = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('titleText');
         formData.get('mainText');
         formData.append('attachImagePath', attachImagePath);
  
-        let config = {
+        let config: AxiosRequestConfig = {
             method: "post",
             url: "/api/forum/post",
             headers: {
-                "content-type": "application/json",
                 "content-type": "multipart/form-data"
             },
             data: formData,
         };
 
         try{
-            const res = await instance(config);
+            const res: AxiosResponse = await instance(config);
             console.log(res.data)
             formReset();
             navigate(`/`);
-        } catch(err){
+        } catch(err: any){
             setAlertShowMessage(err.response.data)
             setAlertShow(true)
         }
     }
 
-    const editForum = async (e) => {
+    const editForum = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('titleText');
@@ -82,28 +81,27 @@ const ForumWrite = () => {
         formData.append('attachImageName', attachImageName);
         formData.append('attachImagePath', attachImagePath);
 
-        let config = {
+        let config: AxiosRequestConfig = {
             method: "put",
             url: `/api/forum/update/${id}`,
             headers: {
-                "content-type": "application/json",
                 "content-type": "multipart/form-data"
             },
             data: formData,
         };
 
         try{
-            const res = await instance(config);
+            const res: AxiosResponse = await instance(config);
             console.log(res.data)
             formReset();
             navigate(`/`);
-        } catch(err){
+        } catch(err: any){
             setAlertShowMessage(err.response.data)
             setAlertShow(true)
         }
     }
 
-    const onSubmit = e => {
+    const onSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         (id ? editForum(e) : createForum(e))
     }
@@ -158,7 +156,7 @@ const ForumWrite = () => {
                             placeholder="Leave a comment here" 
                             value={ titleText }
                             onChange={ onChangeTitle }
-                            maxLength='40'
+                            maxLength={40}
                         />
                     </FloatingLabel>
                 </Form.Group>

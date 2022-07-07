@@ -12,7 +12,11 @@ const Img = styled.img`
     border-radius:50%;
 `
 
-const Nickname = styled.p`
+interface Nickname {
+    nicknameColor?: string;
+}
+
+const Nickname = styled.p<Nickname>`
     color:#fff;
     font-size:16px;
     margin:0;
@@ -20,7 +24,17 @@ const Nickname = styled.p`
     color: ${props => props.nicknameColor || "#fff"};
 `
 
-const Profile = ({ src, nickname, nicknameColor }) => {
+type Profile = {
+    src: string;
+    nickname: string;
+    nicknameColor?: string; 
+}
+
+const Profile = ({ 
+    src, 
+    nickname, 
+    nicknameColor 
+}: Profile): React.ReactElement => {
     return (
         <Box>
             <Img src={ src } alt='프로필 이미지' />

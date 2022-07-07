@@ -1,5 +1,5 @@
 import { Card, Form, Stack } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Profile from '../atoms/profile';
 import Title from '../atoms/title';
 import Btn from '../atoms/button';
@@ -9,23 +9,43 @@ import axios from 'axios';
 import Warning from './warning'
 import instance from '../utils/instance';
 
-const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
+interface Comment {
+	forumId: string;
+    nickname: string;
+    profileImagePath: string;
+}
+
+const Comment = ({ 
+    forumId, 
+    nickname, 
+    profileImagePath
+}: Comment): React.ReactElement => {
+    
+    interface Comment {
+        commentId: string;
+        commentText: string;
+        createdAt: string;
+        heartCount: number;
+        heartFill: boolean;
+        nickname: string;
+        profileImagePath: string;
+    }
 
     const [targetId, setTargetId] = useState('');
     const [commentText, setCommentText] = useState('')
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<Comment[]>([]);
 
     const [alertShow, setAlertShow] = useState(false);
     const [alertShowMessage, setAlertShowMessage] = useState('');
 
     const alertClose = () => setAlertShow(false);
 
-    const onChangeComment = e => {
+    const onChangeComment = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const newCommentText = e.target.value;
         setCommentText(newCommentText);
     }
 
-    const deleteComment = async (targetId) => {
+    const deleteComment = async (targetId: string) => {
         const body = {
             _forum: forumId
         }
@@ -40,7 +60,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
         }
     }
 
-    const updateHeart = async (commentId) => {
+    const updateHeart = async (commentId: string) => {
         const body = {
             _forum: forumId,
             _comment: commentId
@@ -92,19 +112,19 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                 setTargetId('');
             }
 
-        } catch(err){
+        } catch(err: any){
             console.log(err);
             setAlertShowMessage(err.response.data);
             setAlertShow(true);
         }
     }
 
-    const clickCancelBtn = async (commentText) => {
+    const clickCancelBtn = async (commentText: string) => {
         setTargetId('')
         setCommentText(commentText)
     }
 
-    const clickUpdateBtn = async (commentId, commentText) => {
+    const clickUpdateBtn = async (commentId: string, commentText: string) => {
         setTargetId(commentId)
         setCommentText(commentText)
     }
@@ -146,7 +166,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             { /* 댓글 view */
                 comments.map((comment, i) => {
                     return (
-                        <Card key={i} style={{ 'margin-bottom':20 }}>
+                        <Card key={i} style={{ 'margin-bottom':20 } as React.CSSProperties }>
                             <Card.Header as="h5">
                                 <Stack direction="horizontal" gap={3}>
                                     <div>
@@ -158,7 +178,6 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                                     </div>
                                     <div className="ms-auto" style={{ color:'#888', fontSize:15 }}>
                                         <HeartCount 
-                                            src={false} 
                                             count={ comment.heartCount } 
                                             fill={ comment.heartFill } 
                                             onClick={ () => updateHeart(comment.commentId) }
@@ -185,12 +204,14 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
                                             value={ targetId ? "Save" : "Update" } 
                                             variant="outline-primary"
                                             margin='10px 10px 0 0'
+                                            size="sm"
                                             onClick={ targetId ? updateComment : () => clickUpdateBtn(comment.commentId, comment.commentText) }
                                         />
                                         <Btn 
                                             value={ targetId ? "Cancel" : "Delete" }
                                             variant="outline-danger"
                                             margin='10px 0 0 0'
+                                            size="sm"
                                             onClick={ targetId ? () => clickCancelBtn(comment.commentText) : () => deleteComment(comment.commentId) }
                                         />
                                     </div>
@@ -209,9 +230,7 @@ const Comment = ({ forumId, nickname, profileImagePath, userId }) => {
             <CommentWrite 
                 nickname={ nickname }
                 profileImagePath={ profileImagePath }
-                userId={ userId }
                 forumId={ forumId }
-                getComments={ getComments }
                 comments={ comments }
                 setComments={ setComments }
             />

@@ -22,5 +22,11 @@ const store = configureStore({
     middleware: [thunk]
 });
 
+export type ReducerType = ReturnType<typeof reducers>;
+
+export type DispatchType = typeof store.dispatch;
+
 export default store;
+
+
 

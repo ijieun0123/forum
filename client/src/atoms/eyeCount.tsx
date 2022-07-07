@@ -10,7 +10,11 @@ const Count = styled.span`
     font-size:15px;
 `
 
-const EyeCount = ({ count }) => {
+type EyeCount = {
+    count: number;
+}
+
+const EyeCount = ({ count }: EyeCount): React.ReactElement => {
     return (
         <div>
             <Icon src='../../img/eye.svg' alt="조회수" />

@@ -16,7 +16,7 @@ const postForum = async (req, res) => {
     try{
         const newForum = new Forum(data);
         newForum.save()
-        res.status(200).json(newForum)
+        res.status(200).json('Forum saved')
     } catch (err) {
         res.status(500).json('server error');
     }
@@ -92,6 +92,7 @@ const getForums = async (req, res, next) => {
                     heartClickUsers: { $first: "$_heart._user" },
                     profileImagePath: { $first: "$_user.profileImagePath" },
                     nickname: { $first: "$_user.nickname" },
+                    attachImageName: { $first: "$attachImageName" },
                     titleText: { $first: "$titleText" },
                     viewCount: { $first: "$viewCount" },
                     createdAt: { $first: "$createdAt" },

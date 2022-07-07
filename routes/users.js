@@ -20,7 +20,7 @@ router.post('/signup', profileImageUpload, validate(checkSchema('signup')), post
 router.post('/signin', validate(checkSchema('signin')), getTokens, getUser)
 router.delete('/signout', auth, deleteToken)
 router.post('/withdrawal', auth, validate(checkSchema('withdrawal')), deleteUser, deleteToken)
-router.patch('/update/:id', auth, profileImageUpload, validate(checkSchema('profile')), updateUser);
+router.patch('/update', auth, profileImageUpload, validate(checkSchema('profile')), updateUser);
 router.post('/get/accessToken', getAccessToken)
 
 module.exports = router;

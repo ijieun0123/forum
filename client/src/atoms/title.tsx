@@ -15,6 +15,16 @@ const H3 = styled.h3`
     color:#2a2a2a;
 `
 
+type Title = {
+    titleText: string;
+    warnBtn?: boolean | undefined;
+    primaryBtn?: boolean | undefined;
+    clickWarnBtn?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    clickPrimaryBtn?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    primaryBtnText?: string;
+    warnBtnText?: string;
+}
+
 const Title = ({ 
     titleText, 
     warnBtn, 
@@ -23,7 +33,7 @@ const Title = ({
     clickPrimaryBtn, 
     primaryBtnText, 
     warnBtnText 
-}) => {
+}: Title): React.ReactElement => {
     return (
         <TitleBox>
             <H3>{ titleText }</H3>
