@@ -11,7 +11,9 @@ import instance from '../utils/instance'
 import { ReducerType } from '../app/store';
 import { User } from '../features/userSlice'
 import React from 'react';
-
+import { BtnMouseEventType } from '../utils/types';
+import { Users } from '../utils/axios';
+ 
 const Header = () => {
     const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
     const user = useSelector<ReducerType, User['user']>(state => state.user.user);
@@ -19,9 +21,18 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
-    const signout = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-
+    const signout = async () => {
+        Users.signout()
+        .then(() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshTokenId');
+            dispatch(SIGNOUT({}));
+            navigate('/');
+        })
+        .catch(err => {
+            console.log(err)
+        })
+        /*
         try{
             const res = await instance.delete('/api/user/signout')
             console.log(res.data.msg);
@@ -32,6 +43,7 @@ const Header = () => {
         } catch (err) {
             console.log(err)
         }
+        */
     }   
     
     return (
@@ -40,8 +52,8 @@ const Header = () => {
                 <Navbar.Brand>
                     <Link to="/">
                         <Btn 
-                            variant="primary"
-                            value="Forum"
+                            btnVariant="primary"
+                            btnText="Forum"
                             margin='0 5px'
                             size="lg"
                         /> 
@@ -55,7 +67,7 @@ const Header = () => {
                         <Navbar.Text>
                             <Link to='/user/profile'>
                                 <Profile 
-                                    src={ user.profileImagePath! } 
+                                    profileImagePath={ user.profileImagePath! } 
                                     nickname={ user.nickname! }
                                 />
                             </Link>
@@ -63,8 +75,8 @@ const Header = () => {
                         <Navbar.Text>
                             <Btn 
                                 onClick={ signout } 
-                                value="Sign out"
-                                variant="outline-light"
+                                btnText="Sign out"
+                                btnVariant="outline-light"
                                 margin='0 0 0 30px'
                             />
                         </Navbar.Text>
@@ -74,8 +86,8 @@ const Header = () => {
                         <Navbar.Text>
                             <Link to='/user/signin'>
                                 <Btn 
-                                    value="Sign in" 
-                                    variant="outline-light" 
+                                    btnText="Sign in" 
+                                    btnVariant="outline-light" 
                                     margin='0 10px'
                                 />
                             </Link>
@@ -83,8 +95,8 @@ const Header = () => {
                         <Navbar.Text>
                             <Link to='/user/signup'>
                                 <Btn 
-                                    value="Sign up" 
-                                    variant="outline-light" 
+                                    btnText="Sign up" 
+                                    btnVariant="outline-light" 
                                     margin='0'
                                 />
                             </Link>

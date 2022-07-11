@@ -6,7 +6,8 @@ import Title from '../atoms/title'
 import { useDispatch, useSelector } from 'react-redux'
 import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
-import instance from '../utils/instance';
+import { onChangeText, InputEventType, FormEventType } from '../utils/types'
+import { Users } from '../utils/axios'
 
 const Signin = () => {
     const [email, setEmail] = useState('')
@@ -20,27 +21,19 @@ const Signin = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newEmail = e.target.value;
-        setEmail(newEmail);
-    }
+    const onChangeEmail = (e: InputEventType) => onChangeText(e, setEmail);
+    const onChangePassword = (e: InputEventType) => onChangeText(e, setPassword);
 
-    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newPassword = e.target.value;
-        setPassword(newPassword);
-    }
-
-    const signin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const signin = async (e: FormEventType) => {
         e.preventDefault();
         const body = {
             email: email,
             password: password
         }
-        try{
-            const res = await axios.post('/api/user/signin', body);
-            const { accessToken, refreshTokenId, user } = res.data;
-            console.log(accessToken)
-            console.log(refreshTokenId)
+
+        Users.signin(body)
+        .then((data) => {
+            const { accessToken, refreshTokenId, user } = data;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshTokenId', refreshTokenId);
             dispatch(SIGNIN({
@@ -51,11 +44,12 @@ const Signin = () => {
                 profileImagePath:user.profileImagePath
             }));
             navigate('/');
-        } catch(err: any){
+        })
+        .catch((err: any)  => {
             console.log(err.response.data);
             setAlertMessage(err.response.data);
             setAlertShow(true);
-        }
+        })
     }
     
     return (
@@ -66,10 +60,10 @@ const Signin = () => {
                 <Warning 
                     onClickBtn={ alertClose } 
                     onClose={ alertClose }
-                    titleText="경고" 
+                    alertTitleText="Alert" 
                     mainText={ alertMessage }
-                    btnText='닫기'
-                    variant={ "danger" }
+                    btnText='Close'
+                    alertVariant={ "danger" }
                     btnVariant={ "outline-danger" }
                 />
                 : null
@@ -79,7 +73,7 @@ const Signin = () => {
                 <Title 
                     titleText='Sign in'
                     primaryBtn={ true }
-                    primaryBtnText="로그인"
+                    primaryBtnText="Sign in"
                 />
 
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">

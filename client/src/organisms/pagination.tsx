@@ -1,18 +1,12 @@
 import Pagination from 'react-js-pagination';
-
-type Paging = {
-    activePage: number;
-    itemsCountPerPage: number;
-    totalItemsCount: number;
-    onChangePage: (pageNumber: number) => void;
-}
+import { PagingType } from '../utils/types'
 
 const Paging = ({ 
     activePage, 
     itemsCountPerPage,
     totalItemsCount,
     onChangePage
- }: Paging): React.ReactElement => {
+ }: PagingType): React.ReactElement => {
 
     return(
         <Pagination

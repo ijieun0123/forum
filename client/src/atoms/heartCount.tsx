@@ -3,9 +3,12 @@ import { useSelector } from 'react-redux'
 import React from 'react';
 import { ReducerType } from '../app/store';
 import { User } from '../features/userSlice'
+import { HeartCountType } from '../utils/types';
 
-const Box = styled.div`
+const Button = styled.button`
     cursor:pointer;
+    background: none;
+    border: none;
 `
 
 const Icon = styled.img`
@@ -18,24 +21,18 @@ const Count = styled.span`
     font-size:15px;
 `
 
-type HeartCount = {
-    count: number;
-    onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-    fill: boolean;
-}
-
 const HeartCount = ({ 
-    count, 
+    heartCount, 
     onClick, 
-    fill 
-}: HeartCount): React.ReactElement => {
+    heartFill 
+}: HeartCountType): React.ReactElement => {
     const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
 
     return (
-        <Box onClick={ signin ? onClick : undefined }>
-            <Icon src={ fill ? '../../img/heart_true.svg' : '../../img/heart_false.svg' } alt="좋아요" />
-            <Count>{count}</Count>
-        </Box>
+        <Button onClick={ signin ? onClick : undefined }>
+            <Icon src={ heartFill ? '../../img/heart_true.svg' : '../../img/heart_false.svg' } alt="좋아요" />
+            <Count>{heartCount}</Count>
+        </Button>
     )
 }
 

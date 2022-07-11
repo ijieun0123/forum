@@ -14,6 +14,15 @@ import { ReducerType } from '../app/store';
 import { User } from '../features/userSlice'
 import instance from '../utils/instance';
 import Paging from '../organisms/pagination';
+import { Forums, Hearts } from '../utils/axios';
+import { 
+    ForumType, 
+    onChangeText, 
+    InputEventType, 
+    SelectEventType, 
+    BtnMouseEventType,
+    Types
+} from '../utils/types';
 
 const Td = styled.td`
     line-height:45px;
@@ -24,19 +33,7 @@ const ForumList = () => {
     const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
     const user = useSelector<ReducerType, User['user']>(state => state.user.user);
 
-    interface Forums {
-        _id: string;
-        titleText: string;
-        profileImagePath: string;
-        attachImageName: string;
-        viewCount: number;
-        heartCount: number;
-        heartFill: boolean;
-        nickname: string;
-        createdAt: string;
-    }
-
-    const [forums, setForums] = useState<Forums[]>([]);
+    const [forums, setForums] = useState<ForumType[]>([]);
     const [forumId, setForumId] = useState('');
     const [alertShow, setAlertShow] = useState(false);
     const [searchValue, setSearchValue] = useState('');
@@ -48,7 +45,7 @@ const ForumList = () => {
 
     const [indexOfLastPost, setIndexOfLastPost] = useState(0);
     const [indexOfFirstPost, setIndexOfFirstPost] = useState(0);
-    const [pageOfForums, setPageOfForums] = useState<Forums[]>([]);
+    const [pageOfForums, setPageOfForums] = useState<ForumType[]>([]);
 
     const onChangePage = (pageNumber: number) => {
         setActivePage(pageNumber);
@@ -56,20 +53,12 @@ const ForumList = () => {
 
     const navigate = useNavigate();
 
-    const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        let newSearchValue = e.target.value;
-        setSearchValue(newSearchValue);
-        setSelectValue('latestOrder')
-    }
-
-    const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-        const newSelectValue = e.target.value;
-        setSelectValue(newSelectValue);
-        setSearchValue('');
-    }
+    const onChangeSearch = (e: InputEventType) => onChangeText(e, setSearchValue);
+    const onChangeSelect = (e: SelectEventType) => onChangeText(e, setSelectValue);
     
+
     const deleteForum = async () => {
-        const targetForum = forums.find(forum => forum._id === forumId);
+        const targetForum = forums.find(forum => forum.forumId === forumId);
         let attachImageName = '';
 
         if(targetForum) attachImageName = targetForum.attachImageName;
@@ -78,42 +67,40 @@ const ForumList = () => {
             attachImageName: attachImageName
         }
 
-        try{            
-            const res = await instance.delete(`/api/forum/delete/${forumId}`, { params: params });
-            console.log(res.data);
-            const newForums = forums.filter(forum => forum._id !== forumId);
+        Forums.deleteForum(params, forumId)
+        .then(() => {
+            const newForums = forums.filter(forum => forum.forumId !== forumId);
             setAlertShow(false);
             setForums(newForums)
-        } catch(err){
+        })
+        .catch((err) => {
             console.log(err);
-        }
+        })
     }
 
-    const clickDeleteBtn = (forumId: string) => {
+    const clickDeleteBtn = (forumId: Types['forumId']) => {
         setForumId(forumId);
         setAlertShow(true);
     }
 
-    const clickUpdateBtn = (id: string) => {
-        navigate(`/forum/update/${id}`)
+    const clickUpdateBtn = (forumId: Types['forumId']) => {
+        navigate(`/forum/update/${forumId}`)
     }
     
-    const updateHeart = async (e: React.MouseEvent<HTMLDivElement>, forumId: string) => {  
+    const updateHeart = async (e: BtnMouseEventType, forumId: Types['forumId']) => {  
         e.preventDefault();
 
         const body = {
             _forum: forumId,
         }
 
-        try{
-            const res = await instance.post(`/api/heart/update`, body);
-            console.log(res.data.msg);
-          
+        Hearts.postHeart(body)
+        .then((data) => {
             let newForums = [...forums];
-            const findIndex = forums.findIndex(el => el._id == forumId);
-            const newHeartCount = forums[findIndex].heartCount + res.data.fixHeartCount;
-            const newHeartFill = res.data.heartFill;
-            
+            const findIndex = forums.findIndex(el => el.forumId == forumId);
+            const newHeartCount = forums[findIndex].heartCount + data.fixHeartCount;
+            const newHeartFill = data.heartFill;
+
             if(findIndex !== -1) {
                 newForums[findIndex] = {
                     ...newForums[findIndex], 
@@ -129,27 +116,27 @@ const ForumList = () => {
     
                 setForums(newForums)
             }
-        } catch(err){
+        })
+        .catch((err) => {
             console.log(err);
-        }
+        })
     }
 
-    const getForums = async () => {
+    const getForums = () => {
         const body = {
             selectValue: selectValue,
             searchValue: searchValue,
             nickname: user.nickname
         }
 
-        try{
-            const res = await axios.post('/api/forum/get', body)
-            const data = res.data;
-            console.log(data)
+        Forums.getForums(body)
+        .then((data) => {
             setForums(data)
             setActivePage(1);
-        } catch(err){
+        })
+        .catch((err) => {
             console.log(err);
-        }
+        })
     }
 
     useEffect(() => {
@@ -168,7 +155,7 @@ const ForumList = () => {
             <Title 
                 titleText='Forum' 
                 primaryBtn={true}
-                primaryBtnText='글쓰기'
+                primaryBtnText='Write'
                 clickPrimaryBtn={ () => navigate('/forum/write') }
             />
 
@@ -177,10 +164,10 @@ const ForumList = () => {
                 ?   <Warning 
                         onClickBtn={ deleteForum } 
                         onClose={ () => {setAlertShow(false)} }
-                        titleText="경고" 
+                        alertTitleText="Alert" 
                         mainText="게시물을 지우면 복구할 수 없습니다.&nbsp; 정말로 삭제하겠습니까?"
-                        btnText="삭제하기"
-                        variant="danger"
+                        btnText="Delete"
+                        alertVariant="danger"
                         btnVariant="outline-danger"
                     />
                 : null
@@ -242,30 +229,30 @@ const ForumList = () => {
                                         <Td>{1+i}</Td>
                                         <Td>
                                             <Profile 
-                                                src={forum.profileImagePath} 
+                                                profileImagePath={forum.profileImagePath} 
                                                 nickname={forum.nickname} 
                                                 nicknameColor="#000" 
                                             />
                                         </Td>
-                                        <Td onClick={() => {navigate(`/forum/view/${forum._id}`)}} style={{cursor:'pointer'}}>
+                                        <Td onClick={() => {navigate(`/forum/view/${forum.forumId}`)}} style={{cursor:'pointer'}}>
                                             { forum.titleText.slice(0, 40) }
                                         </Td>
                                         <Td>{ forum.createdAt.slice(0,10) }</Td>
                                         <Td>
-                                            <EyeCount count={forum.viewCount} />
+                                            <EyeCount viewCount={forum.viewCount} />
                                         </Td>
                                         <Td>
                                             <HeartCount 
-                                                count={forum.heartCount} 
-                                                fill={forum.heartFill} 
-                                                onClick={ (e) => {updateHeart(e, forum._id)} } 
+                                                heartCount={forum.heartCount} 
+                                                heartFill={forum.heartFill} 
+                                                onClick={ (e) => {updateHeart(e, forum.forumId)} } 
                                             />
                                         </Td>
                                         <Td>
                                             <Btn 
-                                                onClick={ () => {clickUpdateBtn(forum._id)}} 
-                                                value="수정"
-                                                variant="secondary"
+                                                onClick={ () => {clickUpdateBtn(forum.forumId)}} 
+                                                btnText="Update"
+                                                btnVariant="secondary"
                                                 size="sm"
                                                 margin="none"
                                                 disabled={ forum.nickname === user.nickname ? false : true }
@@ -273,9 +260,9 @@ const ForumList = () => {
                                         </Td>
                                         <Td>
                                             <Btn 
-                                                onClick={ () => {clickDeleteBtn(forum._id)} } 
-                                                value="삭제"
-                                                variant="danger"
+                                                onClick={ () => {clickDeleteBtn(forum.forumId)} } 
+                                                btnText="Delete"
+                                                btnVariant="danger"
                                                 size="sm"
                                                 margin="none"
                                                 disabled={ forum.nickname === user.nickname ? false : true }

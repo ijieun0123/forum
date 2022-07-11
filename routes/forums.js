@@ -29,7 +29,6 @@ router.post('/post', auth, attachImageUpload, validate(checkSchema('forum')), po
 router.get('/view/get/:id', auth, updateViewCount, getForum)
 router.get('/write/get/:id', auth, getForum)
 router.put('/update/:id', attachImageUpload, validate(checkSchema('forum')), updateForum);
-router.patch('/heart/update/:id', auth, updateForumHeart);
 router.delete('/delete/:id', auth, deleteForum, deleteHearts, deleteComments);
 router.delete('/delete', deleteForums);
 

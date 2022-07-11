@@ -43,10 +43,10 @@ const App: React.FC = (): JSX.Element => {
                     : <Warning 
                         onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
                         onClose={() => {navigate('/'); setAlertShow(false);}}
-                        titleText={'경고창'}
+                        alertTitleText={'Alert'}
                         mainText={'로그인이 필요합니다.'}
-                        btnText={'sign in'}
-                        variant="danger"
+                        btnText="Sign in"
+                        alertVariant="danger"
                         btnVariant="outline-danger"
                       /> 
                   }
@@ -60,10 +60,10 @@ const App: React.FC = (): JSX.Element => {
                     : <Warning 
                         onClickBtn={() => {navigate('/user/signin'); setAlertShow(false);}}
                         onClose={() => {navigate('/'); setAlertShow(false);}}
-                        titleText={'경고창'}
+                        alertTitleText={'Alert'}
                         mainText={'로그인이 필요합니다.'}
-                        btnText={'sign in'}
-                        variant="danger"
+                        btnText="Sign in"
+                        alertVariant="danger"
                         btnVariant="outline-danger"
                       /> 
                   }

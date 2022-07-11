@@ -11,6 +11,7 @@ import EyeCount from '../atoms/eyeCount';
 import instance from '../utils/instance';
 import { ReducerType } from '../app/store';
 import { User } from '../features/userSlice'
+import { Forums, Hearts } from '../utils/axios';
 
 const ForumView = () => {
 
@@ -22,8 +23,8 @@ const ForumView = () => {
     const [mainText, setMainText] = useState('');
     const [titleText, setTitleText] = useState('');
     const [viewCount, setViewCount] = useState(0);
-    const [writer, setWriter] = useState('');
-    const [writerImg, setWriterImg] = useState('');
+    const [nickName, setNickName] = useState('');
+    const [profileImagePath, setProfileImagePath] = useState('');
 
     const [alertShow, setAlertShow] = useState(false);
     
@@ -62,24 +63,28 @@ const ForumView = () => {
     }
 
     const updateHeart = async () => {
-        const body = {
-            _forum: id
-        }
-        try{            
-            const res = await instance.post(`/api/heart/update`, body);
-            const newHeartCount = heartCount + res.data.fixHeartCount;
-            const newHeartFill =  res.data.heartFill
-            setHeartCount(newHeartCount)
-            setHeartFill(newHeartFill)
-        } catch(err){
-            console.log(err);
+        if(id){
+            const body = {
+                _forum: id
+            }
+    
+            Hearts.postHeart(body)
+            .then(data => {
+                const newHeartCount = heartCount + data.fixHeartCount;
+                const newHeartFill =  data.heartFill
+                setHeartCount(newHeartCount)
+                setHeartFill(newHeartFill)
+            })
+            .catch(err => {
+                console.log(err);
+            })
         }
     }
 
     const getForum = async () => {
-        try{
-            const res = await instance.get(`/api/forum/view/get/${id}`)
-            const data = res.data[0];
+        if(id) 
+        Forums.getForumGetViewCount(id)
+        .then((data) => {
             setAttachImagePath(data.attachImagePath)
             setAttachImageName(data.attachImageName)
             setCreatedAt(data.createdAt)
@@ -88,12 +93,13 @@ const ForumView = () => {
             setMainText(data.mainText)
             setTitleText(data.titleText)
             setViewCount(data.viewCount)
-            setWriter(data.nickname)
-            setWriterImg(data.profileImagePath)
-            console.log(data)
-        } catch(err){
+            setNickName(data.nickname)
+            setProfileImagePath(data.profileImagePath)
+            console.log(data) 
+        })
+        .catch((err) => {
             console.log(err);
-        }
+        })
     }
 
     useEffect(() => {
@@ -104,12 +110,12 @@ const ForumView = () => {
         <div>
             <Title 
                 titleText='Forum View' 
-                warnBtn={ user.nickname === writer ? true : false }
-                primaryBtn={ user.nickname === writer ? true : false }
+                warnBtn={ user.nickname === nickName ? true : false }
+                primaryBtn={ user.nickname === nickName ? true : false }
                 clickWarnBtn={ () => {setAlertShow(true)}  }
                 clickPrimaryBtn={ () => navigate(`/forum/update/${id}`) }
-                primaryBtnText="수정하기"
-                warnBtnText="삭제하기"
+                primaryBtnText="Update"
+                warnBtnText="Delete"
             />
                
             {
@@ -118,10 +124,10 @@ const ForumView = () => {
                 <Warning 
                     onClickBtn={ deleteForum } 
                     onClose={ () => {setAlertShow(false)} }
-                    titleText="경고" 
+                    alertTitleText="Alert" 
                     mainText="게시물을 지우면 복구할 수 없습니다.&nbsp; 정말로 삭제하겠습니까?"
-                    btnText="삭제하기"
-                    variant="danger"
+                    btnText="Delete"
+                    alertVariant="danger"
                     btnVariant="outline-danger"
                 />
                 : null
@@ -132,8 +138,8 @@ const ForumView = () => {
                     <Stack direction="horizontal" gap={3}>
                         <div>
                             <Profile 
-                                src={ writerImg }  
-                                nickname={ writer } 
+                                profileImagePath={ profileImagePath }  
+                                nickname={ nickName } 
                                 nicknameColor="#000" 
                             />
                         </div>
@@ -141,12 +147,12 @@ const ForumView = () => {
                             {titleText.slice(0, 40)}
                         </div>
                         <div className="ms-auto">
-                            <EyeCount count={viewCount} />
+                            <EyeCount viewCount={viewCount} />
                         </div>
                         <div>
                             <HeartCount 
-                                count={heartCount} 
-                                fill={heartFill} 
+                                heartCount={heartCount} 
+                                heartFill={heartFill} 
                                 onClick={ updateHeart } 
                             />
                         </div>

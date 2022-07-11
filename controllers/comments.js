@@ -66,7 +66,6 @@ const getComments = async (req, res) => {
                     createdAt: { $first: "$createdAt" },
                 }
             },
-            {  $unwind: "$_id" },
             { 
                 $sort : { createdAt : 1 } 
             },
@@ -96,14 +95,6 @@ const getComments = async (req, res) => {
     } catch (err) {
         res.status(400).json('Error: ' + err)
     }
-}
-
-const getMyComment = (req, res) => {
-    const _user = req.user.id;
-
-    Comment.find({_user: _user})
-    .then(comments => res.json(comments))
-    .catch(err => res.status(400).json('Error: ' + err));
 }
 
 const updateComment = async (req, res) => {
@@ -145,7 +136,6 @@ const deleteComments = (req, res) => {
 module.exports = {
     postComment,
     getComments,
-    getMyComment,
     updateComment,
     deleteComment,
     deleteComments

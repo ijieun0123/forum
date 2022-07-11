@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { ProfileType, Types } from '../utils/types';
 
 const Box = styled.div`
     display:flex;
@@ -13,7 +14,7 @@ const Img = styled.img`
 `
 
 interface Nickname {
-    nicknameColor?: string;
+    nicknameColor?: Types['nicknameColor'];
 }
 
 const Nickname = styled.p<Nickname>`
@@ -24,20 +25,14 @@ const Nickname = styled.p<Nickname>`
     color: ${props => props.nicknameColor || "#fff"};
 `
 
-type Profile = {
-    src: string;
-    nickname: string;
-    nicknameColor?: string; 
-}
-
 const Profile = ({ 
-    src, 
+    profileImagePath, 
     nickname, 
     nicknameColor 
-}: Profile): React.ReactElement => {
+}: ProfileType): React.ReactElement => {
     return (
         <Box>
-            <Img src={ src } alt='프로필 이미지' />
+            <Img src={ profileImagePath } alt='프로필 이미지' />
             <Nickname nicknameColor={ nicknameColor }>{ nickname }</Nickname>
         </Box>
     )

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Button } from 'react-bootstrap'; 
+import { TitleType } from '../utils/types';
 
 const TitleBox = styled.div`
     display:flex;
@@ -15,16 +16,6 @@ const H3 = styled.h3`
     color:#2a2a2a;
 `
 
-type Title = {
-    titleText: string;
-    warnBtn?: boolean | undefined;
-    primaryBtn?: boolean | undefined;
-    clickWarnBtn?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    clickPrimaryBtn?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    primaryBtnText?: string;
-    warnBtnText?: string;
-}
-
 const Title = ({ 
     titleText, 
     warnBtn, 
@@ -33,7 +24,7 @@ const Title = ({
     clickPrimaryBtn, 
     primaryBtnText, 
     warnBtnText 
-}: Title): React.ReactElement => {
+}: TitleType): React.ReactElement => {
     return (
         <TitleBox>
             <H3>{ titleText }</H3>

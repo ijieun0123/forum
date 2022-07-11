@@ -11,6 +11,12 @@ import styled from 'styled-components';
 import instance from '../utils/instance';
 import { ReducerType } from '../app/store';
 import { User } from '../features/userSlice'
+import { 
+    onChangeText, 
+    onChangeImageSrc,
+    InputEventType,
+    FormEventType
+} from '../utils/types';
 
 const Img = styled.img`
     display:block;
@@ -47,41 +53,11 @@ const Profile = () => {
         setProfileImagePath('');
     }
 
-    const onChangeProfileImageSrc = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if(e.target.files){
-            const fileBlob = e.target.files[0]
-            const reader = new FileReader();
-            reader.readAsDataURL(fileBlob);
-            console.log(e.target.files)
-            return new Promise<void>((resolve) => {
-                reader.onload = () => {
-                    setProfileImageSrc(reader.result as string);
-                    resolve();
-                };
-            });
-        }
-    }
-
-    const onChangeProfileImagePath = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newProfileImagePath = e.target.value;
-        console.log(newProfileImagePath)
-        setProfileImagePath(newProfileImagePath);
-    }
-
-    const onChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newUserName = e.target.value;
-        setUserName(newUserName);
-    }
-
-    const onChangeNickName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newNickName = e.target.value;
-        setNickname(newNickName);
-    }
-
-    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newemail = e.target.value;
-        setEmail(newemail);
-    }
+    const onChangeProfileImageSrc = (e: InputEventType) => onChangeImageSrc(e, setProfileImageSrc);
+    const onChangeProfileImagePath = (e: InputEventType) => onChangeText(e, setProfileImagePath);
+    const onChangeUserName = (e: InputEventType) => onChangeText(e, setUserName);
+    const onChangeNickName = (e: InputEventType) => onChangeText(e, setNickname);
+    const onChangeEmail = (e: InputEventType) => onChangeText(e, setEmail);
 
     const formReset = () => {
         setProfileImagePath('');
@@ -90,7 +66,7 @@ const Profile = () => {
         setEmail('');
     }
 
-    const editUser = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    const editUser = async (e: FormEventType) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('userName');
@@ -147,10 +123,10 @@ const Profile = () => {
                 <Warning 
                     onClickBtn={ validation ? () => navigate('/') : alertClose } 
                     onClose={ alertClose }
-                    titleText={ validation ? '안내' : '경고' }
+                    alertTitleText={ validation ? 'Info' : 'Alert' }
                     mainText={ alertMessage }
-                    btnText={ validation ? '홈으로' : '닫기' }
-                    variant={ validation ? 'primary' : 'danger' }
+                    btnText={ validation ? 'Home' : 'Close' }
+                    alertVariant={ validation ? 'primary' : 'danger' }
                     btnVariant={ validation ? "outline-primary" : "outline-danger" }
                 />
                 : null
@@ -162,8 +138,8 @@ const Profile = () => {
                     warnBtn={ true }
                     primaryBtn={ true }
                     clickWarnBtn={ () => navigate(`/user/withdrawal`) }
-                    primaryBtnText='수정하기'
-                    warnBtnText="탈퇴하기"
+                    primaryBtnText='Update'
+                    warnBtnText="Withdrawal"
                 />
                 
                 {

@@ -1,16 +1,6 @@
 import { Alert, Button  } from 'react-bootstrap'
 import styled from 'styled-components';
-
-type Warning = {
-    alertShow?: boolean;
-    onClickBtn: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    onClose: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    titleText: string;
-    mainText: string;
-    btnText: string;
-    variant: string;
-    btnVariant: string;
-}
+import { WarningType } from '../utils/types'
 
 const Body = styled.div`
     position:fixed;
@@ -26,12 +16,12 @@ const Warning = ({
     alertShow, 
     onClickBtn, 
     onClose, 
-    titleText, 
+    alertTitleText, 
     mainText, 
     btnText, 
-    variant, 
+    alertVariant, 
     btnVariant 
-}: Warning): React.ReactElement => {
+}: WarningType): React.ReactElement => {
     
     const alertStyle = {
         position:'absolute',
@@ -46,11 +36,11 @@ const Warning = ({
             <Alert 
                 show={alertShow} 
                 onClose={onClose} 
-                variant={variant}
+                variant={alertVariant}
                 dismissible 
                 style={alertStyle}
             >
-                <Alert.Heading>{titleText}</Alert.Heading>
+                <Alert.Heading>{alertTitleText}</Alert.Heading>
                 <p>{mainText}</p>
                 <div className="d-flex justify-content-end">
                     <Button variant={btnVariant} onClick={onClickBtn} >

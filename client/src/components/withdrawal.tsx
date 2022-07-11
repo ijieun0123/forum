@@ -7,6 +7,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { SIGNIN, SIGNOUT } from '../features/userSlice'
 import Warning from '../organisms/warning'
 import instance from '../utils/instance';
+import { 
+    onChangeText, 
+    InputEventType, 
+    BtnMouseEventType, 
+    FormEventType 
+} from '../utils/types';
+import { Users } from '../utils/axios';
 
 const Withdrawal = () => {
 
@@ -25,17 +32,10 @@ const Withdrawal = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newEmail = e.target.value;
-        setEmail(newEmail);
-    }
+    const onChangeEmail = (e: InputEventType) => onChangeText(e, setEmail)
+    const onChangePassword = (e: InputEventType) => onChangeText(e, setPassword)
 
-    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newPassword = e.target.value;
-        setPassword(newPassword);
-    }
-
-    const withdrawal = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const withdrawal = async (e: BtnMouseEventType) => {
         setEnsureDelete(true)
 
         const body = {
@@ -43,6 +43,19 @@ const Withdrawal = () => {
             password: password
         }
 
+        Users.withdrawal(body)
+        .then(() => {
+            setAlertMessage('탈퇴되었습니다.');
+            dispatch(SIGNOUT({}));
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshTokenId');
+            navigate('/');
+        })
+        .catch((err: any) => {
+            console.log(err);
+            setAlertMessage(err.response.data);
+        })
+        /*
         try{
             const res = await instance.post(`/api/user/withdrawal`, body);
             console.log(res.data);
@@ -55,9 +68,10 @@ const Withdrawal = () => {
             console.log(err);
             setAlertMessage(err.response.data);
         }
+        */
     }
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = (e: FormEventType) => {
         e.preventDefault();
         setAlertShow(true); 
         setAlertMessage('정말 탈퇴하시겠습니까?');
@@ -71,10 +85,10 @@ const Withdrawal = () => {
                 <Warning 
                     onClickBtn={ ensureDelete ? alertClose : withdrawal } 
                     onClose={ alertClose }
-                    titleText="경고" 
+                    alertTitleText="Alert" 
                     mainText={ alertMessage }
-                    btnText={ ensureDelete ? '닫기' : '탈퇴하기' } 
-                    variant={ "danger" }
+                    btnText={ ensureDelete ? 'Close' : 'Withdrawal' } 
+                    alertVariant={ "danger" }
                     btnVariant={ "outline-danger" }
                 />
                 : null
@@ -85,7 +99,7 @@ const Withdrawal = () => {
                     titleText='Withdrawal'
                     warnBtn={ true }
                     primaryBtn={ false }
-                    warnBtnText={ '탈퇴하기' }
+                    warnBtnText={ 'Withdrawal' }
                 />
 
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">

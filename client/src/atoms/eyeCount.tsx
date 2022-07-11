@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { EyeCountType } from '../utils/types';
 
 const Icon = styled.img`
     width:22px;
@@ -10,15 +11,11 @@ const Count = styled.span`
     font-size:15px;
 `
 
-type EyeCount = {
-    count: number;
-}
-
-const EyeCount = ({ count }: EyeCount): React.ReactElement => {
+const EyeCount = ({ viewCount }: EyeCountType): React.ReactElement => {
     return (
         <div>
             <Icon src='../../img/eye.svg' alt="조회수" />
-            <Count>{count}</Count>
+            <Count>{viewCount}</Count>
         </div>
     )
 }

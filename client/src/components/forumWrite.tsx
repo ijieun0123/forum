@@ -5,6 +5,8 @@ import Title from '../atoms/title';
 import Warning from '../organisms/warning'
 import instance from '../utils/instance';
 import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
+import { onChangeText, InputEventType, FormEventType } from '../utils/types';
+import { Forums } from '../utils/axios'
 
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
@@ -20,21 +22,9 @@ const ForumWrite = () => {
 
     const alertClose = () => setAlertShow(false);
 
-    const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTitle = e.target.value;
-        setTitleText(newTitle);
-    }
-
-    const onChangeMain = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newMain = e.target.value;
-        setMainText(newMain);
-    }
-
-    const onChangeAttachImagePath = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newAttachImagePath = e.target.value; 
-        console.log(newAttachImagePath)
-        setAttachImagePath(newAttachImagePath);
-    }
+    const onChangeTitle = (e: InputEventType) => onChangeText(e, setTitleText);
+    const onChangeMain = (e: InputEventType) => onChangeText(e, setMainText);
+    const onChangeAttachImagePath = (e: InputEventType) => onChangeText(e, setAttachImagePath);
 
     const deleteAttachImagePath = () => {
         setAttachImagePath('');
@@ -46,7 +36,7 @@ const ForumWrite = () => {
         setAttachImagePath('');
     }
 
-    const createForum = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    const createForum = async (e: FormEventType) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('titleText');
@@ -54,14 +44,24 @@ const ForumWrite = () => {
         formData.append('attachImagePath', attachImagePath);
  
         let config: AxiosRequestConfig = {
-            method: "post",
             url: "/api/forum/post",
+            method: "post",
             headers: {
                 "content-type": "multipart/form-data"
             },
             data: formData,
         };
-
+        /*
+        Forums.postForum(config)
+        .then((data) => {
+            formReset();
+            navigate(`/`);
+        })
+        .catch((err) => {
+            setAlertShowMessage(err.response.data)
+            setAlertShow(true)
+        })
+        */
         try{
             const res: AxiosResponse = await instance(config);
             console.log(res.data)
@@ -73,7 +73,7 @@ const ForumWrite = () => {
         }
     }
 
-    const editForum = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    const editForum = async (e: FormEventType) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('titleText');
@@ -101,7 +101,7 @@ const ForumWrite = () => {
         }
     }
 
-    const onSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+    const onSubmit = (e: FormEventType) => {
         e.preventDefault();
         (id ? editForum(e) : createForum(e))
     }
@@ -132,10 +132,10 @@ const ForumWrite = () => {
                 <Warning 
                     onClickBtn={ alertClose } 
                     onClose={ alertClose }
-                    titleText="안내" 
+                    alertTitleText="Alert" 
                     mainText={ alertShowMessage }
-                    btnText="닫기"
-                    variant="danger"
+                    btnText="Close"
+                    alertVariant="danger"
                     btnVariant="outline-danger"
                 />
                 : null
@@ -145,7 +145,7 @@ const ForumWrite = () => {
                 <Title 
                     titleText='Forum Write'
                     primaryBtn={ true }
-                    primaryBtnText="저장하기"
+                    primaryBtnText="Save"
                 />
 
                 <Form.Group controlId="formFile" className="mb-3">

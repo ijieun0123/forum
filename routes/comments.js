@@ -5,7 +5,6 @@ const validate = require('../validation/validate');
 const {
     postComment,
     getComments,
-    getMyComment,
     updateComment,
     deleteComment
 } = require('../controllers/comments');
@@ -15,7 +14,6 @@ const {
 
 router.post('/post', auth, validate(checkSchema('comment')), postComment);
 router.get('/get/:id', auth, getComments);
-router.get('/myComment/get', auth, getMyComment);
 router.patch('/update/:id', auth, validate(checkSchema('comment')), updateComment);
 router.delete('/delete/:id', auth, deleteComment, deleteHearts);
 

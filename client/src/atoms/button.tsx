@@ -1,34 +1,25 @@
 import { Button } from 'react-bootstrap'; 
-
-type Btn = {
-    value: string;
-    onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void; 
-    margin: string | number;
-    variant: string;
-    size?: "sm" | "lg";
-    type?: "submit";
-    disabled?: boolean;
-};
+import { BtnType } from '../utils/types';
 
 const Btn = ({ 
-    value, 
+    btnText, 
     onClick, 
     margin, 
-    variant, 
+    btnVariant, 
     size, 
     type, 
     disabled 
-}: Btn): React.ReactElement => {
+}: BtnType): React.ReactElement => {
     return (
         <Button 
             onClick={ onClick }
-            variant={ variant } 
+            variant={ btnVariant } 
             style={{ margin: margin }}
             size={ size }
             type={ type }
             disabled = { disabled }
         >
-            { value }
+            { btnText }
         </Button>
     )
 }

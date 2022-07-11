@@ -89,6 +89,7 @@ const getForums = async (req, res, next) => {
             { 
                 $group: {
                     _id: "$_id",
+                    forumId: { $first: "$_id" },
                     heartClickUsers: { $first: "$_heart._user" },
                     profileImagePath: { $first: "$_user.profileImagePath" },
                     nickname: { $first: "$_user.nickname" },
@@ -98,7 +99,6 @@ const getForums = async (req, res, next) => {
                     createdAt: { $first: "$createdAt" },
                 }
             },
-            {  $unwind: "$_id" },
             { 
                 $addFields: {
                     heartFill: { 
@@ -113,6 +113,7 @@ const getForums = async (req, res, next) => {
             },
             { 
                 $project: { 
+                    _id:0,
                     updatedAt:0,
                     __v: 0,
                     heartClickUsers:0,
@@ -181,6 +182,7 @@ const getForum = async (req, res) => {
             { 
                 $group: {
                     _id: "$_id",
+                    forumId: { $first: "$_id" },
                     heartClickUsers: { $first: "$_heart._user" },
                     profileImagePath: { $first: "$_user.profileImagePath" },
                     nickname: { $first: "$_user.nickname" },
@@ -206,13 +208,14 @@ const getForum = async (req, res) => {
             },
             { 
                 $project: { 
+                    _id:0,
                     updatedAt:0,
                     __v: 0,
                     heartClickUsers:0,
                 } 
             }
         ])
-        res.status(200).json(forum)
+        res.status(200).json(forum[0])
     } catch (err) {
         res.status(400).json('Error: ' + err)
     }
