@@ -6,8 +6,6 @@ const updateHeart = async (req, res) => {
     const _forum = req.body._forum; // forum id 반드시 필요
     const data = { _user, _comment, _forum };
 
-    req._forum = _forum;
-
     try{
         const heart = await Heart.findOne({ 
             $and: [ 
@@ -36,23 +34,6 @@ const updateHeart = async (req, res) => {
         res.status(400).json(err)
     }
 }
-/*
-const deleteHearts = async (req, res, next) => {
-    const _comment = ( req._comment ? req._comment : null );
-    const _forum = ( req._forum ? req._forum : null );
-
-    try{
-        await Heart.deleteMany(( _comment ? { _comment: _comment } : { _forum: _forum } ))
-        next();
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
-            error: true,
-            msg: 'Server Error'
-        })
-    }
-}
-*/
 
 const deleteHearts = async (req, res, next) => {
     const _comment = ( req._comment ? req._comment : null );

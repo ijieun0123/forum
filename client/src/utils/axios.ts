@@ -18,8 +18,7 @@ interface deleteForumParams {
 const forumRequests = {
     getForumsRequest: (url: string, body: getForumsBody) => instance.post<ForumType>(url, body).then(responseBody),
     getForumRequest: (url: string) => instance.get<ForumType>(url).then(responseBody),
-    //postForumRequest: (config: AxiosRequestConfig) => instance.post<ForumType>(config).then(responseBody),
-    //updateForumRequest,
+    postForumRequest: (config: AxiosRequestConfig) => instance.request<AxiosResponse>(config).then(responseBody),
     deleteForumRequest: (url: string, params: deleteForumParams) => instance.delete<ForumType>(url, { params }).then(responseBody),
 };
 
@@ -27,8 +26,7 @@ export const Forums = {
     getForums : (body: getForumsBody) : Promise<ForumType[]> => forumRequests.getForumsRequest('/api/forum/get', body),
     getForum : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/write/get/${id}`),
     getForumGetViewCount : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/view/get/${id}`),
-    //postForum : (config: AxiosRequestConfig) : Promise<ForumType> => forumRequests.postForumRequest(config),
-    //updateForum
+    postForumRequest : (config: AxiosRequestConfig) : Promise<AxiosResponse> => forumRequests.postForumRequest(config),
     deleteForum : (params: deleteForumParams, id: string) : Promise<ForumType> => forumRequests.deleteForumRequest(`/api/forum/delete/${id}`, params),
 }
 
@@ -73,7 +71,7 @@ interface HeartResponse {
 }
 
 const heartRequest = {
-    postHeartRequest: (url: string, body: postHeartBody) => instance.post<postHeartBody>(url, body).then(responseBody)
+    postHeartRequest: (url: string, body: postHeartBody) => instance.post<HeartResponse>(url, body).then(responseBody)
 }
 
 export const Hearts = {
@@ -86,31 +84,31 @@ interface authBody {
     password: string;
 }
 
+interface profileResponse {
+    userName: string;
+    email: string;
+    nickname: string;
+    profileImageName: string;
+    profileImagePath: string;
+}
+
 interface signinResponse {
     accessToken: string;
     refreshTokenId: string;
-    user: {
-        userName: string;
-        email: string;
-        nickname: string;
-        profileImageName: string;
-        profileImagePath: string;
-    };
+    user: profileResponse;
 }
 
 const userRequest = {
-    //signupRequest: (url: string, body: )
-    authRequest: (url: string, body: authBody) => instance.post<authBody>(url, body).then(responseBody),
+    signupRequest: (config: AxiosRequestConfig) => instance.request<AxiosResponse>(config).then(responseBody),
+    authRequest: (url: string, body: authBody) => instance.post<signinResponse>(url, body).then(responseBody),
     signoutRequest: (url: string) => instance.delete(url).then(responseBody),
-    //updateRequest:
-    //getAccessTokenRequest:
+    updateProfileRequest: (config: AxiosRequestConfig) => instance.request<profileResponse>(config).then(responseBody),
 }
 
 export const Users = {
-    //signup
+    signup : (config: AxiosRequestConfig) : Promise<AxiosResponse> => userRequest.signupRequest(config),
     signin : (body: authBody) : Promise<signinResponse> => userRequest.authRequest('/api/user/signin', body),
     signout : () => userRequest.signoutRequest('/api/user/signout'),
     withdrawal : (body: authBody) => userRequest.authRequest(`/api/user/withdrawal`, body),
-    //update
-    //getAccessToken
+    updateProfile : (config: AxiosRequestConfig) : Promise<profileResponse> => userRequest.updateProfileRequest(config),
 }

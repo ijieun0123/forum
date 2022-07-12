@@ -31,10 +31,11 @@ const upload = multer({
 });
 
 const attachImageUpload = upload.single('attachImagePath');
+const testImageUpload = upload.fields([{ name: 'titleText', maxCount: 1 }, { name: 'mainText', maxCount: 1 }, { name: 'attachImagePath', maxCount: 1 }]);
 const profileImageUpload = upload.single('profileImagePath');
 
 module.exports = {
     attachImageUpload,
-    profileImageUpload
+    //testImageUpload,
+    profileImageUpload,
 }
-

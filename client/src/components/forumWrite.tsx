@@ -36,41 +36,36 @@ const ForumWrite = () => {
         setAttachImagePath('');
     }
 
+    const postForum = (config: AxiosRequestConfig) => {
+        Forums.postForumRequest(config)
+        .then(() => {
+            formReset();
+            navigate(`/`);
+        })
+        .catch((err: any) => {
+            setAlertShowMessage(err.response.data)
+            setAlertShow(true)
+        })
+    }
+
     const createForum = async (e: FormEventType) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.get('titleText');
         formData.get('mainText');
         formData.append('attachImagePath', attachImagePath);
- 
-        let config: AxiosRequestConfig = {
+
+        const config: AxiosRequestConfig = {
             url: "/api/forum/post",
             method: "post",
             headers: {
+                "Content-Type": "application/json",
                 "content-type": "multipart/form-data"
             },
             data: formData,
         };
-        /*
-        Forums.postForum(config)
-        .then((data) => {
-            formReset();
-            navigate(`/`);
-        })
-        .catch((err) => {
-            setAlertShowMessage(err.response.data)
-            setAlertShow(true)
-        })
-        */
-        try{
-            const res: AxiosResponse = await instance(config);
-            console.log(res.data)
-            formReset();
-            navigate(`/`);
-        } catch(err: any){
-            setAlertShowMessage(err.response.data)
-            setAlertShow(true)
-        }
+        
+        postForum(config);
     }
 
     const editForum = async (e: FormEventType) => {
@@ -81,7 +76,7 @@ const ForumWrite = () => {
         formData.append('attachImageName', attachImageName);
         formData.append('attachImagePath', attachImagePath);
 
-        let config: AxiosRequestConfig = {
+        const config: AxiosRequestConfig = {
             method: "put",
             url: `/api/forum/update/${id}`,
             headers: {
@@ -90,15 +85,7 @@ const ForumWrite = () => {
             data: formData,
         };
 
-        try{
-            const res: AxiosResponse = await instance(config);
-            console.log(res.data)
-            formReset();
-            navigate(`/`);
-        } catch(err: any){
-            setAlertShowMessage(err.response.data)
-            setAlertShow(true)
-        }
+        postForum(config);
     }
 
     const onSubmit = (e: FormEventType) => {
@@ -109,7 +96,7 @@ const ForumWrite = () => {
     const getForum = async () => {
         try{
             const res = await instance.get(`/api/forum/write/get/${id}`);
-            const data = res.data[0];
+            const data = res.data;
             setTitleText(data.titleText);
             setMainText(data.mainText);
             setAttachImagePath(data.attachImagePath);

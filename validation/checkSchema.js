@@ -6,8 +6,13 @@ module.exports = (method) => {
     switch (method) {
         case 'forum': {
             return [ 
-                check('titleText', '제목을 입력하세요.').notEmpty(),
-                check('mainText', '본문을 입력하세요').notEmpty(),
+                check('titleText')
+                .notEmpty()
+                .withMessage('제목을 입력하세요.'),
+                
+                check('mainText')
+                .notEmpty()
+                .withMessage('본문을 입력하세요.')
             ]   
         }
         case 'comment': {

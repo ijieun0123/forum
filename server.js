@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+
 //const __dirname = path.resolve();
 
 // .env 환경변수 사용하기
@@ -14,7 +15,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json({limit:'50mb'})); // 파일 업로드 용량
-app.use(express.urlencoded({limit:'50mb', extended:true}));
+app.use(express.urlencoded({limit:'50mb', extended:false}));
 
 // mongoDB
 const uri = process.env.ATLAS_URI;

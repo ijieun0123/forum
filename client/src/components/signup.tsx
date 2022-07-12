@@ -11,6 +11,7 @@ import {
     InputEventType, 
     FormEventType 
 } from '../utils/types';
+import { Users } from '../utils/axios';
 
 const Img = styled.img`
     display:block;
@@ -72,7 +73,7 @@ const Signup = () => {
         formData.get('passwordConfirm');
         formData.append('profileImagePath', profileImagePath)
 
-        let config: AxiosRequestConfig = {
+        const config: AxiosRequestConfig = {
             method: "post",
             url: "/api/user/signup",
             headers: {
@@ -81,18 +82,18 @@ const Signup = () => {
             data: formData,
         };
 
-        try{
-            const res: AxiosResponse = await axios(config);
-            console.log(res.data);
+        Users.signup(config)
+        .then(() => {
             setValidation(true);
             setAlertMessage('회원가입을 축하합니다!')
             setAlertShow(true)
             formReset();
-        } catch(err: any){
+        })
+        .catch((err) => {
             console.log(err);
             setAlertMessage(err.response.data)
             setAlertShow(true)
-        }
+        })
     }
 
     return (

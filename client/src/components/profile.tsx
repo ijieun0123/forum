@@ -17,6 +17,7 @@ import {
     InputEventType,
     FormEventType
 } from '../utils/types';
+import { Users } from '../utils/axios';
 
 const Img = styled.img`
     display:block;
@@ -75,7 +76,7 @@ const Profile = () => {
         formData.append('profileImagePath', profileImagePath)
         formData.append('profileImageName', profileImageName);
 
-        let config: AxiosRequestConfig = {
+        const config: AxiosRequestConfig = {
             method: "patch",
             url: `/api/user/update`,
             headers: {
@@ -84,9 +85,8 @@ const Profile = () => {
             data: formData,
         };
 
-        try{
-            const res: AxiosResponse = await instance(config);;
-            const data = res.data;
+        Users.updateProfile(config)
+        .then(data => {
             console.log(data);
             dispatch(SIGNIN({
                 userName:data.userName,
@@ -99,11 +99,12 @@ const Profile = () => {
             setAlertMessage('프로필이 변경되었습니다!')
             setAlertShow(true)
             formReset();
-        } catch(err: any){
+        })
+        .catch(err => {
             console.log(err);
             setAlertMessage(err.response.data)
             setAlertShow(true)
-        }
+        })
     }
 
     useEffect(() => {

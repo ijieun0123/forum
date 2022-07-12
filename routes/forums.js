@@ -21,13 +21,14 @@ const {
     deleteHearts
 } = require('../controllers/hearts');
 const {
+    //uploadImage,
     attachImageUpload
 } = require('../middleware/cloudinary.config');
 
 router.post('/get', getForums, getNewForums);
 router.post('/post', auth, attachImageUpload, validate(checkSchema('forum')), postForum);
-router.get('/view/get/:id', auth, updateViewCount, getForum)
-router.get('/write/get/:id', auth, getForum)
+router.get('/view/get/:id', auth, updateViewCount, getForum);
+router.get('/write/get/:id', auth, getForum);
 router.put('/update/:id', attachImageUpload, validate(checkSchema('forum')), updateForum);
 router.delete('/delete/:id', auth, deleteForum, deleteHearts, deleteComments);
 router.delete('/delete', deleteForums);
