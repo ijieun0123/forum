@@ -37,10 +37,12 @@ _Client_
 
 <br/>
 
-## :paperclip: &nbsp; 핵심 트러블 슈팅
-* 
+## :paperclip: &nbsp; 핵심 기술
+* 마지막에 선정하는 게 좋아보임
 
 <br/>
 
+## :paperclip: &nbsp; 핵심 트러블 슈팅
+* 노션으로 연결하여 좀더 디테일하게 기록하는 
 
 
