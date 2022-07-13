@@ -11,7 +11,7 @@
 
 ## 사용 기술
 
-<mark>Server</mark>
+_Server_
   * Node JS
   * MongoDB ATLAS
   * Express
