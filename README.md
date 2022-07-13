@@ -1,4 +1,4 @@
-## 게시판 프로젝트
+## :four_leaf_clover: 게시판 프로젝트
 [게시판 주소](https://protected-wildwood-11173.herokuapp.com)  
 
 <br/>
