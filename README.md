@@ -18,6 +18,7 @@ _Server_
   * express-validator
   * bcryptjs
   * JWT
+  * multer
   * cloudinary
   
 _Client_
@@ -26,6 +27,7 @@ _Client_
   * toolkit
   * Axios
   * React-Bootstrap
+  * Typescript
   
 <br/>
 
