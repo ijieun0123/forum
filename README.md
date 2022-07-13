@@ -26,7 +26,8 @@ _Client_
   * Redux
   * toolkit
   * Axios
-  * React-Bootstrap
+  * react-bootstrap
+  * react-js-pagination
   * Typescript
   
 <br/>
