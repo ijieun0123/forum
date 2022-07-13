@@ -38,15 +38,15 @@ const ForumView = () => {
             attachImageName: attachImageName
         }
 
-        try{            
-            const res = await instance.delete(`/api/forum/delete/${id}`, { params: params });
-            console.log(res.data);
-            console.log(attachImageName)
+        if(id) Forums.deleteForum(params, id)
+        .then(data => {
+            console.log(data);
             setAlertShow(false);
             navigate(`/`);
-        } catch(err){
+        })
+        .catch(err => {
             console.log(err);
-        }
+        })
     }
 
     const updateHeart = async () => {
