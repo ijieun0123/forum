@@ -3,8 +3,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 
-//const __dirname = path.resolve();
-
 // .env 환경변수 사용하기
 require('dotenv').config();
 
