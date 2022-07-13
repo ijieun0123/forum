@@ -11,7 +11,7 @@
 
 ## 사용 기술
 
-**Server**
+<u>Server</u>
   * Node JS
   * MongoDB ATLAS
   * Express
@@ -20,7 +20,7 @@
   * JWT
   * cloudinary
   
-**Client**
+<u>Client</u>
   * React JS
   * Redux
   * toolkit
