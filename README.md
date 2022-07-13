@@ -30,7 +30,7 @@ _Client_
 <br/>
 
 ## ERD 설계
-* 공란
+![Entity Relationship Diagram](https://user-images.githubusercontent.com/97034723/178698168-b6c151ae-5bc0-4694-bceb-b90372aba4ab.jpg)
 
 <br/>
 
