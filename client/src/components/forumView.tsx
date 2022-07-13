@@ -32,18 +32,6 @@ const ForumView = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
-
-    const deleteImage = async () => {
-        const params = {
-            attachImageName: attachImageName,
-        }
-        try{            
-            const res = await instance.delete(`/api/image/delete/${id}`, { params: params });
-            console.log(res.data);
-        } catch(err){
-            console.log(err);
-        }
-    }
     
     const deleteForum = async () => {
         const params = {
@@ -54,7 +42,6 @@ const ForumView = () => {
             const res = await instance.delete(`/api/forum/delete/${id}`, { params: params });
             console.log(res.data);
             console.log(attachImageName)
-            if(attachImageName) deleteImage()
             setAlertShow(false);
             navigate(`/`);
         } catch(err){
