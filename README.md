@@ -1,5 +1,4 @@
-게시판 프로젝트
-------------
+## 게시판 프로젝트
 [게시판 주소](https://protected-wildwood-11173.herokuapp.com)  
 
 <br/>
@@ -12,7 +11,7 @@
 
 ## 사용 기술
 
-_Server_
+<mark>Server</mark>
   * Node JS
   * MongoDB ATLAS
   * Express
