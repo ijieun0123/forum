@@ -5,7 +5,7 @@ const User = require('../models/user.model');
 module.exports = (method) => {
     switch (method) {
         case 'forum': {
-            return [ 
+            return [ // <p><br class="ProseMirror-trailingBreak"></p>
                 check('titleText')
                 .notEmpty()
                 .withMessage('제목을 입력하세요.'),
@@ -13,6 +13,11 @@ module.exports = (method) => {
                 check('mainText')
                 .notEmpty()
                 .withMessage('본문을 입력하세요.')
+                .custom( async mainText => { 
+                        const empty = '<p><br class="ProseMirror-trailingBreak"></p>'
+                        if(mainText === empty) return Promise.reject('본문을 입력하세요.')
+                    }   
+                ),
             ]   
         }
         case 'comment': {
