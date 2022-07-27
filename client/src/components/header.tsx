@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from "react-router-dom";
-import { SIGNOUT } from '../features/userSlice'
-import Profile from '../atoms/profile';
-import Btn from '../atoms/button';
+import { SIGNOUT } from '../features/userSlice.ts'
+import Profile from '../atoms/profile.tsx';
+import Btn from '../atoms/button.tsx';
 import axios from 'axios';
 import instance from '../utils/instance'
-import { ReducerType } from '../app/store';
-import { User } from '../features/userSlice'
+import { ReducerType } from '../app/store.ts';
+import { User } from '../features/userSlice.ts'
 import React from 'react';
 import { BtnMouseEventType } from '../utils/types';
-import { Users } from '../utils/axios';
+import { Users } from '../utils/axios.ts';
  
 const Header = () => {
     const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);

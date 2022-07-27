@@ -2,18 +2,18 @@ import { Row, Form, Col, Button, Modal } from 'react-bootstrap';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-import Title from '../atoms/title'
+import Title from '../atoms/title.tsx'
 import { useDispatch, useSelector } from 'react-redux'
-import { SIGNIN, SIGNOUT } from '../features/userSlice'
-import Warning from '../organisms/warning'
+import { SIGNIN, SIGNOUT } from '../features/userSlice.ts'
+import Warning from '../organisms/warning.tsx'
 import instance from '../utils/instance';
 import { 
     onChangeText, 
     InputEventType, 
     BtnMouseEventType, 
     FormEventType 
-} from '../utils/types';
-import { Users } from '../utils/axios';
+} from '../utils/types.ts';
+import { Users } from '../utils/axios.ts';
 
 const Withdrawal = () => {
 

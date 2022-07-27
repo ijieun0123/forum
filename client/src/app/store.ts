@@ -3,10 +3,12 @@ import storage from "redux-persist/lib/storage/session"
 import { combineReducers } from "redux"; 
 import { persistReducer } from 'redux-persist'
 import thunk from 'redux-thunk'
-import userSlice from '../features/userSlice'
+import userSlice from '../features/userSlice.ts'
+import forumSlice from '../features/forumSlice.ts'
 
 const reducers = combineReducers({
-    user: userSlice
+    user: userSlice,
+    forum: forumSlice
 });
 
 const persistConfig = {

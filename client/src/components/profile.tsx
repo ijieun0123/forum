@@ -1,23 +1,23 @@
 import { Row, Form, Col, Stack, FloatingLabel } from 'react-bootstrap';
 import React, { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import Warning from '../organisms/warning'
+import Warning from '../organisms/warning.tsx'
 import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
-import Title from '../atoms/title'
+import Title from '../atoms/title.tsx'
 import { useSelector, useDispatch } from 'react-redux'
-import { SIGNIN, SIGNOUT } from '../features/userSlice'
+import { SIGNIN, SIGNOUT } from '../features/userSlice.ts'
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import instance from '../utils/instance';
-import { ReducerType } from '../app/store';
-import { User } from '../features/userSlice'
+import { ReducerType } from '../app/store.ts';
+import { User } from '../features/userSlice.ts'
 import { 
     onChangeText, 
     onChangeImageSrc,
     InputEventType,
     FormEventType
-} from '../utils/types';
-import { Users } from '../utils/axios';
+} from '../utils/types.ts';
+import { Users } from '../utils/axios.ts';
 
 const Img = styled.img`
     display:block;

@@ -1,17 +1,17 @@
 import { Card, Form } from 'react-bootstrap';
-import Profile from '../atoms/profile';
-import Btn from '../atoms/button';
+import Profile from '../atoms/profile.tsx';
+import Btn from '../atoms/button.tsx';
 import React, { useState } from 'react';
-import Warning from './warning'
+import Warning from './warning.tsx'
 import instance from '../utils/instance';
 import axios, {AxiosError} from 'axios';
-import { Comments } from '../utils/axios';
+import { Comments } from '../utils/axios.ts';
 import { 
     CommentWritePropsType, 
     onChangeText, 
     InputEventType, 
     FormEventType 
-} from '../utils/types';
+} from '../utils/types.ts';
 
 const CommentWrite = ({ 
     profileImagePath, 

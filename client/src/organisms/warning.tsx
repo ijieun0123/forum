@@ -9,7 +9,7 @@ const Body = styled.div`
     width:100%;
     height:100%;
     background:rgba(0,0,0,0.9);
-    z-index:10;
+    z-index:100;
 `
 
 const Warning = ({ 
@@ -30,15 +30,15 @@ const Warning = ({
         transform:'translate(-50%, -50%)',
         width:'500px'
     } as React.CSSProperties
-
+    
     return(
         <Body>
             <Alert 
                 show={alertShow} 
+                style={alertStyle}
                 onClose={onClose} 
                 variant={alertVariant}
                 dismissible 
-                style={alertStyle}
             >
                 <Alert.Heading>{alertTitleText}</Alert.Heading>
                 <p>{mainText}</p>

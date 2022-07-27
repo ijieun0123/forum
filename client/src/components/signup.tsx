@@ -1,8 +1,8 @@
 import { Row, Form, Col, Stack, FloatingLabel } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import Warning from '../organisms/warning'
-import Title from '../atoms/title'
+import Warning from '../organisms/warning.tsx'
+import Title from '../atoms/title.tsx'
 import styled from 'styled-components';
 import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
 import { 
@@ -10,8 +10,8 @@ import {
     onChangeImageSrc, 
     InputEventType, 
     FormEventType 
-} from '../utils/types';
-import { Users } from '../utils/axios';
+} from '../utils/types.ts';
+import { Users } from '../utils/axios.ts';
 
 const Img = styled.img`
     display:block;

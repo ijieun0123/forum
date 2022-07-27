@@ -1,20 +1,20 @@
 import { Table, Row, Col, FloatingLabel, Form } from 'react-bootstrap'
 import { useEffect, useState } from 'react';
-import Title from '../atoms/title'
-import Profile from '../atoms/profile'
-import EyeCount from '../atoms/eyeCount'
-import HeartCount from '../atoms/heartCount'
-import Btn from '../atoms/button'
-import Warning from '../organisms/warning'
+import Title from '../atoms/title.tsx'
+import Profile from '../atoms/profile.tsx'
+import EyeCount from '../atoms/eyeCount.tsx'
+import HeartCount from '../atoms/heartCount.tsx'
+import Btn from '../atoms/button.tsx'
+import Warning from '../organisms/warning.tsx'
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-import { ReducerType } from '../app/store';
-import { User } from '../features/userSlice'
+import { ReducerType } from '../app/store.ts';
+import { User } from '../features/userSlice.ts'
 import instance from '../utils/instance';
-import Paging from '../organisms/pagination';
-import { Forums, Hearts } from '../utils/axios';
+import Paging from '../organisms/pagination.tsx';
+import { Forums, Hearts } from '../utils/axios.ts';
 import { 
     ForumType, 
     onChangeText, 
@@ -22,7 +22,9 @@ import {
     SelectEventType, 
     BtnMouseEventType,
     Types
-} from '../utils/types';
+} from '../utils/types.ts';
+import { FORUM_POST, FORUM_DELETE } from '../features/forumSlice.ts'
+import { Forum } from '../features/forumSlice'
 
 const Td = styled.td`
     line-height:45px;
@@ -32,6 +34,7 @@ const Td = styled.td`
 const ForumList = () => {
     const signin = useSelector<ReducerType, User['signin']>(state => state.user.signin);
     const user = useSelector<ReducerType, User['user']>(state => state.user.user);
+    const forum = useSelector<ReducerType, Forum['forum']>(state => state.forum.forum);
 
     const [forums, setForums] = useState<ForumType[]>([]);
     const [forumId, setForumId] = useState('');
@@ -52,6 +55,7 @@ const ForumList = () => {
     };
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const onChangeSearch = (e: InputEventType) => onChangeText(e, setSearchValue);
     const onChangeSelect = (e: SelectEventType) => onChangeText(e, setSelectValue);
@@ -59,17 +63,18 @@ const ForumList = () => {
 
     const deleteForum = async () => {
         const targetForum = forums.find(forum => forum.forumId === forumId);
-        let attachImageName = '';
+        let attachImageNames = [];
 
-        if(targetForum) attachImageName = targetForum.attachImageName;
+        if(targetForum) attachImageNames = targetForum.attachImageNames;
 
         const params = {
-            attachImageName: attachImageName
+            attachImageNames: attachImageNames
         }
 
         Forums.deleteForum(params, forumId)
         .then(() => {
             const newForums = forums.filter(forum => forum.forumId !== forumId);
+            dispatch(FORUM_DELETE({ forumId: forumId }))
             setAlertShow(false);
             setForums(newForums)
         })
@@ -131,7 +136,9 @@ const ForumList = () => {
 
         Forums.getForums(body)
         .then((data) => {
+            console.log(data)
             setForums(data)
+            dispatch(FORUM_POST(data))
             setActivePage(1);
         })
         .catch((err) => {

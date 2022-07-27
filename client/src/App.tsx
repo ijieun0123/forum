@@ -1,20 +1,20 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
-import Header from './components/header';
-import Signin from './components/signin';
-import Signup from './components/signup';
-import Profile from './components/profile';
-import Withdrawal from './components/withdrawal';
-import ForumList from './components/forumList';
-import ForumWrite from './components/forumWrite';
-import ForumView from './components/forumView';
+import Header from './components/header.tsx';
+import Signin from './components/signin.tsx';
+import Signup from './components/signup.tsx';
+import Profile from './components/profile.tsx';
+import Withdrawal from './components/withdrawal.tsx';
+import ForumList from './components/forumList.tsx';
+import ForumWrite from './components/forumWrite.tsx';
+import ForumView from './components/forumView.tsx';
 import { useSelector, useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react';
-import Warning from './organisms/warning';
+import Warning from './organisms/warning.tsx';
 import { useNavigate } from 'react-router-dom';
-import { ReducerType } from './app/store';
-import { User } from './features/userSlice'
+import { ReducerType } from './app/store.ts';
+import { User } from './features/userSlice.ts'
 
 const App: React.FC = (): JSX.Element => {
 

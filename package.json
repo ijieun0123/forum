@@ -14,6 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^34.2.0",
+    "@ckeditor/ckeditor5-react": "^5.0.2",
+    "@ckeditor/ckeditor5-upload": "^34.2.0",
+    "@toast-ui/react-editor": "^3.1.8",
+    "@types/ckeditor__ckeditor5-core": "^33.0.3",
+    "@types/react": "^18.0.15",
     "autoprefixer": "10.4.5",
     "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
@@ -31,11 +37,14 @@
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.15",
+    "react-beforeunload": "^2.5.3",
+    "react-navigation-hooks": "^1.1.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/ckeditor__ckeditor5-build-classic": "^29.0.1",
     "concurrently": "^7.1.0"
   },
   "homepage": "."

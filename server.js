@@ -28,12 +28,10 @@ const usersRouter = require('./routes/users');
 const forumsRouter = require('./routes/forums');
 const commentsRouter = require('./routes/comments');
 const heartRouter = require('./routes/hearts');
-const imageRouter = require('./routes/images');
 app.use('/api/user', usersRouter);
 app.use('/api/forum', forumsRouter);
 app.use('/api/comment', commentsRouter);
 app.use('/api/heart', heartRouter);
-app.use('/api/image', imageRouter);
 
 // Server static assets if in production
 if (process.env.NODE_ENV === 'production') {

@@ -2,12 +2,12 @@ import { Row, Form, Col, Button, Modal } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-import Title from '../atoms/title'
+import Title from '../atoms/title.tsx'
 import { useDispatch, useSelector } from 'react-redux'
-import { SIGNIN, SIGNOUT } from '../features/userSlice'
-import Warning from '../organisms/warning'
-import { onChangeText, InputEventType, FormEventType } from '../utils/types'
-import { Users } from '../utils/axios'
+import { SIGNIN, SIGNOUT } from '../features/userSlice.ts'
+import Warning from '../organisms/warning.tsx'
+import { onChangeText, InputEventType, FormEventType } from '../utils/types.ts'
+import { Users } from '../utils/axios.ts'
 
 const Signin = () => {
     const [email, setEmail] = useState('')

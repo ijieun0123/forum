@@ -1,21 +1,21 @@
 import { Card, Form, Stack } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
-import Profile from '../atoms/profile';
-import Title from '../atoms/title';
-import Btn from '../atoms/button';
-import HeartCount from '../atoms/heartCount';
-import CommentWrite from './commentWrite'
+import Profile from '../atoms/profile.tsx';
+import Title from '../atoms/title.tsx';
+import Btn from '../atoms/button.tsx';
+import HeartCount from '../atoms/heartCount.tsx';
+import CommentWrite from './commentWrite.tsx'
 import axios from 'axios';
-import Warning from './warning'
+import Warning from './warning.tsx'
 import instance from '../utils/instance';
-import { Comments, Hearts } from '../utils/axios';
+import { Comments, Hearts } from '../utils/axios.ts';
 import { 
     CommentType, 
     CommentPropsType, 
     onChangeText, 
     InputEventType,
     Types
-} from '../utils/types';
+} from '../utils/types.ts';
 
 const Comment = ({ 
     forumId, 
