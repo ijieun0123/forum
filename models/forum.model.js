@@ -9,11 +9,11 @@ const forumSchema = new Schema({
         required: true
     },
     attachImagePath: {
-        type: String,
+        type: Array,
         required: false,
     },
-    attachImageName: {
-        type: String,
+    attachImageNames: {
+        type: Array,
         required: false,
     },
     titleText: {

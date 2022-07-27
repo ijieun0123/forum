@@ -18,7 +18,7 @@ export interface Types {
     forumId: string;
     titleText: string;
     mainText: string;
-    attachImageName: string;
+    attachImageNames: string[];
     attachImagePath: string;
     commentId: string;
     commentText: string;
@@ -104,7 +104,7 @@ export interface ForumType extends EyeCountType, ProfileType, HeartCountType {
     titleText: Types['titleText'];
     mainText: Types['mainText'];
     attachImagePath: Types['attachImagePath'];
-    attachImageName: Types['attachImageName'];
+    attachImageNames: Types['attachImageNames'];
     createdAt: Types['createdAt'];
 }
 

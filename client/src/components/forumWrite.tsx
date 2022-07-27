@@ -1,18 +1,24 @@
 import { FloatingLabel, Form, Stack, Button } from 'react-bootstrap';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Title from '../atoms/title';
-import Warning from '../organisms/warning'
-import instance from '../utils/instance';
+import Title from '../atoms/title.tsx';
+import Warning from '../organisms/warning.tsx'
+import instance from '../utils/instance.ts';
 import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
-import { onChangeText, InputEventType, FormEventType } from '../utils/types';
-import { Forums } from '../utils/axios'
+import { onChangeText, InputEventType, FormEventType } from '../utils/types.ts';
+import { Forums } from '../utils/axios.ts'
+import Editor from '../organisms/editor.tsx';
+import { useDispatch, useSelector } from 'react-redux'
+import { ReducerType } from '../app/store.ts';
+import { Forum } from '../features/forumSlice.ts'
 
 const ForumWrite = () => {
     const [titleText, setTitleText] = useState('')
     const [mainText, setMainText] = useState('')
-    const [attachImagePath, setAttachImagePath] = useState('');
-    const [attachImageName, setAttachImageName] = useState('');
+    //const [attachImagePath, setAttachImagePath] = useState('');
+    const [attachImageNames, setAttachImageNames] = useState<string[]>([]);
+    const [isSubmit, setIsSubmit] = useState(false);
+    //let isSubmit = false;
 
     const [alertShow, setAlertShow] = useState(false);
     const [alertShowMessage, setAlertShowMessage] = useState('');
@@ -20,27 +26,32 @@ const ForumWrite = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const forum = useSelector<ReducerType, Forum['forum']>(state => state.forum.forum);
+    const forumData = forum.find(el => el.forumId === id);
+
     const alertClose = () => setAlertShow(false);
 
     const onChangeTitle = (e: InputEventType) => onChangeText(e, setTitleText);
     const onChangeMain = (e: InputEventType) => onChangeText(e, setMainText);
-    const onChangeAttachImagePath = (e: InputEventType) => onChangeText(e, setAttachImagePath);
+    //const onChangeAttachImagePath = (e: InputEventType) => onChangeText(e, setAttachImagePath);
 
-    const deleteAttachImagePath = () => {
-        setAttachImagePath('');
-    }
-  
     const formReset = () => {
         setTitleText('');
         setMainText('');
-        setAttachImagePath('');
     }
 
-    const postForum = (config: AxiosRequestConfig) => {
-        Forums.postForumRequest(config)
+    const createForum = async (e: FormEventType) => {
+        e.preventDefault();
+        const body = {
+            titleText: titleText,
+            mainText: mainText,
+            attachImageNames: attachImageNames
+        }
+
+        Forums.postForum(body)
         .then(() => {
+            setIsSubmit(isSubmit => !isSubmit);
             formReset();
-            navigate(`/`);
         })
         .catch((err: any) => {
             setAlertShowMessage(err.response.data)
@@ -48,44 +59,23 @@ const ForumWrite = () => {
         })
     }
 
-    const createForum = async (e: FormEventType) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        formData.get('titleText');
-        formData.get('mainText');
-        formData.append('attachImagePath', attachImagePath);
-
-        const config: AxiosRequestConfig = {
-            url: "/api/forum/post",
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-                "content-type": "multipart/form-data"
-            },
-            data: formData,
-        };
-        
-        postForum(config);
-    }
-
     const editForum = async (e: FormEventType) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        formData.get('titleText');
-        formData.get('mainText');
-        formData.append('attachImageName', attachImageName);
-        formData.append('attachImagePath', attachImagePath);
+        const body = {
+            titleText: titleText,
+            mainText: mainText,
+            attachImageNames: attachImageNames
+        }
 
-        const config: AxiosRequestConfig = {
-            method: "put",
-            url: `/api/forum/update/${id}`,
-            headers: {
-                "content-type": "multipart/form-data"
-            },
-            data: formData,
-        };
-
-        postForum(config);
+        Forums.putForum(body, id)
+        .then(() => {
+            setIsSubmit(isSubmit => !isSubmit);
+            formReset();
+        })
+        .catch((err: any) => {
+            setAlertShowMessage(err.response.data)
+            setAlertShow(true)
+        })
     }
 
     const onSubmit = (e: FormEventType) => {
@@ -95,13 +85,12 @@ const ForumWrite = () => {
 
     const getForum = async () => {
         try{
-            const res = await instance.get(`/api/forum/write/get/${id}`);
-            const data = res.data;
-            setTitleText(data.titleText);
-            setMainText(data.mainText);
-            setAttachImagePath(data.attachImagePath);
-            setAttachImageName(data.attachImageName);
-            console.log(data)
+            if(id){
+                setTitleText(forumData.titleText);
+                setMainText(forumData.mainText);
+                setAttachImageNames(forumData.attachImageNames);
+                console.log(forumData)
+            }
         } catch(err){
             console.log(err);
         }
@@ -110,7 +99,12 @@ const ForumWrite = () => {
     useEffect(() => {
         if(id) getForum();
     }, [])
-
+    /*
+    useEffect(() => {
+        console.log('forumWrite isSubmit: ' + isSubmit)
+        if(isSubmit) navigate('/');
+    }, [isSubmit])
+    */
     return (
         <div>
             {
@@ -148,47 +142,16 @@ const ForumWrite = () => {
                     </FloatingLabel>
                 </Form.Group>
                 <Form.Group controlId="formFile" className="mb-3">
-                    <FloatingLabel controlId="floatingTextarea2" label="본문">
-                        <Form.Control
-                            name="mainText"
-                            as="textarea"
-                            placeholder="Leave a comment here"
-                            style={{ minHeight: '100px' }}
-                            value={ mainText }
-                            onChange={ onChangeMain }
+                    <FloatingLabel controlId="floatingTextarea2" label="">
+                        <Editor 
+                            onChangeMain={ onChangeMain }
+                            setMainText={ setMainText }
+                            mainText={ forumData ? forumData.mainText : '' }
+                            attachImageNames={ attachImageNames }
+                            setAttachImageNames={ setAttachImageNames }
+                            isSubmit={ isSubmit }
                         />
                     </FloatingLabel>
-                </Form.Group>
-
-                <Form.Group controlId="formFileMultiple" className="mb-3">
-                    <Stack gap={0}>
-                        <div>
-                            <Form.Label style={{cursor:'pointer'}}>파일첨부</Form.Label>
-                            <img 
-                                src="../../img/close.svg" 
-                                alt="삭제" 
-                                style={{ cursor:'pointer', width:25, marginLeft:5 }}
-                                onClick={ deleteAttachImagePath }
-                            />
-                        </div>
-                        <div>
-                            <Form.Control 
-                                name="attachImagePath"
-                                type="file" 
-                                //multiple="multiple"
-                                onChange={ onChangeAttachImagePath }
-                                accept="image/jpg,image/png,image/jpeg"
-                                style={{ display:'none' }}
-                            />
-                            <FloatingLabel controlId="floatingTextarea2" label="파일명">
-                                <Form.Control
-                                    type="text" 
-                                    value={ attachImagePath }
-                                    readOnly
-                                />
-                            </FloatingLabel>
-                        </div>
-                    </Stack>
                 </Form.Group>
             </Form>
         </div>

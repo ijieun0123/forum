@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
-import instance from "./instance";
+import instance from "./instance.ts";
 import { ForumType, CommentType } from "./types";
 
 const responseBody = (response: AxiosResponse) => response.data;
@@ -11,6 +11,12 @@ interface getForumsBody {
     nickname?: string;
 }
 
+interface postForumBody {
+    titleText: string;
+    mainText: string;
+    attachImageNames?: string[];
+}
+
 interface deleteForumParams {
     attachImageName?: string
 }
@@ -18,7 +24,8 @@ interface deleteForumParams {
 const forumRequests = {
     getForumsRequest: (url: string, body: getForumsBody) => instance.post<ForumType>(url, body).then(responseBody),
     getForumRequest: (url: string) => instance.get<ForumType>(url).then(responseBody),
-    postForumRequest: (config: AxiosRequestConfig) => instance.request<AxiosResponse>(config).then(responseBody),
+    postForumRequest: (url: string, body: postForumBody) => instance.post<ForumType>(url, body).then(responseBody),
+    putForumRequest: (url: string, body: postForumBody) => instance.put<ForumType>(url, body).then(responseBody),
     deleteForumRequest: (url: string, params: deleteForumParams) => instance.delete<ForumType>(url, { params }).then(responseBody),
 };
 
@@ -26,7 +33,8 @@ export const Forums = {
     getForums : (body: getForumsBody) : Promise<ForumType[]> => forumRequests.getForumsRequest('/api/forum/get', body),
     getForum : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/write/get/${id}`),
     getForumGetViewCount : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/view/get/${id}`),
-    postForumRequest : (config: AxiosRequestConfig) : Promise<AxiosResponse> => forumRequests.postForumRequest(config),
+    postForum : (body: postForumBody) : Promise<ForumType> => forumRequests.postForumRequest("/api/forum/post", body),
+    putForum : (body: postForumBody, id: string) : Promise<ForumType> => forumRequests.putForumRequest(`/api/forum/update/${id}`, body),
     deleteForum : (params: deleteForumParams, id: string) : Promise<ForumType> => forumRequests.deleteForumRequest(`/api/forum/delete/${id}`, params),
 }
 

@@ -1,22 +1,27 @@
-import Title from '../atoms/title';
+import Title from '../atoms/title.tsx';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Warning from '../organisms/warning'
-import Comment from '../organisms/comment'
+import Warning from '../organisms/warning.tsx'
+import Comment from '../organisms/comment.tsx'
 import { Card, Stack } from 'react-bootstrap';
-import Profile from '../atoms/profile';
-import HeartCount from '../atoms/heartCount'
-import { useSelector } from 'react-redux'
-import EyeCount from '../atoms/eyeCount';
+import Profile from '../atoms/profile.tsx';
+import HeartCount from '../atoms/heartCount.tsx'
+import EyeCount from '../atoms/eyeCount.tsx';
 import instance from '../utils/instance';
-import { ReducerType } from '../app/store';
-import { User } from '../features/userSlice'
-import { Forums, Hearts } from '../utils/axios';
+import { ReducerType } from '../app/store.ts';
+import { User } from '../features/userSlice.ts'
+import { Forums, Hearts } from '../utils/axios.ts';
+
+import { Viewer } from '@toast-ui/react-editor'
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { useBeforeunload } from 'react-beforeunload';
+import { Forum } from '../features/forumSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 const ForumView = () => {
 
     const [attachImagePath, setAttachImagePath] = useState('');
-    const [attachImageName, setAttachImageName] = useState('')
+    const [attachImageNames, setAttachImageNames] = useState<string[]>([])
     const [createdAt, setCreatedAt] = useState('');
     const [heartCount, setHeartCount] = useState(0);
     const [heartFill, setHeartFill] = useState(false);
@@ -27,15 +32,17 @@ const ForumView = () => {
     const [profileImagePath, setProfileImagePath] = useState('');
 
     const [alertShow, setAlertShow] = useState(false);
-    
-    const user = useSelector<ReducerType, User['user']>(state => state.user.user);
 
     const { id } = useParams();
     const navigate = useNavigate();
     
+    const user = useSelector<ReducerType, User['user']>(state => state.user.user);
+    const forum = useSelector<ReducerType, Forum['forum']>(state => state.forum.forum);
+    const forumData = forum.find(el => el.forumId === id);
+    
     const deleteForum = async () => {
         const params = {
-            attachImageName: attachImageName
+            attachImageNames: attachImageNames
         }
 
         if(id) Forums.deleteForum(params, id)
@@ -48,7 +55,7 @@ const ForumView = () => {
             console.log(err);
         })
     }
-
+    
     const updateHeart = async () => {
         if(id){
             const body = {
@@ -69,26 +76,17 @@ const ForumView = () => {
     }
 
     const getForum = async () => {
-        if(id) 
-        Forums.getForumGetViewCount(id)
-        .then((data) => {
-            setAttachImagePath(data.attachImagePath)
-            setAttachImageName(data.attachImageName)
-            setCreatedAt(data.createdAt)
-            setHeartCount(data.heartCount)
-            setHeartFill(data.heartFill)
-            setMainText(data.mainText)
-            setTitleText(data.titleText)
-            setViewCount(data.viewCount)
-            setNickName(data.nickname)
-            setProfileImagePath(data.profileImagePath)
-            console.log(data) 
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+        setAttachImageNames(forumData.attachImageNames)
+        setCreatedAt(forumData.createdAt)
+        setHeartCount(forumData.heartCount)
+        setHeartFill(forumData.heartFill)
+        setMainText(forumData.mainText)
+        setTitleText(forumData.titleText)
+        setViewCount(forumData.viewCount)
+        setNickName(forumData.nickname)
+        setProfileImagePath(forumData.profileImagePath)
     }
-
+    
     useEffect(() => {
         getForum();
     }, [])
@@ -145,10 +143,13 @@ const ForumView = () => {
                         </div>
                     </Stack>
                 </Card.Header>
+
                 <Card.Body>
-                    {attachImagePath? <Card.Img variant="top" src={ attachImagePath } /> : null}
-                    <Card.Text>{mainText}</Card.Text>
+                <Viewer 
+                    initialValue={ forumData.mainText }
+                />
                 </Card.Body>
+                
                 <Card.Footer className="text-muted text-center">
                     {createdAt? createdAt.slice(0, 10) : null}
                 </Card.Footer>
@@ -164,3 +165,4 @@ const ForumView = () => {
 }
 
 export default ForumView;
+

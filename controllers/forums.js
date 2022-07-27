@@ -5,13 +5,55 @@ const cloudinary = require('cloudinary').v2;
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
+const getImageUrl = async (req, res) => {
+    const attachImagePath = req.file.path
+    const attachImageName = req.file.filename;
+    
+    if(attachImagePath && attachImageName){
+        res.status(200).json({
+            attachImagePath: attachImagePath,
+            attachImageName: attachImageName
+        })
+    } else{
+        res.status(400).json('Cloudinary 오류')
+    }
+}
+
+const deleteImage = async (req, res) => {
+    const attachImageName = req.query.attachImageName;
+  
+    cloudinary.uploader.destroy(
+        attachImageName, 
+        (err, res) => { 
+            console.log(err, res)
+        }
+    )
+    res.status(200).json('클라우디너리 이미지 삭제')
+}
+
+const deleteImages = async (req, res) => {
+    const attachImageNames = req.query.attachImageNames;
+    
+    for(let attachImageName of attachImageNames){
+        cloudinary.uploader.destroy(
+            attachImageName, 
+            (err, res) => { 
+                console.log(err, res)
+            }
+        )
+    }
+
+    res.status(200).json('클라우디너리 이미지 삭제')
+}
+
 const postForum = async (req, res) => {
     const _user = req.user.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    const attachImagePath = (req.file ? req.file.path : '');
-    const attachImageName = (req.file ? req.file.filename : '');
-    const data = { _user, titleText, mainText, attachImagePath, attachImageName };
+    //const attachImagePath = (req.file ? req.file.path : '');
+    //const attachImageName = (req.file ? req.file.filename : '');
+    const attachImageNames = (req.body.attachImageNames ? req.body.attachImageNames : []);
+    const data = { _user, titleText, mainText, attachImageNames };
     
     try{
         const newForum = new Forum(data);
@@ -93,8 +135,9 @@ const getForums = async (req, res, next) => {
                     heartClickUsers: { $first: "$_heart._user" },
                     profileImagePath: { $first: "$_user.profileImagePath" },
                     nickname: { $first: "$_user.nickname" },
-                    attachImageName: { $first: "$attachImageName" },
+                    attachImageNames: { $first: "$attachImageNames" },
                     titleText: { $first: "$titleText" },
+                    mainText: { $first: "$mainText" },
                     viewCount: { $first: "$viewCount" },
                     createdAt: { $first: "$createdAt" },
                 }
@@ -187,7 +230,7 @@ const getForum = async (req, res) => {
                     profileImagePath: { $first: "$_user.profileImagePath" },
                     nickname: { $first: "$_user.nickname" },
                     attachImagePath: { $first: "$attachImagePath" },
-                    attachImageName: { $first: "$attachImageName" },
+                    attachImageNames: { $first: "$attachImageNames" },
                     titleText: { $first: "$titleText" },
                     mainText: { $first: "$mainText" },
                     viewCount: { $first: "$viewCount" },
@@ -222,38 +265,13 @@ const getForum = async (req, res) => {
 }
 
 const updateForum = async (req, res) => {
-    const id = req.params.id;
+    const forumId = req.params.id;
     const titleText = req.body.titleText;
     const mainText = req.body.mainText;
-    const oldAttachImagePath = req.body.attachImagePath;
-    const oldAttachImageName = req.body.attachImageName;
-    const attachImagePath = ( req.file ? req.file.path : oldAttachImagePath );
-    let attachImageName = ''
-
-    if(req.file){ // 이미지 변경했을 때
-        attachImageName = req.file.filename
-    } else if(oldAttachImageName && !oldAttachImagePath){ // 이미지 삭제했을 때
-        attachImageName = ''
-    } else{ // 이미지 변경 안했을 때
-        attachImageName = oldAttachImageName
-    }
-
-    const data = { 
-        titleText, 
-        mainText, 
-        attachImagePath,
-        attachImageName
-    };
-
-    // Cloudinary oldAttachImage 삭제 ( 이미지 변경했을 때 || 이미지 삭제했을 때 )
-    if(oldAttachImageName && req.file || oldAttachImageName && !oldAttachImagePath) { 
-        cloudinary.uploader.destroy(
-            oldAttachImageName, 
-            (err, res) => { console.log(res, err) }
-        )
-    }
-
-    Forum.findByIdAndUpdate(id, data)
+    const attachImageNames = (req.body.attachImageNames ? req.body.attachImageNames : []);
+    const data = { titleText, mainText, attachImageNames };
+    
+    Forum.findByIdAndUpdate(forumId, data)
     .then(() => res.json('forum updated'))
     .catch(err => res.status(400).json(err.message))
 }
@@ -277,19 +295,20 @@ const updateForumHeart = (req, res) => {
 
 const deleteForum = async (req, res, next) => {
     const id = req.params.id;
-    const attachImageName = req.query.attachImageName;
-
+    const attachImageNames = req.query.attachImageNames;
     req._forum = id;
 
     try{
         const forum = await Forum.findByIdAndDelete(id)
         if(Array.isArray(forum)) forum.save()
 
-        if(attachImageName) {
-            cloudinary.uploader.destroy(
-                attachImageName, 
-                (err, res) => { console.log(res, err) }
-            )
+        if(attachImageNames) {
+            for(let attachImageName of attachImageNames){
+                cloudinary.uploader.destroy(
+                    attachImageName, 
+                    (err, res) => { console.log(res, err) }
+                )
+            }
         }
 
         next()
@@ -317,6 +336,9 @@ module.exports = {
     updateForumHeart,
     deleteForum,
     deleteForums,
-    getNewForums
+    getNewForums,
+    getImageUrl,
+    deleteImage,
+    deleteImages
 }
 
