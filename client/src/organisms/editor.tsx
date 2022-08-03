@@ -61,7 +61,7 @@ const Editor = ({
     const uploadImage = async (blob: Blob | File, callback: Function): Promise<void> => {
         const formData = new FormData();
         formData.append('image', blob);
-
+        console.log(blob)
         const config: AxiosRequestConfig = {
             url: "/api/forum/get/image/url",
             method: "post",
@@ -76,16 +76,7 @@ const Editor = ({
             const data = res.data;
             const attachImagePath = data.attachImagePath;
             const attachImageName = data.attachImageName;
-            /*
-            useCallback(
-                () => {
-                    setAttachImageNames(attachImageNames => 
-                        [...attachImageNames, attachImageName]
-                    )
-                },
-                [attachImageNames],
-            )
-            */
+
             setAttachImageNames(attachImageNames => {
                 const newAttachImageNames = [...attachImageNames, attachImageName];
                 return newAttachImageNames

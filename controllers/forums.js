@@ -8,6 +8,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const getImageUrl = async (req, res) => {
     const attachImagePath = req.file.path
     const attachImageName = req.file.filename;
+    console.log(attachImagePath)
+    console.log(attachImageName)
     
     if(attachImagePath && attachImageName){
         res.status(200).json({
