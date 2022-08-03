@@ -5,6 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const generateTokens = require('../utils/generateTokens');
 const verifyRefreshToken = require('../utils/verifyRefreshToken');
 const Token = require('../models/token.model');
+require('dotenv').config();
 
 const defaultProfileImage = "/img/profile_default.png";
 
