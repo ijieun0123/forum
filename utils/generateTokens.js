@@ -5,7 +5,6 @@ utils > generateTokens.js
 */
 const jwt = require('jsonwebtoken');
 const Token = require('../models/token.model')
-require('dotenv').config();
 
 module.exports = async user => {
     try{

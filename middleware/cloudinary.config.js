@@ -9,9 +9,9 @@ const {
 } = process.env;
 
 cloudinary.config({
-    cloud_name: CLOUDINARY_HOST,
-    api_key: CLOUDINARY_API_KEY,
-    api_secret: CLOUDINARY_API_SECRET,
+    cloud_name: `${CLOUDINARY_HOST}`,
+    api_key: `${CLOUDINARY_API_KEY}`,
+    api_secret: `${CLOUDINARY_API_SECRET}`,
 })
 
 const storage = new CloudinaryStorage({
