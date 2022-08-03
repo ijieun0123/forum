@@ -16,7 +16,7 @@ app.use(express.json({limit:'50mb'})); // 파일 업로드 용량
 app.use(express.urlencoded({limit:'50mb', extended:false}));
 
 // mongoDB
-const uri = process.env.ATLAS_URI;
+const uri = `${process.env.ATLAS_URI}`;
 mongoose.connect(uri, { useNewUrlParser: true });
 const connection = mongoose.connection;
 connection.once('open', () => {
