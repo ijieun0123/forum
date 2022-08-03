@@ -13,6 +13,8 @@ import {
     FormEventType 
 } from '../utils/types.ts';
 
+import openSocket from 'socket.io-client';
+
 const CommentWrite = ({ 
     profileImagePath, 
     nickname, 

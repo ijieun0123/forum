@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -41,8 +41,6 @@ const Editor = ({
 
     const [imgTagLength, setImgTagLength] = useState(0);
 
-    let attachImageNamesArr = [];
-
     const navigate = useNavigate();
     
     const onChangeEditor = () => {
@@ -78,10 +76,21 @@ const Editor = ({
             const data = res.data;
             const attachImagePath = data.attachImagePath;
             const attachImageName = data.attachImageName;
-
-            setAttachImageNames(attachImageNames => 
-                [...attachImageNames, attachImageName]
+            /*
+            useCallback(
+                () => {
+                    setAttachImageNames(attachImageNames => 
+                        [...attachImageNames, attachImageName]
+                    )
+                },
+                [attachImageNames],
             )
+            */
+            setAttachImageNames(attachImageNames => {
+                const newAttachImageNames = [...attachImageNames, attachImageName];
+                return newAttachImageNames
+            })
+            console.log(attachImageNames)
             callback(attachImagePath, '첨부사진');
         } catch (err) {
             console.log(err)
@@ -96,9 +105,11 @@ const Editor = ({
         try{
             const res = await axios.delete("/api/forum/delete/image", {params: body})
             console.log(res.data)
-            setAttachImageNames(attachImageNames => 
-                attachImageNames.filter(el => el !== attachImageName)
-            );
+            setAttachImageNames(attachImageNames => {
+                const newAttachImageNames = attachImageNames.filter(el => el !== attachImageName)
+                return newAttachImageNames
+            });
+            console.log(attachImageNames)
         } catch (err) {
             console.log(err)
         }
@@ -121,21 +132,34 @@ const Editor = ({
         const imgTagLength = document.getElementsByTagName("img").length;
         setImgTagLength(imgTagLength);
     }, []);
+    /*
+    useEffect(() => {
+        console.log(attachImageNames)
+    }, [attachImageNames, isSubmit]);
+    */
+
+    const isFirstRender = useRef(true)
 
     useEffect(() => {
-       console.log(attachImageNames)
-    }, [attachImageNames]);
+        if (!isFirstRender.current) {
+            console.log(attachImageNames) // do something after state has updated
+        }
+    }, [attachImageNames])
+
+    useEffect(() => { 
+        isFirstRender.current = false // toggle flag after first render/mounting
+    }, [])
 
     useEffect(() => {
         if(isSubmit) navigate('/');
-
+        
         return(() => {
             console.log('return isSubmit: ' + isSubmit);
             console.log('return attachImageNames: ' + attachImageNames);
             if(!isSubmit && attachImageNames) deleteImages() // attachImageNames가 안잡힘
         })
     }, [isSubmit])
-
+    
     return (
         <ToastEditor
             initialValue={ mainText }
