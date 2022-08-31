@@ -38,7 +38,7 @@ _Client_
 <br/>
 
 ## :paperclip: &nbsp; 핵심 기술
-* **#7** 
+* **#7**  
 
 <br/>
 
