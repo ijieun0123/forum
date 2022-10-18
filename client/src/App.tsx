@@ -1,7 +1,7 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
-import Header from './components/header.tsx';
+import Header from './organisms/header.tsx';
 import Signin from './components/signin.tsx';
 import Signup from './components/signup.tsx';
 import Profile from './components/profile.tsx';

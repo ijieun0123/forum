@@ -32,18 +32,6 @@ const Header = () => {
         .catch(err => {
             console.log(err)
         })
-        /*
-        try{
-            const res = await instance.delete('/api/user/signout')
-            console.log(res.data.msg);
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshTokenId');
-            dispatch(SIGNOUT({}));
-            navigate('/');
-        } catch (err) {
-            console.log(err)
-        }
-        */
     }   
     
     return (
