@@ -39,7 +39,7 @@
 <br/>
 
 ## :ledger: &nbsp; ERD 설계
-![Entity Relationship Diagram](https://user-images.githubusercontent.com/97034723/178698168-b6c151ae-5bc0-4694-bceb-b90372aba4ab.jpg)
+![Entity Relationship Diagram](https://user-images.githubusercontent.com/97034723/196351643-ece78c87-fb85-433b-a027-b3b2a11a7004.jpg)
 
 <br/>
 
