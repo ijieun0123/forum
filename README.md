@@ -40,6 +40,7 @@
 
 ## :ledger: &nbsp; ERD 설계
 ![Entity Relationship Diagram](https://user-images.githubusercontent.com/97034723/196351643-ece78c87-fb85-433b-a027-b3b2a11a7004.jpg)
+* [ERD 설계 참고 링크](https://www.notion.so/ERD-bec6370fefe343fa9eb38da8503f8a0e)
 
 <br/>
 
