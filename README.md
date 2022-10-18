@@ -1,6 +1,6 @@
 ## :pencil2: &nbsp; 게시판 프로젝트
 
-* [게시판 주소](https://protected-wildwood-11173.herokuapp.com)  
+* [게시판 주소](https://protected-wildwood-11173.herokuapp.com)
 
 <br/>
   
@@ -9,6 +9,7 @@
 <pre>
 * 제작기간 : 4월 1일 ~
 * 참여인원 : 개인 프로젝트
+* 테스트 아이디/비번 : test@test.kr / Qlalfqjsgh123@ ( 탈퇴하지 말아주세요 )  
 </pre>
 
 <br/>
