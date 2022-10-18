@@ -45,7 +45,7 @@ const getAccessToken = async (req, res) => {
         }
         const accessToken = jwt.sign(
             payload,
-            process.env.ACCESS_TOKEN_PRIVATE_KEY,
+            `${process.env.ACCESS_TOKEN_PRIVATE_KEY}`,
             { expiresIn: '30m' }
         )
         res.status(200).json({

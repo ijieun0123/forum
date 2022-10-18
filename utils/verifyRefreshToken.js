@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const Token = require('../models/token.model')
 
 module.exports = refreshToken => {
-    const privateKey = process.env.REFRESH_TOKEN_PRIVATE_KEY;
+    const privateKey = `${process.env.REFRESH_TOKEN_PRIVATE_KEY}`;
 
     return new Promise((resolve, reject) => {
         Token.findOne({ token: refreshToken }, (err, doc) => {

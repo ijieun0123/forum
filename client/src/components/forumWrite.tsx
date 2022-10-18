@@ -99,12 +99,7 @@ const ForumWrite = () => {
     useEffect(() => {
         if(id) getForum();
     }, [])
-    /*
-    useEffect(() => {
-        console.log('forumWrite isSubmit: ' + isSubmit)
-        if(isSubmit) navigate('/');
-    }, [isSubmit])
-    */
+
     return (
         <div>
             {

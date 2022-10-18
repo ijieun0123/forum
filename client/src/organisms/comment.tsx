@@ -16,6 +16,11 @@ import {
     InputEventType,
     Types
 } from '../utils/types.ts';
+import openSocket from "socket.io-client";
+
+const socket = openSocket("http://localhost:5000", {
+    transports: ['websocket']
+});
 
 const Comment = ({ 
     forumId, 
@@ -127,8 +132,26 @@ const Comment = ({
         })
     }
 
+    socket.on("comment", data => {
+        console.log(data);
+        
+        if (data.action === "add") {
+            setComments(prevComments => [data.comment, ...prevComments]);
+        } else if (data.action === "delete") {
+            /*
+            setComments(prevComments =>
+                prevComments.filter(comment => comment._id !== commentId)
+            );
+            */
+        }
+       
+        socket.emit('reply', data)
+
+    });
+
     useEffect(() => {
         getComments();
+        //return () => socket.disconnect();
     }, [])
 
     return (

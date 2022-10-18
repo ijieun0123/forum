@@ -5,7 +5,7 @@ const User = require('../models/user.model');
 module.exports = (method) => {
     switch (method) {
         case 'forum': {
-            return [ // <p><br class="ProseMirror-trailingBreak"></p>
+            return [
                 check('titleText')
                 .notEmpty()
                 .withMessage('제목을 입력하세요.'),

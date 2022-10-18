@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": "14.17.6",
+    "npm": "6.14.15"
+  },
   "scripts": {
     "start": "node server.js",
     "heroku-postbuild": "cd client && npm install && npm install webpack-cli --dev && npm run build",
@@ -41,6 +45,7 @@
     "react-navigation-hooks": "^1.1.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
+    "socketio": "^1.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

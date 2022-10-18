@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
 
     // Verify accessToken
     try{
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_PRIVATE_KEY, (error, decoded) => {
+        jwt.verify(accessToken, `${process.env.ACCESS_TOKEN_PRIVATE_KEY}`, (error, decoded) => {
             if (error) {
                 return res.status(401).json({ msg: 'accessToken is not valid' });
             } else{

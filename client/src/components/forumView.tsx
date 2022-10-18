@@ -76,15 +76,22 @@ const ForumView = () => {
     }
 
     const getForum = async () => {
-        setAttachImageNames(forumData.attachImageNames)
-        setCreatedAt(forumData.createdAt)
-        setHeartCount(forumData.heartCount)
-        setHeartFill(forumData.heartFill)
-        setMainText(forumData.mainText)
-        setTitleText(forumData.titleText)
-        setViewCount(forumData.viewCount)
-        setNickName(forumData.nickname)
-        setProfileImagePath(forumData.profileImagePath)
+        Forums.getForumView(id)
+        .then((data) => {
+            console.log(data)
+            setAttachImageNames(data.attachImageNames)
+            setCreatedAt(data.createdAt)
+            setHeartCount(data.heartCount)
+            setHeartFill(data.heartFill)
+            setMainText(data.mainText)
+            setTitleText(data.titleText)
+            setViewCount(data.viewCount)
+            setNickName(data.nickname)
+            setProfileImagePath(data.profileImagePath)
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }
     
     useEffect(() => {

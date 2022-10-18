@@ -10,7 +10,8 @@ const heartSchema = new Schema({
     },
     _forum: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Forum'
+        ref: 'Forum',
+        required: true
     },
     _comment: {
         type: mongoose.Schema.Types.ObjectId, 

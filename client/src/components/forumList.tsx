@@ -57,8 +57,8 @@ const ForumList = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const onChangeSearch = (e: InputEventType) => onChangeText(e, setSearchValue);
-    const onChangeSelect = (e: SelectEventType) => onChangeText(e, setSelectValue);
+    const onChangeSearch = (e: InputEventType) => onChangeText(e, setSearchValue, setSelectValue('latestOrder'));
+    const onChangeSelect = (e: SelectEventType) => onChangeText(e, setSelectValue, setSearchValue(''));
     
 
     const deleteForum = async () => {
@@ -166,7 +166,7 @@ const ForumList = () => {
                 clickPrimaryBtn={ () => navigate('/forum/write') }
             />
 
-            {
+            {/* 경고창 */
                 alertShow  
                 ?   <Warning 
                         onClickBtn={ deleteForum } 
