@@ -67,6 +67,7 @@ const postForum = async (req, res) => {
 
 }
 
+// select value, search value에 따라 게시물 list를 필터링하는 함수 getNewForums
 const getNewForums = async (req, res) => {
     const forums = req.forums;
     const selectValue = req.body.selectValue;
@@ -95,6 +96,7 @@ const getNewForums = async (req, res) => {
     } 
 }
 
+// 전체 게시물 list 을 가져오는 함수 getForums
 const getForums = async (req, res, next) => {
     const selectValue = req.body.selectValue;
     const searchValue = req.body.searchValue;
@@ -172,6 +174,7 @@ const getForums = async (req, res, next) => {
         req.forums = forums;
         req.user = user;
 
+        // 셀렉트 value, 서치 value가 있을 경우 getNewForums 동작
         if(selectValue || searchValue) {
             next()
         } else{

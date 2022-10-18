@@ -13,7 +13,7 @@ import {
     FormEventType 
 } from '../utils/types.ts';
 
-import openSocket from 'socket.io-client';
+import openSocket from "socket.io-client"; 
 
 const CommentWrite = ({ 
     profileImagePath, 
@@ -32,7 +32,9 @@ const CommentWrite = ({
     
     const onChangeComment = (e: InputEventType) => onChangeText(e, setCommentText)
 
-    const createComment = async () => {        
+    const createComment = async (e) => {        
+        e.preventDefault();
+
         const body = {
             _forum: forumId,
             commentText: commentText

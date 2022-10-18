@@ -32,6 +32,7 @@ const forumRequests = {
 export const Forums = {
     getForums : (body: getForumsBody) : Promise<ForumType[]> => forumRequests.getForumsRequest('/api/forum/get', body),
     getForum : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/write/get/${id}`),
+    getForumView : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/view/get/${id}`),
     getForumGetViewCount : (id: string) : Promise<ForumType> => forumRequests.getForumRequest(`/api/forum/view/get/${id}`),
     postForum : (body: postForumBody) : Promise<ForumType> => forumRequests.postForumRequest("/api/forum/post", body),
     putForum : (body: postForumBody, id: string) : Promise<ForumType> => forumRequests.putForumRequest(`/api/forum/update/${id}`, body),

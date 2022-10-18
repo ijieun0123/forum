@@ -44,6 +44,46 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // 서버 시작
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
+})
+/*
+const SocketIO = require('socket.io');
+
+// 서버 연결, path는 프론트와 일치시켜준다.
+const io = SocketIO(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods:["GET","POST"],
+    }
+});
+*/
+/* Create socket io connection 기존 삭제 */
+const io = require("./utils/socket").init(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods:["GET","POST"],
+    }
+})
+
+io.on("connection", socket => {
+    console.log("Client connected");
+
+     //* 연결 종료 시
+    socket.on('disconnect', () => {
+        console.log('클라이언트 접속 해제', socket.id);
+        clearInterval(socket.interval);
+    });
+
+    //* 에러 시
+    socket.on('error', (error) => {
+        console.error(error);
+    });
+
+    //* 클라이언트로부터 메시지 수신
+    socket.on('reply', (data) => { // reply라는 이벤트로 송신오면 메세지가 data인수에 담김
+        console.log(data);
+    });
+
+    //socket.emit('comment', 'comment')
 })
