@@ -43,10 +43,6 @@
 
 <br/>
 
-<<<<<<< HEAD
-## :paperclip: &nbsp; 핵심 기술
-* **#7**  
-=======
 ## :pushpin: &nbsp; 핵심 기술 & 트러블 슈팅
 * [Toast UI Editor & Cloudinary](https://github.com/Ji-eun1/forum/issues/2)
 * [Auth [ JWT ( Access Token ) / Refresh Token ]](https://github.com/Ji-eun1/forum/issues/11)
@@ -57,7 +53,6 @@
 * [페이지네이션](https://github.com/Ji-eun1/forum/issues/8)
 * [서치박스 & 셀렉박스](https://github.com/Ji-eun1/forum/issues/7)
 
->>>>>>> branch
 
 
 
