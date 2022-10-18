@@ -44,12 +44,12 @@
 <br/>
 
 ## :pushpin: &nbsp; 핵심 기술 & 트러블 슈팅
-* [Toast UI Editor & Cloudinary](https://github.com/Ji-eun1/forum/issues/2)
 * [Auth [ JWT ( Access Token ) / Refresh Token ]](https://github.com/Ji-eun1/forum/issues/11)
 * [express-validator](https://github.com/Ji-eun1/forum/issues/13) 
 * [aggregate vs populate [ 참고 SQL vs NoSQL ]](https://github.com/Ji-eun1/forum/issues/12)
 * [좋아요](https://github.com/Ji-eun1/forum/issues/10)
 * [댓글](https://github.com/Ji-eun1/forum/issues/9)
+* [Toast UI Editor & Cloudinary](https://github.com/Ji-eun1/forum/issues/2)
 * [페이지네이션](https://github.com/Ji-eun1/forum/issues/8)
 * [서치박스 & 셀렉박스](https://github.com/Ji-eun1/forum/issues/7)
 
